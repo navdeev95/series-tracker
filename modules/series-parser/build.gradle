@@ -1,0 +1,12 @@
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+}
+
+bootJar {
+	archiveFileName = "series-parser-service.jar"
+}
+
+jar {
+	enabled = false
+}

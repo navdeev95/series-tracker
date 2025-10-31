@@ -1,0 +1,3 @@
+rootProject.name = 'seriestracker'
+
+include 'modules:series-parser'
