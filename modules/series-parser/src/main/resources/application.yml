@@ -1,6 +1,9 @@
 spring:
   application:
     name: seriesparser
+  liquibase:
+    change-log: classpath:db/changelog/master.xml
+    enabled: true
 api:
   movielab:
       username: movielabmbtv

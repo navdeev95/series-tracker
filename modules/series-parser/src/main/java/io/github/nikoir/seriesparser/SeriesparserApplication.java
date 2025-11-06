@@ -12,11 +12,11 @@ public class SeriesparserApplication {
 		SpringApplication.run(SeriesparserApplication.class, args);
 	}
 
-	@Bean
+/*	@Bean
 	public CommandLineRunner run(MovielabService movielabService) {
 		return args -> {
 			var result = movielabService.getByKinopoiskId(4910542);
 			System.out.println(result);
 		};
-	}
+	}*/
 }
