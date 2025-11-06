@@ -1,6 +1,6 @@
 package io.github.nikoir.seriesparser;
 
-import io.github.nikoir.seriesparser.service.MovielabService;
+import io.github.nikoir.seriesparser.service.DbSeriesSearchService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,11 +12,11 @@ public class SeriesparserApplication {
 		SpringApplication.run(SeriesparserApplication.class, args);
 	}
 
-/*	@Bean
-	public CommandLineRunner run(MovielabService movielabService) {
+	@Bean
+	public CommandLineRunner run(DbSeriesSearchService seriesSearchService) {
 		return args -> {
-			var result = movielabService.getByKinopoiskId(4910542);
+			var result = seriesSearchService.findSeriesByTitle("title");
 			System.out.println(result);
 		};
-	}*/
+	}
 }

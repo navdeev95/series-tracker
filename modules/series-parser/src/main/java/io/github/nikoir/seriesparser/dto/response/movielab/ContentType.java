@@ -1,4 +1,4 @@
-package io.github.nikoir.seriesparser.response.movielab;
+package io.github.nikoir.seriesparser.dto.response.movielab;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

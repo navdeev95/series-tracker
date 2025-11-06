@@ -1,11 +1,10 @@
 package io.github.nikoir.seriesparser.service;
 
-import io.github.nikoir.seriesparser.response.movielab.LoginResponse;
-import io.github.nikoir.seriesparser.response.movielab.shorts.ContentItem;
-import io.github.nikoir.seriesparser.response.movielab.shorts.ShortResponse;
-import io.github.nikoir.seriesparser.response.movielab.stream.StreamResponse;
+import io.github.nikoir.seriesparser.dto.response.movielab.LoginResponse;
+import io.github.nikoir.seriesparser.dto.response.movielab.shorts.ContentItem;
+import io.github.nikoir.seriesparser.dto.response.movielab.shorts.ShortResponse;
+import io.github.nikoir.seriesparser.dto.response.movielab.stream.StreamResponse;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -70,7 +69,7 @@ public class MovielabService {
 
         // 2. Извлекаем contentItem
         ContentItem contentItem = Optional.ofNullable(shortResponse)
-                .map(ShortResponse::getData)
+                .map(ShortResponse::data)
                 .filter(list -> !list.isEmpty())
                 .map(list -> list.get(0))
                 .orElseThrow(() -> new RuntimeException("No content found for kinopoiskId: " + kinopoiskId));
@@ -115,7 +114,7 @@ public class MovielabService {
                 LoginResponse.class);
 
         return Optional.ofNullable(response.getBody())
-                .map(LoginResponse::getAccessToken)
+                .map(LoginResponse::accessToken)
                 .orElseThrow(() -> new RuntimeException("Failed to get access token"));
     }
 
@@ -128,8 +127,8 @@ public class MovielabService {
 
         String streamUrl = String.format("%s?contentId=%s&contentType=%s&clientId=%s&domain=movielabone", // ⚠️ исправлено domain
                 streamInfoUrl,
-                contentItem.getId(),
-                contentItem.getContentType().getApiValue(),
+                contentItem.id(),
+                contentItem.contentType().getApiValue(),
                 streamInfoClientId);
 
         ResponseEntity<StreamResponse> response = restTemplate.exchange(
