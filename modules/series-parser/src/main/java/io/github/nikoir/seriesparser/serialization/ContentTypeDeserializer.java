@@ -9,9 +9,9 @@ import java.io.IOException;
 
 public class ContentTypeDeserializer extends JsonDeserializer<ContentType> {
     @Override
-    public ContentType deserialize(JsonParser p, DeserializationContext ctxt)
+    public ContentType deserialize(JsonParser jsonParser, DeserializationContext ctxt)
             throws IOException {
-        String value = p.getValueAsString();
+        String value = jsonParser.getValueAsString();
         return ContentType.fromApiValue(value);
     }
 }

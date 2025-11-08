@@ -1,0 +1,310 @@
+{
+  "docs": [
+    {
+      "id": 5019944,
+      "name": "Кибердеревня",
+      "alternativeName": "",
+      "enName": "The Cyberfarm",
+      "type": "tv-series",
+      "year": 2023,
+      "description": "2100 год. Николай счастливо живет с семьей в кибердеревне на Марсе. Он спокойно ведет роботизированное хозяйство, пока на планету не прилетает руководитель огромной корпорации — Барагозин, который хочет построить на месте деревни новый завод. Николай отправляется в полное опасностей и приключений путешествие до Земли, чтобы спасти свой дом.",
+      "shortDescription": "Фермер и робот бегут из космической тюрьмы навстречу приключениям. Захватывающий сай-фай с русской душой",
+      "movieLength": 0,
+      "isSeries": true,
+      "ticketsOnSale": false,
+      "totalSeriesLength": null,
+      "seriesLength": 25,
+      "ratingMpaa": null,
+      "ageRating": 16,
+      "top10": 6,
+      "top250": null,
+      "typeNumber": 2,
+      "status": null,
+      "names": [
+        {
+          "name": "The Cyberfarm",
+          "language": "US",
+          "type": null
+        },
+        {
+          "name": "Cybervillage",
+          "language": "US",
+          "type": "Dubbed version"
+        }
+      ],
+      "externalId": {
+        "imdb": "tt23805348",
+        "tmdb": 232377,
+        "kpHD": "4155a88009824db685e260a1a611d17c"
+      },
+      "logo": {
+        "url": "https://image.openmoviedb.com/tmdb-images/original/zTnPBZPgRifMVZqfPx4p20D1n8R.png",
+        "previewUrl": "https://image.openmoviedb.com/tmdb-images/w500/zTnPBZPgRifMVZqfPx4p20D1n8R.png"
+      },
+      "poster": {
+        "url": "https://image.openmoviedb.com/kinopoisk-images/10953618/22898033-9a50-4018-9c08-80793dea6df6/600x900",
+        "previewUrl": "https://image.openmoviedb.com/kinopoisk-images/10953618/22898033-9a50-4018-9c08-80793dea6df6/300x450"
+      },
+      "backdrop": {
+        "url": "https://image.openmoviedb.com/kinopoisk-ott-images/223007/2a00000199e25a4a606a5b5e0db56a3e5b62/1344x756",
+        "previewUrl": "https://image.openmoviedb.com/kinopoisk-ott-images/223007/2a00000199e25a4a606a5b5e0db56a3e5b62/678x380"
+      },
+      "rating": {
+        "kp": 8.1,
+        "imdb": 7.3,
+        "filmCritics": 0,
+        "russianFilmCritics": 100,
+        "await": null
+      },
+      "votes": {
+        "kp": 684714,
+        "imdb": 852,
+        "filmCritics": 0,
+        "russianFilmCritics": 6,
+        "await": 0
+      },
+      "genres": [
+        {
+          "name": "фантастика"
+        },
+        {
+          "name": "комедия"
+        },
+        {
+          "name": "приключения"
+        }
+      ],
+      "countries": [
+        {
+          "name": "Россия"
+        }
+      ],
+      "releaseYears": [
+        {
+          "start": 2023,
+          "end": null
+        }
+      ]
+    },
+    {
+      "id": 5413371,
+      "name": "Кибердеревня. Новый год",
+      "alternativeName": "",
+      "enName": "",
+      "type": "movie",
+      "year": 2023,
+      "description": "31 декабря 2099 года по всей Солнечной системе накрывают столы и наряжают киберёлки, а марсианский фермер Николай ждёт к себе в гости с Земли жену и двух дочерей. Но что делать, если из-за аномальной солнечной активности отменяют все межпланетные перелёты? Новый год — праздник семейный, и Николай решает во что бы то ни стало добраться до родных. Помогут ему в этом любимая «буханка» Буля, самодельный телепорт и портативная чёрная дыра.",
+      "shortDescription": "Чтобы встретить праздник с семьей, Николаю придется отправиться в прошлое. Уютный спешел с отсылками к Нолану",
+      "movieLength": 27,
+      "isSeries": false,
+      "ticketsOnSale": false,
+      "totalSeriesLength": null,
+      "seriesLength": null,
+      "ratingMpaa": null,
+      "ageRating": 12,
+      "top10": null,
+      "top250": null,
+      "typeNumber": 1,
+      "status": null,
+      "names": [
+        {
+          "name": "Kiberderevnya. Novyy god",
+          "language": "US",
+          "type": null
+        },
+        {
+          "name": "Cybervillage. The New Year",
+          "language": "US",
+          "type": null
+        }
+      ],
+      "externalId": {
+        "imdb": "tt30267167",
+        "tmdb": 1221645,
+        "kpHD": "03f57a87fa004d8dba100ce88fb95c43"
+      },
+      "logo": {
+        "url": null,
+        "previewUrl": null
+      },
+      "poster": {
+        "url": "https://image.openmoviedb.com/kinopoisk-images/10809116/b3558f22-bd3b-407c-9c7f-38da6081055c/600x900",
+        "previewUrl": "https://image.openmoviedb.com/kinopoisk-images/10809116/b3558f22-bd3b-407c-9c7f-38da6081055c/300x450"
+      },
+      "backdrop": {
+        "url": "https://image.openmoviedb.com/kinopoisk-ott-images/212840/2a0000018c7cdf7199e1c85e75d8a5b951c6/1344x756",
+        "previewUrl": "https://image.openmoviedb.com/kinopoisk-ott-images/212840/2a0000018c7cdf7199e1c85e75d8a5b951c6/678x380"
+      },
+      "rating": {
+        "kp": 7.774,
+        "imdb": 0,
+        "filmCritics": 0,
+        "russianFilmCritics": 0,
+        "await": null
+      },
+      "votes": {
+        "kp": 238720,
+        "imdb": 0,
+        "filmCritics": 0,
+        "russianFilmCritics": 0,
+        "await": 0
+      },
+      "genres": [
+        {
+          "name": "фантастика"
+        },
+        {
+          "name": "комедия"
+        },
+        {
+          "name": "короткометражка"
+        }
+      ],
+      "countries": [
+        {
+          "name": "Россия"
+        }
+      ],
+      "releaseYears": []
+    },
+    {
+      "id": 5396107,
+      "name": "Кибердеревня: Экстра",
+      "alternativeName": "",
+      "enName": "",
+      "type": "tv-series",
+      "year": 2023,
+      "description": "Создатели делятся этапами работы над сериалом. Как из небольшого ролика на YouTube выросла идея сериала? Что общего у «Кибердеревни», «Звездных войн» и советской классики «Любовь и голуби»? Когда можно будет улететь жить на Марс? И главное: заменит ли нас когда-то искусственный интеллект?",
+      "shortDescription": "Мир будущего и закулисье съемок. Рассказываем про вселенную «Кибердеревни»",
+      "movieLength": 0,
+      "isSeries": true,
+      "ticketsOnSale": false,
+      "totalSeriesLength": null,
+      "seriesLength": 15,
+      "ratingMpaa": null,
+      "ageRating": 18,
+      "top10": null,
+      "top250": null,
+      "typeNumber": 2,
+      "status": null,
+      "names": [
+        {
+          "name": "Кибердеревня: Экстра",
+          "language": "RU",
+          "type": "Russian title on kinopoisk"
+        }
+      ],
+      "externalId": {
+        "kpHD": "b97e7ff825f642599b3ab95b890d95ee"
+      },
+      "logo": null,
+      "poster": {
+        "url": "https://image.openmoviedb.com/kinopoisk-images/9784475/f9c6469f-e063-422b-9834-986ad1ce2238/600x900",
+        "previewUrl": "https://image.openmoviedb.com/kinopoisk-images/9784475/f9c6469f-e063-422b-9834-986ad1ce2238/300x450"
+      },
+      "backdrop": {
+        "url": "https://image.openmoviedb.com/kinopoisk-ott-images/13051577/2a00000199a8e5e36d2cd0ecb83f27526778/1344x756",
+        "previewUrl": "https://image.openmoviedb.com/kinopoisk-ott-images/13051577/2a00000199a8e5e36d2cd0ecb83f27526778/678x380"
+      },
+      "rating": {
+        "kp": 8.081,
+        "imdb": 0,
+        "filmCritics": 0,
+        "russianFilmCritics": 0,
+        "await": null
+      },
+      "votes": {
+        "kp": 58012,
+        "imdb": 0,
+        "filmCritics": 0,
+        "russianFilmCritics": 0,
+        "await": 0
+      },
+      "genres": [
+        {
+          "name": "документальный"
+        }
+      ],
+      "countries": [
+        {
+          "name": "Россия"
+        }
+      ],
+      "releaseYears": [
+        {
+          "start": 2023,
+          "end": null
+        }
+      ]
+    },
+    {
+      "id": 5413367,
+      "name": "Кибердеревня. Фильм о фильме",
+      "alternativeName": "",
+      "enName": "",
+      "type": "movie",
+      "year": 2023,
+      "description": "Создатели «Кибердеревни» — режиссер Сергей Васильев, продюсеры, актерский состав, специалисты по компьютерной графике, художники-постановщики и другие — рассказывают, как у них получилось развить короткий шутливый ролик в целый фантастический сериал-блокбастер, отправляющий нас в мир России будущего.",
+      "shortDescription": "Где нашли Плутонск и как придумали Червика? За кулисами главной комедии осени",
+      "movieLength": 31,
+      "isSeries": false,
+      "ticketsOnSale": false,
+      "totalSeriesLength": null,
+      "seriesLength": null,
+      "ratingMpaa": null,
+      "ageRating": 12,
+      "top10": null,
+      "top250": null,
+      "typeNumber": 1,
+      "status": null,
+      "names": [
+        {
+          "name": "Кибердеревня. Фильм о фильме",
+          "language": "RU",
+          "type": "Russian title on kinopoisk"
+        }
+      ],
+      "externalId": {
+        "kpHD": "c2f1d2b1c76a448f8481fcf17045a2f0"
+      },
+      "logo": null,
+      "poster": {
+        "url": "https://image.openmoviedb.com/kinopoisk-images/10893610/363d2538-2414-4561-ac3b-47dac74443a0/600x900",
+        "previewUrl": "https://image.openmoviedb.com/kinopoisk-images/10893610/363d2538-2414-4561-ac3b-47dac74443a0/300x450"
+      },
+      "backdrop": {
+        "url": "https://image.openmoviedb.com/kinopoisk-ott-images/224348/2a0000018bbac0e84d49cd13e1b60c6d3cc1/1344x756",
+        "previewUrl": "https://image.openmoviedb.com/kinopoisk-ott-images/224348/2a0000018bbac0e84d49cd13e1b60c6d3cc1/678x380"
+      },
+      "rating": {
+        "kp": 8.531,
+        "imdb": 0,
+        "filmCritics": 0,
+        "russianFilmCritics": 0,
+        "await": null
+      },
+      "votes": {
+        "kp": 23281,
+        "imdb": 0,
+        "filmCritics": 0,
+        "russianFilmCritics": 0,
+        "await": 0
+      },
+      "genres": [
+        {
+          "name": "документальный"
+        }
+      ],
+      "countries": [
+        {
+          "name": "Россия"
+        }
+      ],
+      "releaseYears": []
+    }
+  ],
+  "total": 4,
+  "limit": 10,
+  "page": 1,
+  "pages": 1
+}

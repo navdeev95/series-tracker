@@ -3,7 +3,7 @@ package io.github.nikoir.seriesparser.dto.response.movielab.shorts;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-public record ShortResponse(
+public record ShortRs(
         @JsonProperty("result")
         Boolean result,
 

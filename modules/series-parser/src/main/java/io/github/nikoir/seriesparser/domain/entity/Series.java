@@ -1,44 +1,108 @@
 package io.github.nikoir.seriesparser.domain.entity;
 
-import jakarta.persistence.*;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
-import java.time.LocalDate;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "series")
 public class Series {
 
+    public enum Status {
+        FILMING, PRE_PRODUCTION, COMPLETED, ANNOUNCED, POST_PRODUCTION
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
+    @NotBlank
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "original_title", nullable = false)
-    private String originalTitle;
+    @Column(name = "eng_title")
+    private String engTitle;
 
-    @Column(name = "total_seasons", nullable = false)
+    @PositiveOrZero
+    @Column(name = "total_seasons")
     private Integer totalSeasons;
 
-    @Column(name = "status", nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status;
 
-    @Column(name = "release_date", nullable = false)
-    private LocalDate releaseDate;
+    @NotNull
+    @Column(name = "release_year", nullable = false)
+    private Integer releaseYear;
 
     @Column(name = "poster_url")
     private String posterUrl;
 
-    @Column(name = "kinopoisk_id")
-    private String kinopoiskId;
+    @Type(JsonBinaryType.class)
+    @Column(name = "external_ids", columnDefinition = "jsonb")
+    @Builder.Default
+    private Map<String, String> externalIds = new HashMap<>();
 
-    @Column(name = "imdb_id")
-    private String imdbId;
+    // Удобные методы для работы с external_ids
+    public String getKinopoiskId() {
+        return externalIds != null ? externalIds.get("kinopoisk") : null;
+    }
+
+    public void setKinopoiskId(String kinopoiskId) {
+        if (externalIds == null) {
+            externalIds = new HashMap<>();
+        }
+        externalIds.put("kinopoisk", kinopoiskId);
+    }
+
+    public String getImdbId() {
+        return externalIds != null ? externalIds.get("imdb") : null;
+    }
+
+    public void setImdbId(String imdbId) {
+        if (externalIds == null) {
+            externalIds = new HashMap<>();
+        }
+        externalIds.put("imdb", imdbId);
+    }
+
+    public String getTmdbId() {
+        return externalIds != null ? externalIds.get("tmdb") : null;
+    }
+
+    public void setTmdbId(String tmdbId) {
+        if (externalIds == null) {
+            externalIds = new HashMap<>();
+        }
+        externalIds.put("tmdb", tmdbId);
+    }
+
+    // Вспомогательные методы
+    public boolean hasPoster() {
+        return posterUrl != null && !posterUrl.isBlank();
+    }
+
+    public boolean hasEngTitle() {
+        return engTitle != null && !engTitle.isBlank();
+    }
+
+    public boolean isCompleted() {
+        return status == Status.COMPLETED;
+    }
+
+    public boolean isOngoing() {
+        return status == Status.FILMING || status == Status.POST_PRODUCTION;
+    }
 }

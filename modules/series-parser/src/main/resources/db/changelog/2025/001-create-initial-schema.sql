@@ -4,19 +4,19 @@
 -- comment: Создание основных таблиц
 
 CREATE TABLE "series" (
-  "id" integer PRIMARY KEY,
+  "id" BIGSERIAL PRIMARY KEY,
   "title" varchar NOT NULL,
-  "original_title" varchar NOT NULL,
-  "total_seasons" integer NOT NULL,
-  "status" varchar NOT NULL,
-  "release_date" date NOT NULL,
+  "eng_title" varchar,
+  "total_seasons" integer,
+  "status" varchar,
+  "release_year" integer NOT NULL,
   "poster_url" varchar,
-  "kinopoisk_id" varchar,
-  "imdb_id" varchar
+  "external_ids" JSONB DEFAULT '{}',
+  CONSTRAINT chk_status CHECK (status in ('filming', 'pre-production', 'completed', 'announced', 'post-production'))
 );
 
 CREATE TABLE "season" (
-  "id" integer PRIMARY KEY,
+  "id" BIGSERIAL PRIMARY KEY,
   "name" varchar NOT NULL,
   "release_date" date NOT NULL,
   "total_episodes" integer NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE "season" (
 );
 
 CREATE TABLE "episode" (
-  "id" integer PRIMARY KEY,
+  "id" BIGSERIAL PRIMARY KEY,
   "name" varchar NOT NULL,
   "release_date" date NOT NULL,
   "season_id" integer NOT NULL,
@@ -33,14 +33,14 @@ CREATE TABLE "episode" (
 );
 
 CREATE TABLE "dub_studio" (
-  "id" integer PRIMARY KEY,
+  "id" BIGSERIAL PRIMARY KEY,
   "name" varchar NOT NULL,
   "slug" varchar NOT NULL,
   "aliases" varchar[]
 );
 
 CREATE TABLE "quality" (
-  "id" integer PRIMARY KEY,
+  "id" BIGSERIAL PRIMARY KEY,
   "name" varchar NOT NULL,
   "slug" varchar NOT NULL,
   "aliases" varchar[],
@@ -49,7 +49,7 @@ CREATE TABLE "quality" (
 );
 
 CREATE TABLE "episode_release" (
-  "id" integer PRIMARY KEY,
+  "id" BIGSERIAL PRIMARY KEY,
   "episode_id" integer NOT NULL,
   "dub_studio_id" integer,
   "source_id" integer,
@@ -58,19 +58,19 @@ CREATE TABLE "episode_release" (
 );
 
 CREATE TABLE "source" (
-  "id" integer PRIMARY KEY,
+  "id" BIGSERIAL PRIMARY KEY,
   "name" varchar NOT NULL,
   "root_url" varchar NOT NULL,
   "url_template" varchar NOT NULL
 );
 
 CREATE TABLE "user" (
-  "id" integer PRIMARY KEY,
+  "id" BIGSERIAL PRIMARY KEY,
   "name" varchar NOT NULL
 );
 
 CREATE TABLE "user_subscription" (
-  "id" integer PRIMARY KEY,
+  "id" BIGSERIAL PRIMARY KEY,
   "user_id" integer,
   "series_id" integer,
   "source_id" integer,

@@ -5,9 +5,14 @@ spring:
     change-log: classpath:db/changelog/master.xml
     enabled: true
 api:
+  search-strategy: "movielab" #возможные значения: local|kinopoisk|movielab
   movielab:
       username: movielabmbtv
       password: QxWgxbv5oN0C
+      root:
+        url: https://movielab.one
+      search:
+        url: https://api.movielab.guru/api/v1/new-search/movies
       login:
         url: https://api.lumex.site/login
       short-info:
@@ -16,3 +21,8 @@ api:
       stream-info:
         url: https://api.lumex.site/stream
         client-id: 3dMif4uaUVYO
+  kinopoisk:
+    root-url: https://api.kinopoisk.dev/v1.4/
+    token: RNWQ3V9-FKS4XM7-MPCQ5G6-EQ0300E
+
+    name-search-path: movie/search
