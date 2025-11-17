@@ -13,6 +13,8 @@ api:
         url: https://movielab.one
       search:
         url: https://api.movielab.guru/api/v1/new-search/movies
+      episode-search:
+        url: https://api.movielab.guru/api/v1/movies
       login:
         url: https://api.lumex.site/login
       short-info:
@@ -21,8 +23,14 @@ api:
       stream-info:
         url: https://api.lumex.site/stream
         client-id: 3dMif4uaUVYO
+        timeout: 10000
   kinopoisk:
     root-url: https://api.kinopoisk.dev/v1.4/
     token: RNWQ3V9-FKS4XM7-MPCQ5G6-EQ0300E
 
     name-search-path: movie/search
+
+logging:
+  level:
+    org:
+      springframework.web.client: DEBUG

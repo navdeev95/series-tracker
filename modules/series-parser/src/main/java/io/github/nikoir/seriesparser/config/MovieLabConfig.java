@@ -26,9 +26,9 @@ public class MovieLabConfig {
         headers.setAccept(List.of(MediaType.ALL));
         headers.setAcceptLanguage(List.of(new Locale.LanguageRange("ru")));
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setOrigin(properties.getRootUrl());
+        headers.setOrigin(properties.getRoot().getUrl());
         headers.set("priority", "u=1, i");
-        headers.set("referer", properties.getRootUrl());
+        headers.set("referer", properties.getRoot().getUrl());
         headers.set("sec-ch-ua", "\"Microsoft Edge\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"");
         headers.set("sec-ch-ua-mobile", "?0");
         headers.set("sec-ch-ua-platform", "\"Windows\"");

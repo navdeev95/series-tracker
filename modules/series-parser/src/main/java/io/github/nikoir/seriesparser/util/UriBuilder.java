@@ -9,9 +9,20 @@ public final class UriBuilder {
     private final String baseUrl;
     private final Map<String, Object> params = new LinkedHashMap<>();
     private final List<String> paths = new ArrayList<>();
+    private boolean encodeEnabled = true; // по умолчанию кодирование включено
 
     private UriBuilder(String baseUrl) {
         this.baseUrl = Objects.requireNonNull(baseUrl, "Base URL cannot be null");
+    }
+
+    public UriBuilder disableEncoding() {
+        this.encodeEnabled = false;
+        return this;
+    }
+
+    public UriBuilder enableEncoding() {
+        this.encodeEnabled = true;
+        return this;
     }
 
     public static UriBuilder from(String baseUrl) {
@@ -62,7 +73,18 @@ public final class UriBuilder {
             }
         });
 
-        return builder.encode().build().toUriString();
+
+        if (encodeEnabled) {
+            return builder
+                    .encode()
+                    .build()
+                    .toUriString();
+        } else {
+            // Без кодирования - ОПАСНО!
+            return builder
+                    .build(false) // false = не кодировать
+                    .toUriString();
+        }
     }
 
     public URI buildUri() {

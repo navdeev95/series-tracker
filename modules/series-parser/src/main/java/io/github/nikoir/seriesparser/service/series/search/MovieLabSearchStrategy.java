@@ -3,8 +3,8 @@ package io.github.nikoir.seriesparser.service.series.search;
 import io.github.nikoir.seriesparser.config.MovieLabProperties;
 import io.github.nikoir.seriesparser.dto.request.SeriesSearchRq;
 import io.github.nikoir.seriesparser.dto.response.SeriesViewRs;
-import io.github.nikoir.seriesparser.dto.response.movielab.search.MovieLabSearchRs;
-import io.github.nikoir.seriesparser.mapper.SeriesMapper;
+import io.github.nikoir.seriesparser.dto.response.movielab.series.search.MovieLabSeriesSearchRs;
+import io.github.nikoir.seriesparser.mapper.MovieLabSeriesMapper;
 import io.github.nikoir.seriesparser.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PagedModel;
@@ -18,26 +18,27 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class MovieLabSearchStrategy implements SeriesSearchStrategy {
-    private final SeriesMapper seriesMapper;
+    private final MovieLabSeriesMapper seriesMapper;
 
     private final HttpHeaders movieLabHeaders;
 
     private final MovieLabProperties movieLabProperties;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     @Override
     public PagedModel<SeriesViewRs> search(SeriesSearchRq request) {
         HttpEntity<String> entity = new HttpEntity<>(movieLabHeaders);
 
-        String url = UriBuilder.from(movieLabProperties.getSearchUrl())
+        String url = UriBuilder.from(movieLabProperties.getSearch().getUrl())
                 .param("title", request.title())
                 .param("page", request.page())
                 .param("limit", request.limit())
+                .disableEncoding()
                 .build();
 
-        ResponseEntity<MovieLabSearchRs> response = restTemplate.exchange(
-                url, HttpMethod.GET, entity, MovieLabSearchRs.class);
+        ResponseEntity<MovieLabSeriesSearchRs> response = restTemplate.exchange(
+                url, HttpMethod.GET, entity, MovieLabSeriesSearchRs.class);
 
         return seriesMapper.toViewDtoPage(response.getBody());
     }

@@ -1,58 +1,42 @@
 package io.github.nikoir.seriesparser.service.series.search;
 
+import io.github.nikoir.seriesparser.config.KinopoiskProperties;
 import io.github.nikoir.seriesparser.dto.request.SeriesSearchRq;
 import io.github.nikoir.seriesparser.dto.response.SeriesViewRs;
 import io.github.nikoir.seriesparser.dto.response.kinopoisk.NameSearchRs;
-import io.github.nikoir.seriesparser.mapper.SeriesMapper;
+import io.github.nikoir.seriesparser.mapper.KinopoiskSeriesMapper;
+import io.github.nikoir.seriesparser.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class KinopoiskSearchStrategy implements SeriesSearchStrategy {
-    @Value("${api.kinopoisk.root-url}")
-    private String rootUrl;
+    private final KinopoiskProperties kinopoiskProperties;
 
-    @Value("${api.kinopoisk.token}")
-    private String token;
+    private final KinopoiskSeriesMapper seriesMapper;
 
-    @Value("${api.kinopoisk.name-search-path}")
-    private String nameSearchPath;
-
-    private final SeriesMapper seriesMapper;
-
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     public PagedModel<SeriesViewRs> search(SeriesSearchRq request) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        headers.set("X-API-KEY", token);
+        headers.set("X-API-KEY", kinopoiskProperties.getToken());
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        UriComponentsBuilder builder;
-        try {
-            builder = UriComponentsBuilder
-                    .fromUri(new URL(new URL(rootUrl), nameSearchPath).toURI())
-                    .queryParam("page", 1)
-                    .queryParam("limit", 10)
-                    .queryParam("query", request.title());
-        } catch (URISyntaxException | MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+        String url = UriBuilder.from(kinopoiskProperties.getRootUrl())
+                .path(kinopoiskProperties.getNameSearchPath())
+                .param("page", request.page())
+                .param("limit", request.limit())
+                .param("query", request.title())
+                .build();
 
-        ResponseEntity<NameSearchRs> response = restTemplate.exchange(
-                builder.toUriString(), HttpMethod.GET, entity, NameSearchRs.class);
+        ResponseEntity<NameSearchRs> response = restTemplate.exchange(url, HttpMethod.GET, entity, NameSearchRs.class);
 
         return seriesMapper.toViewDtoPage(response.getBody());
     }

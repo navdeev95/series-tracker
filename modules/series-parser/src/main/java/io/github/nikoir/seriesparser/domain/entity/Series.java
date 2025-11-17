@@ -11,6 +11,8 @@ import jakarta.validation.constraints.PositiveOrZero;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.github.nikoir.seriesparser.enums.ExternalId.*;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -57,36 +59,36 @@ public class Series {
 
     // Удобные методы для работы с external_ids
     public String getKinopoiskId() {
-        return externalIds != null ? externalIds.get("kinopoisk") : null;
+        return externalIds != null ? externalIds.get(KINOPOISK.getSourceName()) : null;
     }
 
     public void setKinopoiskId(String kinopoiskId) {
         if (externalIds == null) {
             externalIds = new HashMap<>();
         }
-        externalIds.put("kinopoisk", kinopoiskId);
+        externalIds.put(KINOPOISK.getSourceName(), kinopoiskId);
     }
 
     public String getImdbId() {
-        return externalIds != null ? externalIds.get("imdb") : null;
+        return externalIds != null ? externalIds.get(IMDB.getSourceName()) : null;
     }
 
     public void setImdbId(String imdbId) {
         if (externalIds == null) {
             externalIds = new HashMap<>();
         }
-        externalIds.put("imdb", imdbId);
+        externalIds.put(IMDB.getSourceName(), imdbId);
     }
 
     public String getTmdbId() {
-        return externalIds != null ? externalIds.get("tmdb") : null;
+        return externalIds != null ? externalIds.get(TMDB.getSourceName()) : null;
     }
 
     public void setTmdbId(String tmdbId) {
         if (externalIds == null) {
             externalIds = new HashMap<>();
         }
-        externalIds.put("tmdb", tmdbId);
+        externalIds.put(TMDB.getSourceName(), tmdbId);
     }
 
     // Вспомогательные методы

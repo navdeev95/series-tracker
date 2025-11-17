@@ -7,6 +7,8 @@ import io.github.nikoir.seriesparser.dto.response.movielab.shorts.ContentItem;
 import io.github.nikoir.seriesparser.dto.response.movielab.shorts.ShortRs;
 import io.github.nikoir.seriesparser.dto.response.movielab.stream.StreamRs;
 import io.github.nikoir.seriesparser.util.JsonUtil;
+import io.github.nikoir.seriesparser.util.UriBuilder;
+import liquibase.util.UrlUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +26,7 @@ public class MovieLabService {
 
     private final HttpHeaders movieLabHeaders;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     public StreamRs getByKinopoiskId(Integer kinopoiskId) {
         // 1. Получаем короткую информацию
@@ -47,10 +49,10 @@ public class MovieLabService {
     private ShortRs getShortInfo(Integer kinopoiskId) {
         HttpEntity<String> entity = new HttpEntity<>(movieLabHeaders);
 
-        String shortUrl = String.format("%s?api_token=%s&kinopoisk_id=%s",
-                properties.getShortInfoUrl(),
-                properties.getShortInfoToken(),
-                kinopoiskId);
+        String shortUrl = UriBuilder.from(properties.getShortInfo().getUrl())
+                .param("api_token", properties.getShortInfo().getToken())
+                .param("kinopoisk_id", kinopoiskId)
+                .build();
 
         ResponseEntity<ShortRs> response = restTemplate.exchange(
                 shortUrl, HttpMethod.GET, entity, ShortRs.class);
@@ -68,7 +70,7 @@ public class MovieLabService {
         HttpEntity<String> entity = new HttpEntity<>(JsonUtil.toJson(loginRq), headers);
 
         ResponseEntity<LoginRs> response = restTemplate.exchange(
-                properties.getLoginUrl(),
+                properties.getLogin().getUrl(),
                 HttpMethod.POST,
                 entity,
                 LoginRs.class);
@@ -85,11 +87,11 @@ public class MovieLabService {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        String streamUrl = String.format("%s?contentId=%s&contentType=%s&clientId=%s&domain=movielabone", // ⚠️ исправлено domain
-                properties.getStreamInfoUrl(),
-                contentItem.id(),
-                contentItem.contentType().getApiValue(),
-                properties.getStreamInfoClientId());
+        String streamUrl = UriBuilder.from(properties.getStreamInfo().getUrl())
+                .param("contentId", contentItem.id())
+                .param("contentType", contentItem.contentType().getApiValue())
+                .param("domain", "movielabone")
+                .build();
 
         ResponseEntity<StreamRs> response = restTemplate.exchange(
                 streamUrl, HttpMethod.GET, entity, StreamRs.class);

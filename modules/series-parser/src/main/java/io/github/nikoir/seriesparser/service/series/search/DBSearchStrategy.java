@@ -4,7 +4,7 @@ import io.github.nikoir.seriesparser.domain.entity.Series;
 import io.github.nikoir.seriesparser.domain.repo.SeriesRepository;
 import io.github.nikoir.seriesparser.dto.request.SeriesSearchRq;
 import io.github.nikoir.seriesparser.dto.response.SeriesViewRs;
-import io.github.nikoir.seriesparser.mapper.SeriesMapper;
+import io.github.nikoir.seriesparser.mapper.DatabaseSeriesMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DBSearchStrategy implements SeriesSearchStrategy {
     private final SeriesRepository seriesRepository;
-    private final SeriesMapper seriesMapper;
+    private final DatabaseSeriesMapper seriesMapper;
 
     public PagedModel<SeriesViewRs> search(SeriesSearchRq request) {
         Page<Series> seriesPage = seriesRepository.searchByTitleOrEngTitle(request.title(),
