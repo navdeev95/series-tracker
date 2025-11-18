@@ -8,6 +8,7 @@ import io.github.nikoir.seriesparser.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -37,7 +38,8 @@ public class MovieLabEpisodeSearchStrategy implements EpisodeSearchStrategy {
                 .path(kinopoiskId)
                 .build();
 
-        ResponseEntity<MovieLabEpisodeSearchRs> response = restTemplate.getForEntity(url, MovieLabEpisodeSearchRs.class);
+        ResponseEntity<MovieLabEpisodeSearchRs> response = restTemplate.exchange(
+                url, HttpMethod.GET, entity, MovieLabEpisodeSearchRs.class);
 
         List<MovieLabEpisodeSearchRs.Season> seasonList =  Optional.of(response)
                 .map(HttpEntity::getBody)
