@@ -1,14 +1,13 @@
 package io.github.nikoir.seriesparser.service;
 
-import io.github.nikoir.seriesparser.config.MovieLabProperties;
+import io.github.nikoir.seriesparser.config.props.LumexPortalProps;
+import io.github.nikoir.seriesparser.config.props.LumexSiteProps;
 import io.github.nikoir.seriesparser.dto.request.movielab.MovieLabLoginRq;
-import io.github.nikoir.seriesparser.dto.response.movielab.LoginRs;
-import io.github.nikoir.seriesparser.dto.response.movielab.shorts.ContentItem;
-import io.github.nikoir.seriesparser.dto.response.movielab.shorts.ShortRs;
-import io.github.nikoir.seriesparser.dto.response.movielab.stream.StreamRs;
+import io.github.nikoir.seriesparser.dto.response.lumex.login.LoginRs;
+import io.github.nikoir.seriesparser.dto.response.lumex.shorts.ShortRs;
+import io.github.nikoir.seriesparser.dto.response.lumex.stream.StreamRs;
 import io.github.nikoir.seriesparser.util.JsonUtil;
 import io.github.nikoir.seriesparser.util.UriBuilder;
-import liquibase.util.UrlUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,11 +20,10 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class MovieLabService {
-    private final MovieLabProperties properties;
-
+public class LumexService {
+    private final LumexPortalProps lumexPortalProps;
+    private final LumexSiteProps lumexSiteProps;
     private final HttpHeaders movieLabHeaders;
-
     private final RestTemplate restTemplate;
 
     public StreamRs getByKinopoiskId(Integer kinopoiskId) {
@@ -33,7 +31,7 @@ public class MovieLabService {
         ShortRs shortRs = getShortInfo(kinopoiskId);
 
         // 2. Извлекаем contentItem
-        ContentItem contentItem = Optional.ofNullable(shortRs)
+        ShortRs.ContentItem contentItem = Optional.ofNullable(shortRs)
                 .map(ShortRs::data)
                 .filter(list -> !list.isEmpty())
                 .map(list -> list.get(0))
@@ -47,10 +45,13 @@ public class MovieLabService {
     }
 
     private ShortRs getShortInfo(Integer kinopoiskId) {
+        String token = lumexPortalProps.getCredentials().get("token");
+
         HttpEntity<String> entity = new HttpEntity<>(movieLabHeaders);
 
-        String shortUrl = UriBuilder.from(properties.getShortInfo().getUrl())
-                .param("api_token", properties.getShortInfo().getToken())
+        String shortUrl = UriBuilder.from(lumexPortalProps.getUrl())
+                .path(lumexPortalProps.getShortInfo().getPath())
+                .param("api_token", token)
                 .param("kinopoisk_id", kinopoiskId)
                 .build();
 
@@ -62,15 +63,22 @@ public class MovieLabService {
 
     //TODO: сделать refresh_token
     private String getAccessToken() {
+        String login = lumexSiteProps.getCredentials().get("username");
+        String password = lumexSiteProps.getCredentials().get("password");
+
         HttpHeaders headers = new HttpHeaders();
         headers.addAll(movieLabHeaders);
 
-        MovieLabLoginRq loginRq = new MovieLabLoginRq(properties.getUsername(), properties.getPassword());
+        MovieLabLoginRq loginRq = new MovieLabLoginRq(login, password);
 
         HttpEntity<String> entity = new HttpEntity<>(JsonUtil.toJson(loginRq), headers);
 
+        String url = UriBuilder.from(lumexSiteProps.getUrl())
+                .path(lumexSiteProps.getLogin().getPath())
+                .build();
+
         ResponseEntity<LoginRs> response = restTemplate.exchange(
-                properties.getLogin().getUrl(),
+                url,
                 HttpMethod.POST,
                 entity,
                 LoginRs.class);
@@ -80,14 +88,15 @@ public class MovieLabService {
                 .orElseThrow(() -> new RuntimeException("Failed to get access token"));
     }
 
-    private StreamRs getStreamInfo(ContentItem contentItem, String accessToken) {
+    private StreamRs getStreamInfo(ShortRs.ContentItem contentItem, String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.addAll(movieLabHeaders);
         headers.setBearerAuth(accessToken);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        String streamUrl = UriBuilder.from(properties.getStreamInfo().getUrl())
+        String streamUrl = UriBuilder.from(lumexSiteProps.getUrl())
+                .path(lumexSiteProps.getStreamInfo().getPath())
                 .param("contentId", contentItem.id())
                 .param("contentType", contentItem.contentType().getApiValue())
                 .param("domain", "movielabone")

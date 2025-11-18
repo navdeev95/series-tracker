@@ -1,5 +1,6 @@
 package io.github.nikoir.seriesparser.config;
 
+import io.github.nikoir.seriesparser.config.props.MovieLabProps;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,21 +15,21 @@ public class MovieLabConfig {
 
     @Bean
     @ConfigurationProperties(prefix = "api.movielab")
-    public MovieLabProperties movieLabProperties() {
-        return new MovieLabProperties();
+    public MovieLabProps movieLabProperties() {
+        return new MovieLabProps();
     }
 
     @Bean
     public HttpHeaders movieLabBaseHeaders(
-            MovieLabProperties properties
+            MovieLabProps properties
     ) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.ALL));
         headers.setAcceptLanguage(List.of(new Locale.LanguageRange("ru")));
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setOrigin(properties.getRoot().getUrl());
+        headers.setOrigin(properties.getUrl());
         headers.set("priority", "u=1, i");
-        headers.set("referer", properties.getRoot().getUrl());
+        headers.set("referer", properties.getUrl());
         headers.set("sec-ch-ua", "\"Microsoft Edge\";v=\"141\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"");
         headers.set("sec-ch-ua-mobile", "?0");
         headers.set("sec-ch-ua-platform", "\"Windows\"");

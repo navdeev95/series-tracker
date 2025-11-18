@@ -1,6 +1,6 @@
 package io.github.nikoir.seriesparser.service.series.search;
 
-import io.github.nikoir.seriesparser.config.MovieLabProperties;
+import io.github.nikoir.seriesparser.config.props.MovieLabProps;
 import io.github.nikoir.seriesparser.dto.request.SeriesSearchRq;
 import io.github.nikoir.seriesparser.dto.response.SeriesViewRs;
 import io.github.nikoir.seriesparser.dto.response.movielab.series.search.MovieLabSeriesSearchRs;
@@ -22,7 +22,7 @@ public class MovieLabSearchStrategy implements SeriesSearchStrategy {
 
     private final HttpHeaders movieLabHeaders;
 
-    private final MovieLabProperties movieLabProperties;
+    private final MovieLabProps movieLabProps;
 
     private final RestTemplate restTemplate;
 
@@ -30,7 +30,8 @@ public class MovieLabSearchStrategy implements SeriesSearchStrategy {
     public PagedModel<SeriesViewRs> search(SeriesSearchRq request) {
         HttpEntity<String> entity = new HttpEntity<>(movieLabHeaders);
 
-        String url = UriBuilder.from(movieLabProperties.getSearch().getUrl())
+        String url = UriBuilder.from(movieLabProps.getUrl())
+                .path(movieLabProps.getSeriesSearch().getPath())
                 .param("title", request.title())
                 .param("page", request.page())
                 .param("limit", request.limit())

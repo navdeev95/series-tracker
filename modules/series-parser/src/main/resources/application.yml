@@ -5,30 +5,41 @@ spring:
     change-log: classpath:db/changelog/master.xml
     enabled: true
 api:
-  search-strategy: "movielab" #возможные значения: local|kinopoisk|movielab
-  movielab:
-      username: movielabmbtv
-      password: QxWgxbv5oN0C
-      root:
-        url: https://movielab.one
-      search:
-        url: https://api.movielab.guru/api/v1/new-search/movies
-      episode-search:
-        url: https://api.movielab.guru/api/v1/movies
-      login:
-        url: https://api.lumex.site/login
-      short-info:
-        url: https://portal.lumex.host/api/short
-        token: 6b313ac178d276c7920257ffe5a8e342
-      stream-info:
-        url: https://api.lumex.site/stream
-        client-id: 3dMif4uaUVYO
-        timeout: 10000
-  kinopoisk:
-    root-url: https://api.kinopoisk.dev/v1.4/
-    token: RNWQ3V9-FKS4XM7-MPCQ5G6-EQ0300E
+  connect-timeout: 20000
+  read-timeout: 20000
+  series-search-strategy: "movielab" #возможные значения: local|kinopoisk|movielab
+  lumex-site:
+    url: https://api.lumex.site/
+    login:
+      path: login
+    stream-info:
+      path: stream-info
 
-    name-search-path: movie/search
+    credentials:
+      client-id: ${LUMEX_CLIENT_ID}
+      username: ${LUMEX_USERNAME}
+      password: ${LUMEX_PASSWORD}
+
+  lumex-portal:
+    url: https://portal.lumex.host/api/
+    short-info:
+      path: short
+
+    credentials:
+      token: ${LUMEX_TOKEN}
+  movielab:
+    url: https://api.movielab.guru/api/v1/
+    series-search:
+      path: new-search/movies
+    episode-search:
+      path: movies
+  kinopoisk:
+    url: https://api.kinopoisk.dev/v1.4/
+    series-search:
+      path: movie/search
+
+    credentials:
+      token: ${KINOPOISK_TOKEN}
 
 logging:
   level:

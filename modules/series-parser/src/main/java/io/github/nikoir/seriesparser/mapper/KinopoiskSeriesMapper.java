@@ -1,10 +1,8 @@
 package io.github.nikoir.seriesparser.mapper;
 
 import io.github.nikoir.seriesparser.dto.response.SeriesViewRs;
-import io.github.nikoir.seriesparser.dto.response.kinopoisk.Doc;
-import io.github.nikoir.seriesparser.dto.response.kinopoisk.Image;
 import io.github.nikoir.seriesparser.dto.response.kinopoisk.KinopoiskExternalId;
-import io.github.nikoir.seriesparser.dto.response.kinopoisk.NameSearchRs;
+import io.github.nikoir.seriesparser.dto.response.kinopoisk.KinopoiskSeriesSearchRs;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
@@ -18,21 +16,21 @@ import java.util.*;
 import static io.github.nikoir.seriesparser.enums.ExternalId.*;
 
 @Mapper(componentModel = "spring")
-public abstract class KinopoiskSeriesMapper implements ISeriesMapper<NameSearchRs> {
+public abstract class KinopoiskSeriesMapper implements ISeriesMapper<KinopoiskSeriesSearchRs> {
     @Mapping(target="title", source = "name")
     @Mapping(target="posterUrl", source = "poster")
     @Mapping(target="externalIds", source = ".")
     @Mapping(target="totalSeasons", ignore = true)
-    abstract SeriesViewRs toViewDto(Doc doc);
+    abstract SeriesViewRs toViewDto(KinopoiskSeriesSearchRs.Doc doc);
 
-    protected String mapPosterToPosterUrl(Image poster) {
+    protected String mapPosterToPosterUrl(KinopoiskSeriesSearchRs.Image poster) {
         return Optional.ofNullable(poster)
-                .map(Image::previewUrl)
+                .map(KinopoiskSeriesSearchRs.Image::previewUrl)
                 .orElse(null);
     }
 
     @Override
-    public PagedModel<SeriesViewRs> toViewDtoPage(NameSearchRs searchRs) {
+    public PagedModel<SeriesViewRs> toViewDtoPage(KinopoiskSeriesSearchRs searchRs) {
         if (searchRs == null) {
             return new PagedModel<>(Page.empty());
         }
@@ -52,7 +50,7 @@ public abstract class KinopoiskSeriesMapper implements ISeriesMapper<NameSearchR
         return new PagedModel<>(seriesPage);
     }
 
-    protected Map<String, String> mapExternalIds(Doc doc) {
+    protected Map<String, String> mapExternalIds(KinopoiskSeriesSearchRs.Doc doc) {
         if (doc == null || doc.externalId() == null) {
             return Collections.emptyMap();
         }

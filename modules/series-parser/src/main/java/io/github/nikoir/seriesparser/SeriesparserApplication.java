@@ -2,15 +2,12 @@ package io.github.nikoir.seriesparser;
 
 import io.github.nikoir.seriesparser.dto.request.SeriesSearchRq;
 import io.github.nikoir.seriesparser.dto.response.SeriesViewRs;
-import io.github.nikoir.seriesparser.service.MovieLabService;
 import io.github.nikoir.seriesparser.service.episode.search.MovieLabEpisodeSearchStrategy;
 import io.github.nikoir.seriesparser.service.series.search.MovieLabSearchStrategy;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import static io.github.nikoir.seriesparser.enums.ExternalId.KINOPOISK;
 
 @SpringBootApplication
 public class SeriesparserApplication {

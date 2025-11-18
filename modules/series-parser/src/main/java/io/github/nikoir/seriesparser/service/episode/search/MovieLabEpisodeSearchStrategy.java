@@ -1,6 +1,6 @@
 package io.github.nikoir.seriesparser.service.episode.search;
 
-import io.github.nikoir.seriesparser.config.MovieLabProperties;
+import io.github.nikoir.seriesparser.config.props.MovieLabProps;
 import io.github.nikoir.seriesparser.dto.response.SeasonViewRs;
 import io.github.nikoir.seriesparser.dto.response.movielab.episode.search.MovieLabEpisodeSearchRs;
 import io.github.nikoir.seriesparser.mapper.MovieLabEpisodeMapper;
@@ -24,7 +24,7 @@ public class MovieLabEpisodeSearchStrategy implements EpisodeSearchStrategy {
     private final MovieLabEpisodeMapper episodeMapper;
     private final RestTemplate restTemplate;
     private final HttpHeaders movieLabHeaders;
-    private final MovieLabProperties movieLabProperties;
+    private final MovieLabProps movieLabProps;
 
     @Override
     public List<SeasonViewRs> search(Map<String, String> externalIds) {
@@ -32,7 +32,8 @@ public class MovieLabEpisodeSearchStrategy implements EpisodeSearchStrategy {
 
         String kinopoiskId = externalIds.get(KINOPOISK.getSourceName());
 
-        String url = UriBuilder.from(movieLabProperties.getEpisodeSearch().getUrl())
+        String url = UriBuilder.from(movieLabProps.getUrl())
+                .path(movieLabProps.getEpisodeSearch().getPath())
                 .path(kinopoiskId)
                 .build();
 

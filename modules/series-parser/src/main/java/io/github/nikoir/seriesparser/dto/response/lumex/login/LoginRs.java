@@ -1,4 +1,4 @@
-package io.github.nikoir.seriesparser.dto.response.movielab;
+package io.github.nikoir.seriesparser.dto.response.lumex.login;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
