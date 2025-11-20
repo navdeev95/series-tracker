@@ -8,7 +8,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static io.github.nikoir.seriesparser.enums.ExternalId.*;
@@ -57,54 +60,7 @@ public class Series {
     @Builder.Default
     private Map<String, String> externalIds = new HashMap<>();
 
-    // Удобные методы для работы с external_ids
-    public String getKinopoiskId() {
-        return externalIds != null ? externalIds.get(KINOPOISK.getSourceName()) : null;
-    }
-
-    public void setKinopoiskId(String kinopoiskId) {
-        if (externalIds == null) {
-            externalIds = new HashMap<>();
-        }
-        externalIds.put(KINOPOISK.getSourceName(), kinopoiskId);
-    }
-
-    public String getImdbId() {
-        return externalIds != null ? externalIds.get(IMDB.getSourceName()) : null;
-    }
-
-    public void setImdbId(String imdbId) {
-        if (externalIds == null) {
-            externalIds = new HashMap<>();
-        }
-        externalIds.put(IMDB.getSourceName(), imdbId);
-    }
-
-    public String getTmdbId() {
-        return externalIds != null ? externalIds.get(TMDB.getSourceName()) : null;
-    }
-
-    public void setTmdbId(String tmdbId) {
-        if (externalIds == null) {
-            externalIds = new HashMap<>();
-        }
-        externalIds.put(TMDB.getSourceName(), tmdbId);
-    }
-
-    // Вспомогательные методы
-    public boolean hasPoster() {
-        return posterUrl != null && !posterUrl.isBlank();
-    }
-
-    public boolean hasEngTitle() {
-        return engTitle != null && !engTitle.isBlank();
-    }
-
-    public boolean isCompleted() {
-        return status == Status.COMPLETED;
-    }
-
-    public boolean isOngoing() {
-        return status == Status.FILMING || status == Status.POST_PRODUCTION;
-    }
+    @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Season> seasons = new ArrayList<>();
 }

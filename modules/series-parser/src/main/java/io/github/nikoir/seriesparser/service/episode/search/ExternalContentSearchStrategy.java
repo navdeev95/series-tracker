@@ -5,6 +5,6 @@ import io.github.nikoir.seriesparser.dto.response.SeasonViewRs;
 import java.util.List;
 import java.util.Map;
 
-public interface EpisodeSearchStrategy {
+public interface ExternalContentSearchStrategy {
     List<SeasonViewRs> search(Map<String, String> externalIds);
 }

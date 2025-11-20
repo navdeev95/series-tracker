@@ -4,7 +4,7 @@ import io.github.nikoir.seriesparser.config.props.KinopoiskProps;
 import io.github.nikoir.seriesparser.dto.request.SeriesSearchRq;
 import io.github.nikoir.seriesparser.dto.response.SeriesViewRs;
 import io.github.nikoir.seriesparser.dto.response.kinopoisk.KinopoiskSeriesSearchRs;
-import io.github.nikoir.seriesparser.mapper.KinopoiskSeriesMapper;
+import io.github.nikoir.seriesparser.adapter.KinopoiskSeriesAdapter;
 import io.github.nikoir.seriesparser.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PagedModel;
@@ -18,7 +18,7 @@ import java.util.List;
 public class KinopoiskSearchStrategy implements SeriesSearchStrategy {
     private final KinopoiskProps kinopoiskProps;
 
-    private final KinopoiskSeriesMapper seriesMapper;
+    private final KinopoiskSeriesAdapter seriesMapper;
 
     private final RestTemplate restTemplate;
 

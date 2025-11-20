@@ -1,6 +1,7 @@
-package io.github.nikoir.seriesparser.mapper;
+package io.github.nikoir.seriesparser.adapter;
 
 import io.github.nikoir.seriesparser.dto.response.SeriesViewRs;
+import io.github.nikoir.seriesparser.dto.response.kinopoisk.Image;
 import io.github.nikoir.seriesparser.dto.response.kinopoisk.KinopoiskExternalId;
 import io.github.nikoir.seriesparser.dto.response.kinopoisk.KinopoiskSeriesSearchRs;
 import org.mapstruct.Mapper;
@@ -16,16 +17,16 @@ import java.util.*;
 import static io.github.nikoir.seriesparser.enums.ExternalId.*;
 
 @Mapper(componentModel = "spring")
-public abstract class KinopoiskSeriesMapper implements ISeriesMapper<KinopoiskSeriesSearchRs> {
+public abstract class KinopoiskSeriesAdapter implements SeriesAdapter<KinopoiskSeriesSearchRs> {
     @Mapping(target="title", source = "name")
     @Mapping(target="posterUrl", source = "poster")
     @Mapping(target="externalIds", source = ".")
     @Mapping(target="totalSeasons", ignore = true)
     abstract SeriesViewRs toViewDto(KinopoiskSeriesSearchRs.Doc doc);
 
-    protected String mapPosterToPosterUrl(KinopoiskSeriesSearchRs.Image poster) {
+    protected String mapPosterToPosterUrl(Image poster) {
         return Optional.ofNullable(poster)
-                .map(KinopoiskSeriesSearchRs.Image::previewUrl)
+                .map(Image::previewUrl)
                 .orElse(null);
     }
 

@@ -1,3 +1,7 @@
+server:
+  port: 8090
+  servlet.context-path: /api
+
 spring:
   application:
     name: seriesparser
@@ -34,14 +38,23 @@ api:
     episode-search:
       path: movies
   kinopoisk:
-    url: https://api.kinopoisk.dev/v1.4/
+    url: https://api.poiskkino.dev/v1.4/
     series-search:
       path: movie/search
+    series-info:
+      path: movie
 
     credentials:
       token: ${KINOPOISK_TOKEN}
 
 logging:
-  level:
-    org:
-      springframework.web.client: DEBUG
+  file:
+    path: logs/
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 1GB

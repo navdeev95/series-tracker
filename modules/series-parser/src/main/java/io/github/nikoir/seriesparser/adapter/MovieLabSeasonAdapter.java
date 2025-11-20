@@ -1,4 +1,4 @@
-package io.github.nikoir.seriesparser.mapper;
+package io.github.nikoir.seriesparser.adapter;
 
 import io.github.nikoir.seriesparser.dto.response.SeasonViewRs;
 import io.github.nikoir.seriesparser.dto.response.movielab.episode.search.MovieLabEpisodeSearchRs;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Mapper(componentModel = "spring")
-public abstract class MovieLabEpisodeMapper implements IEpisodeMapper<MovieLabEpisodeSearchRs.Season> {
+public abstract class MovieLabSeasonAdapter implements ExternalSeasonAdapter<MovieLabEpisodeSearchRs.Season> {
     @Override
     @Mapping(source = "seasonNumber", target = "number")
     @Mapping(source = "episodes", target = "episodes", qualifiedByName = "mapEpisodes")

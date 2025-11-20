@@ -1,12 +1,11 @@
-package io.github.nikoir.seriesparser.mapper;
+package io.github.nikoir.seriesparser.adapter;
 
 import io.github.nikoir.seriesparser.dto.response.SeasonViewRs;
-import org.mapstruct.Mapper;
 import org.springframework.util.CollectionUtils;
 import java.util.Collections;
 import java.util.List;
 
-public interface IEpisodeMapper<T> {
+public interface ExternalSeasonAdapter<T> {
     SeasonViewRs toSeasonViewRs(T source);
 
     default List<SeasonViewRs> toSeasonViewRsList(List<T> source) {

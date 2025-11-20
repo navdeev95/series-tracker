@@ -1,4 +1,4 @@
-package io.github.nikoir.seriesparser.mapper;
+package io.github.nikoir.seriesparser.adapter;
 
 import io.github.nikoir.seriesparser.dto.response.SeriesViewRs;
 import io.github.nikoir.seriesparser.dto.response.movielab.series.search.MovieLabSeriesSearchRs;
@@ -15,7 +15,7 @@ import java.util.*;
 import static io.github.nikoir.seriesparser.enums.ExternalId.KINOPOISK;
 
 @Mapper(componentModel = "spring")
-public abstract class MovieLabSeriesMapper implements ISeriesMapper<MovieLabSeriesSearchRs> {
+public abstract class MovieLabSeriesAdapter implements SeriesAdapter<MovieLabSeriesSearchRs> {
     protected boolean mapIsSeries(MovieLabSeriesSearchRs.SearchResult searchResult) {
         return searchResult != null && "serial".equals(searchResult.type());
     }

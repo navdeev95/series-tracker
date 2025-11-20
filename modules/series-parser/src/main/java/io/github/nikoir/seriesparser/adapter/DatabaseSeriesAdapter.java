@@ -1,4 +1,4 @@
-package io.github.nikoir.seriesparser.mapper;
+package io.github.nikoir.seriesparser.adapter;
 
 import io.github.nikoir.seriesparser.domain.entity.Series;
 import io.github.nikoir.seriesparser.dto.response.SeriesViewRs;
@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedModel;
 
 @Mapper(componentModel = "spring")
-public abstract class DatabaseSeriesMapper implements ISeriesMapper<Page<Series>> {
+public abstract class DatabaseSeriesAdapter implements SeriesAdapter<Page<Series>> {
     @Mapping(target="year", source="releaseYear")
     @Mapping(target = "isSeries", expression = "java(true)")
     abstract SeriesViewRs toViewDto(Series series);

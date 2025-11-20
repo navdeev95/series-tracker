@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SeriesRepository extends JpaRepository<Series, Integer> {
+public interface SeriesRepository extends JpaRepository<Series, Long> {
 
     @Query("SELECT s FROM Series s WHERE " +
             "s.title ILIKE %:searchTerm% OR " +

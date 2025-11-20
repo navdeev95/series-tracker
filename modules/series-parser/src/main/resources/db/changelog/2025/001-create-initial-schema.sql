@@ -17,19 +17,19 @@ CREATE TABLE "series" (
 
 CREATE TABLE "season" (
   "id" BIGSERIAL PRIMARY KEY,
-  "name" varchar NOT NULL,
-  "release_date" date NOT NULL,
-  "total_episodes" integer NOT NULL,
+  "name" varchar,
+  "number" integer NOT NULL,
+  "release_date" date,
+  "total_episodes" integer,
   "series_id" integer NOT NULL
 );
 
 CREATE TABLE "episode" (
   "id" BIGSERIAL PRIMARY KEY,
-  "name" varchar NOT NULL,
-  "release_date" date NOT NULL,
-  "season_id" integer NOT NULL,
-  "is_processed" boolean NOT NULL DEFAULT false,
-  "processed_at" timestamp NOT NULL
+  "name" varchar,
+  "number" integer NOT NULL,
+  "release_date" date,
+  "season_id" integer NOT NULL
 );
 
 CREATE TABLE "dub_studio" (
@@ -71,8 +71,8 @@ CREATE TABLE "user" (
 
 CREATE TABLE "user_subscription" (
   "id" BIGSERIAL PRIMARY KEY,
-  "user_id" integer,
-  "series_id" integer,
+  "user_id" integer NOT NULL,
+  "series_id" integer NOT NULL,
   "source_id" integer,
   "dub_studio_id" integer,
   "quality_id" integer

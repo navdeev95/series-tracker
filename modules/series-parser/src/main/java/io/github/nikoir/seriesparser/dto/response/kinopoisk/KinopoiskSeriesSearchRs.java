@@ -49,13 +49,6 @@ public record KinopoiskSeriesSearchRs(
                           Boolean isSeries) {
         }
 
-        public record Image(@JsonProperty("url")
-                            String url,
-
-                            @JsonProperty("previewUrl")
-                            String previewUrl) {
-        }
-
     @RequiredArgsConstructor
     public enum Status {
         FILMING("filming"),

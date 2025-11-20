@@ -4,7 +4,7 @@ import io.github.nikoir.seriesparser.config.props.MovieLabProps;
 import io.github.nikoir.seriesparser.dto.request.SeriesSearchRq;
 import io.github.nikoir.seriesparser.dto.response.SeriesViewRs;
 import io.github.nikoir.seriesparser.dto.response.movielab.series.search.MovieLabSeriesSearchRs;
-import io.github.nikoir.seriesparser.mapper.MovieLabSeriesMapper;
+import io.github.nikoir.seriesparser.adapter.MovieLabSeriesAdapter;
 import io.github.nikoir.seriesparser.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PagedModel;
@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class MovieLabSearchStrategy implements SeriesSearchStrategy {
-    private final MovieLabSeriesMapper seriesMapper;
+    private final MovieLabSeriesAdapter seriesMapper;
 
     private final HttpHeaders movieLabHeaders;
 

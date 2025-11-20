@@ -3,7 +3,7 @@ package io.github.nikoir.seriesparser.service.episode.search;
 import io.github.nikoir.seriesparser.config.props.MovieLabProps;
 import io.github.nikoir.seriesparser.dto.response.SeasonViewRs;
 import io.github.nikoir.seriesparser.dto.response.movielab.episode.search.MovieLabEpisodeSearchRs;
-import io.github.nikoir.seriesparser.mapper.MovieLabEpisodeMapper;
+import io.github.nikoir.seriesparser.adapter.MovieLabSeasonAdapter;
 import io.github.nikoir.seriesparser.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -21,8 +21,8 @@ import static io.github.nikoir.seriesparser.enums.ExternalId.KINOPOISK;
 
 @Service
 @RequiredArgsConstructor
-public class MovieLabEpisodeSearchStrategy implements EpisodeSearchStrategy {
-    private final MovieLabEpisodeMapper episodeMapper;
+public class MovieLabExternalContentSearchStrategy implements ExternalContentSearchStrategy {
+    private final MovieLabSeasonAdapter seasonAdapter;
     private final RestTemplate restTemplate;
     private final HttpHeaders movieLabHeaders;
     private final MovieLabProps movieLabProps;
@@ -48,6 +48,6 @@ public class MovieLabEpisodeSearchStrategy implements EpisodeSearchStrategy {
                 .map(e -> e.values().stream().toList())
                 .orElseThrow();
 
-        return episodeMapper.toSeasonViewRsList(seasonList);
+        return seasonAdapter.toSeasonViewRsList(seasonList);
     }
 }

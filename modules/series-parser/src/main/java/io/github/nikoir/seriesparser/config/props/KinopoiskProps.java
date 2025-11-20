@@ -10,5 +10,6 @@ import java.util.Map;
 public class KinopoiskProps{
     private String url;
     private MethodProps seriesSearch;
+    private MethodProps seriesInfo;
     private Map<String, String> credentials;
 }
