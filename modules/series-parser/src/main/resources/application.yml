@@ -1,0 +1,60 @@
+server:
+  port: 8090
+  servlet.context-path: /api
+
+spring:
+  application:
+    name: seriesparser
+  liquibase:
+    change-log: classpath:db/changelog/master.xml
+    enabled: true
+api:
+  connect-timeout: 20000
+  read-timeout: 20000
+  series-search-strategy: "movielab" #возможные значения: local|kinopoisk|movielab
+  lumex-site:
+    url: https://api.lumex.site/
+    login:
+      path: login
+    stream-info:
+      path: stream-info
+
+    credentials:
+      client-id: ${LUMEX_CLIENT_ID}
+      username: ${LUMEX_USERNAME}
+      password: ${LUMEX_PASSWORD}
+
+  lumex-portal:
+    url: https://portal.lumex.host/api/
+    short-info:
+      path: short
+
+    credentials:
+      token: ${LUMEX_TOKEN}
+  movielab:
+    url: https://api.movielab.guru/api/v1/
+    series-search:
+      path: new-search/movies
+    episode-search:
+      path: movies
+  kinopoisk:
+    url: https://api.poiskkino.dev/v1.4/
+    series-search:
+      path: movie/search
+    series-info:
+      path: movie
+
+    credentials:
+      token: ${KINOPOISK_TOKEN}
+
+logging:
+  file:
+    path: logs/
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 1GB
