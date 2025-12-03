@@ -6,4 +6,7 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.19.xsd">
     <include file="2025/001-create-initial-schema.sql" relativeToChangelogFile="true"/>
     <include file="2025/002-alter-status-constraint.sql" relativeToChangelogFile="true"/>
+    <include file="2025/003-add-sources.sql" relativeToChangelogFile="true"/>
+    <include file="2025/004-alter-source-id-column.sql" relativeToChangelogFile="true"/>
+    <include file="2025/005-drop-slug-columns.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

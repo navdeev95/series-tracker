@@ -22,10 +22,13 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
 	------------ schema permissions for api user
 	GRANT USAGE ON SCHEMA $POSTGRES_SCHEMA TO $PG_API_USER;
 
+	------------ sequences permissions
+	ALTER DEFAULT PRIVILEGES IN SCHEMA $POSTGRES_SCHEMA
+  GRANT USAGE, SELECT ON SEQUENCES TO $PG_API_USER;
+
 	-- allow DML on future tables created by postgres and dbo users
 	ALTER DEFAULT privileges for role postgres, $PG_DBO_USER IN SCHEMA $POSTGRES_SCHEMA
 	GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO $PG_API_USER;
-	GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA $POSTGRES_SCHEMA TO $PG_API_USER;
 
 	-- allow DML on all existing tables
 	GRANT SELECT, INSERT, UPDATE, DELETE on all tables in schema $POSTGRES_SCHEMA TO $PG_API_USER;

@@ -1,7 +1,7 @@
 package io.github.nikoir.seriesparser.mapper;
 
 import io.github.nikoir.seriesparser.domain.entity.Season;
-import io.github.nikoir.seriesparser.dto.response.SeasonViewRs;
+import io.github.nikoir.seriesparser.dto.internal.SeasonViewRs;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
