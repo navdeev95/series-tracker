@@ -1,58 +1,70 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.5.7' apply false
-	id 'io.spring.dependency-management' version '1.1.7' apply false
+	id 'org.springframework.boot' version '3.5.7'
+	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-allprojects {
-	group = 'io.github.nikoir'
-	version = '0.0.1-SHAPSHOT'
+group = 'io.github.nikoir'
+version = '0.0.1-SNAPSHOT'
 
-	repositories {
-		mavenCentral()
-	}
-}
-
-subprojects {
-	apply plugin: 'java'
-	apply plugin: 'org.springframework.boot'
-	apply plugin: 'io.spring.dependency-management'
-
+java {
 	sourceCompatibility = '17'
 	targetCompatibility = '17'
+}
 
-	configurations {
-		compileOnly {
-			extendsFrom annotationProcessor
-		}
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
 	}
+}
 
-	dependencies {
-		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-		implementation 'org.springframework.boot:spring-boot-starter-validation'
-		// Database
-		implementation 'org.liquibase:liquibase-core'
-		runtimeOnly 'org.postgresql:postgresql'
+repositories {
+	mavenCentral()
+}
 
-		// Hibernate utilities
-		implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.11.0'
+dependencies {
+	// Spring Boot Starters
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-		// MapStruct
-		implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-		annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+	// Для Telegram бота
+	// implementation 'org.telegram:telegrambots-spring-boot-starter:6.9.7.0'
 
-		// Lombok
-		compileOnly 'org.projectlombok:lombok'
-		annotationProcessor 'org.projectlombok:lombok'
+	// Для планировщика
+	// implementation 'org.springframework.boot:spring-boot-starter-quartz'
 
-		// Тестирование
-		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	// Database
+	implementation 'org.liquibase:liquibase-core'
+	runtimeOnly 'org.postgresql:postgresql'
 
-		// Для работы Lombok с MapStruct (важно!)
-		annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
-	}
+	// Hibernate utilities
+	implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.11.0'
 
-	tasks.named('test') {
-		useJUnitPlatform()
-	}
+	// MapStruct
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// Для работы Lombok с MapStruct
+	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+	// Тестирование
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+bootJar {
+	archiveFileName = "series-tracker.jar"
+}
+
+jar {
+	enabled = false
 }

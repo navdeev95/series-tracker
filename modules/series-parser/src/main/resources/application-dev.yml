@@ -1,8 +1,0 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/series_parser_dev?currentSchema=series_parser
-    username: series_parser_api
-    password: ${DB_API_PWD}
-  liquibase:
-    user: series_parser_dbo
-    password: ${DB_DBO_PWD}
