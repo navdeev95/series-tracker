@@ -1,9 +1,10 @@
-package io.github.nikoir.series.tracker.service.get.series;
+package io.github.nikoir.series.tracker.strategy.impl;
 
-import io.github.nikoir.series.tracker.adapter.series.SeriesDetailAdapter;
+import io.github.nikoir.series.tracker.adapter.series.detail.SeriesDetailAdapter;
 import io.github.nikoir.series.tracker.config.props.KinopoiskProps;
 import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskSeriesInfoRs;
 import io.github.nikoir.series.tracker.dto.internal.SeriesDetailViewRs;
+import io.github.nikoir.series.tracker.strategy.SeriesGetStrategy;
 import io.github.nikoir.series.tracker.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;

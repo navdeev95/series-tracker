@@ -1,6 +1,7 @@
-package io.github.nikoir.series.tracker.service.get.series;
+package io.github.nikoir.series.tracker.strategy.context;
 
 import io.github.nikoir.series.tracker.enums.ExternalSource;
+import io.github.nikoir.series.tracker.strategy.SeriesGetStrategy;
 import org.springframework.stereotype.Component;
 
 import java.util.EnumMap;

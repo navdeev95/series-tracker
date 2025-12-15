@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.service.search.content.strategy;
+package io.github.nikoir.series.tracker.strategy;
 
 import io.github.nikoir.series.tracker.dto.internal.SeasonViewRs;
 import io.github.nikoir.series.tracker.enums.ExternalSource;

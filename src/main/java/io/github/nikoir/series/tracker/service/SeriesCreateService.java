@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.service.create.content;
+package io.github.nikoir.series.tracker.service;
 
 import io.github.nikoir.series.tracker.domain.entity.Series;
 import io.github.nikoir.series.tracker.domain.repo.SeriesRepository;
@@ -6,7 +6,7 @@ import io.github.nikoir.series.tracker.dto.internal.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.enums.ExternalId;
 import io.github.nikoir.series.tracker.enums.ExternalSource;
 import io.github.nikoir.series.tracker.mapper.SeriesDetailMapper;
-import io.github.nikoir.series.tracker.service.get.series.SeriesGetStrategyContext;
+import io.github.nikoir.series.tracker.strategy.context.SeriesGetStrategyContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.service.search.series;
+package io.github.nikoir.series.tracker.strategy.context;
 
 import org.springframework.stereotype.Component;
 

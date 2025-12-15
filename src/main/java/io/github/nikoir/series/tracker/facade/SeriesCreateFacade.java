@@ -1,7 +1,7 @@
-package io.github.nikoir.series.tracker.service.create.content;
+package io.github.nikoir.series.tracker.facade;
 
 import io.github.nikoir.series.tracker.domain.entity.Series;
-import io.github.nikoir.series.tracker.service.sync.SeriesSynchronizationFacade;
+import io.github.nikoir.series.tracker.service.SeriesCreateService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

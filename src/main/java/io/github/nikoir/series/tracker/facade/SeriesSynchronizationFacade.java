@@ -1,10 +1,11 @@
-package io.github.nikoir.series.tracker.service.sync;
+package io.github.nikoir.series.tracker.facade;
 
 import io.github.nikoir.series.tracker.domain.entity.Series;
 import io.github.nikoir.series.tracker.dto.internal.SyncResult;
 import io.github.nikoir.series.tracker.dto.internal.SeasonViewRs;
 import io.github.nikoir.series.tracker.enums.ExternalSource;
-import io.github.nikoir.series.tracker.service.search.content.strategy.ExternalContentSearchStrategy;
+import io.github.nikoir.series.tracker.service.SeriesContentSyncService;
+import io.github.nikoir.series.tracker.strategy.ExternalContentSearchStrategy;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

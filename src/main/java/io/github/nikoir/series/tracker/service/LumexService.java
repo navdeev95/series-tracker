@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.service.search.content.provider;
+package io.github.nikoir.series.tracker.service;
 
 import io.github.nikoir.series.tracker.config.props.LumexPortalProps;
 import io.github.nikoir.series.tracker.config.props.LumexSiteProps;

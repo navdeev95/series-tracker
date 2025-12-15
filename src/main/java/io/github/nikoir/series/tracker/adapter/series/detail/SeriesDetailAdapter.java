@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.adapter.series;
+package io.github.nikoir.series.tracker.adapter.series.detail;
 
 import io.github.nikoir.series.tracker.dto.internal.SeriesDetailViewRs;
 

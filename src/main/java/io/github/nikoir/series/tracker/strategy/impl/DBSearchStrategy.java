@@ -1,10 +1,11 @@
-package io.github.nikoir.series.tracker.service.search.series;
+package io.github.nikoir.series.tracker.strategy.impl;
 
 import io.github.nikoir.series.tracker.domain.entity.Series;
 import io.github.nikoir.series.tracker.domain.repo.SeriesRepository;
 import io.github.nikoir.series.tracker.dto.api.request.SeriesSearchRq;
 import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
-import io.github.nikoir.series.tracker.adapter.series.DatabaseSeriesShortAdapter;
+import io.github.nikoir.series.tracker.adapter.series.shorts.DatabaseSeriesShortAdapter;
+import io.github.nikoir.series.tracker.strategy.SeriesSearchStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

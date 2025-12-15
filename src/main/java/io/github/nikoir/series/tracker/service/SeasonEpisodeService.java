@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.service.create.entity;
+package io.github.nikoir.series.tracker.service;
 
 import io.github.nikoir.series.tracker.domain.entity.Episode;
 import io.github.nikoir.series.tracker.domain.entity.Season;

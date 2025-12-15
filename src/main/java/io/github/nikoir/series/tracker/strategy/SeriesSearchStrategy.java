@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.service.search.series;
+package io.github.nikoir.series.tracker.strategy;
 
 import io.github.nikoir.series.tracker.dto.api.request.SeriesSearchRq;
 import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;

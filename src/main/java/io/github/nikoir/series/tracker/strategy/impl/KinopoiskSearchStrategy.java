@@ -1,10 +1,11 @@
-package io.github.nikoir.series.tracker.service.search.series;
+package io.github.nikoir.series.tracker.strategy.impl;
 
 import io.github.nikoir.series.tracker.config.props.KinopoiskProps;
 import io.github.nikoir.series.tracker.dto.api.request.SeriesSearchRq;
 import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
 import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskSeriesSearchRs;
-import io.github.nikoir.series.tracker.adapter.series.KinopoiskSeriesShortAdapter;
+import io.github.nikoir.series.tracker.adapter.series.shorts.KinopoiskSeriesShortAdapter;
+import io.github.nikoir.series.tracker.strategy.SeriesSearchStrategy;
 import io.github.nikoir.series.tracker.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PagedModel;
