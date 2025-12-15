@@ -11,7 +11,8 @@ spring:
 api:
   connect-timeout: 20000
   read-timeout: 20000
-  series-search-strategy: "movielab" #возможные значения: local|kinopoisk|movielab
+  series:
+    search-strategy: "movielab" #возможные значения: local|kinopoisk|movielab
   lumex-site:
     url: https://api.lumex.site/
     login:
@@ -46,6 +47,13 @@ api:
 
     credentials:
       token: ${KINOPOISK_TOKEN}
+
+telegram:
+  bot:
+    token: ${TG_BOT_TOKEN}
+    name: ${TG_BOT_NAME}
+    username: ${TG_BOT_USERNAME}
+    enabled: true
 
 logging:
   file:
