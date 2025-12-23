@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.domain.entity;
+package io.github.nikoir.series.tracker.domain.entity.dictionary;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,11 +12,10 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "quality")
-public class Quality {
+@Table(name = "dub_studio")
+public class DictDubStudio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -28,10 +27,4 @@ public class Quality {
             columnDefinition = "varchar[]"
     )
     private List<String> aliases;
-
-    @Column(name = "resolution_width", nullable = false)
-    private Integer resolutionWidth;
-
-    @Column(name = "resolution_height", nullable = false)
-    private Integer resolutionHeight;
 }

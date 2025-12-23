@@ -5,6 +5,7 @@ import io.github.nikoir.series.tracker.dto.api.request.SeriesSearchRq;
 import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
 import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskSeriesSearchRs;
 import io.github.nikoir.series.tracker.adapter.series.shorts.KinopoiskSeriesShortAdapter;
+import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.strategy.SeriesSearchStrategy;
 import io.github.nikoir.series.tracker.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
@@ -42,5 +43,10 @@ public class KinopoiskSearchStrategy implements SeriesSearchStrategy {
         ResponseEntity<KinopoiskSeriesSearchRs> response = restTemplate.exchange(url, HttpMethod.GET, entity, KinopoiskSeriesSearchRs.class);
 
         return seriesMapper.toViewDtoPage(response.getBody());
+    }
+
+    @Override
+    public Source getDataSource() {
+        return Source.KINOPOISK;
     }
 }

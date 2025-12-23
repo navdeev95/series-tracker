@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.domain.entity;
+package io.github.nikoir.series.tracker.domain.entity.dictionary;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "source")
-public class Source {
+public class DictSource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

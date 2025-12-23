@@ -53,10 +53,8 @@ public class Series {
     @Column(name = "poster_url")
     private String posterUrl;
 
-    @Type(JsonBinaryType.class)
-    @Column(name = "external_ids", columnDefinition = "jsonb")
-    @Builder.Default
-    private Map<String, String> externalIds = new HashMap<>();
+    @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ExternalIdSeries> externalIds;
 
     @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

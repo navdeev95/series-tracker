@@ -1,10 +1,11 @@
 package io.github.nikoir.series.tracker.service;
 import io.github.nikoir.series.tracker.domain.entity.*;
+import io.github.nikoir.series.tracker.domain.entity.dictionary.DictSource;
 import io.github.nikoir.series.tracker.domain.repo.EpisodeReleaseRepository;
 import io.github.nikoir.series.tracker.domain.repo.SourceRepository;
 import io.github.nikoir.series.tracker.dto.internal.SyncResult;
 import io.github.nikoir.series.tracker.dto.internal.SeasonViewRs;
-import io.github.nikoir.series.tracker.enums.ExternalSource;
+import io.github.nikoir.series.tracker.enums.Source;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -29,7 +30,7 @@ public class SeriesContentSyncService {
 
     public SyncResult syncSeriesContent(Series series,
                                         List<SeasonViewRs> externalSeasons,
-                                        ExternalSource source) {
+                                        Source source) {
         log.info("Starting content sync for series: {}", series.getTitle());
         SeriesContent currentContent = new SeriesContent(seasonEpisodeService.loadCurrentContent(series.getId()));
 
@@ -93,8 +94,8 @@ public class SeriesContentSyncService {
     }
 
     private List<EpisodeRelease> createReleases(List<Episode> createdEpisodes,
-                                                ExternalSource source) {
-        Source sourceEntity = sourceRepository.findByName(source.getName()).orElseThrow();
+                                                Source source) {
+        DictSource sourceEntity = sourceRepository.findByName(source.getName()).orElseThrow();
 
         List<EpisodeRelease> episodeReleases = createdEpisodes
                 .stream()

@@ -4,8 +4,9 @@ import io.github.nikoir.series.tracker.config.props.MovieLabProps;
 import io.github.nikoir.series.tracker.dto.internal.SeasonViewRs;
 import io.github.nikoir.series.tracker.dto.api.response.movielab.episode.search.MovieLabEpisodeSearchRs;
 import io.github.nikoir.series.tracker.adapter.season.MovieLabSeasonAdapter;
-import io.github.nikoir.series.tracker.enums.ExternalSource;
+import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.strategy.ExternalContentSearchStrategy;
+import io.github.nikoir.series.tracker.strategy.SearchStrategy;
 import io.github.nikoir.series.tracker.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -16,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-
-import static io.github.nikoir.series.tracker.enums.ExternalId.KINOPOISK;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +28,13 @@ public class MovieLabExternalContentSearchStrategy implements ExternalContentSea
     private final MovieLabProps movieLabProps;
 
     @Override
-    public List<SeasonViewRs> search(Map<String, String> externalIds) {
-        HttpEntity<String> entity = new HttpEntity<>(movieLabHeaders);
+    public Source getDataSource() {
+        return Source.MOVIELAB;
+    }
 
-        String kinopoiskId = externalIds.get(KINOPOISK.getSourceName());
+    @Override
+    public List<SeasonViewRs> search(String kinopoiskId) {
+        HttpEntity<String> entity = new HttpEntity<>(movieLabHeaders);
 
         String url = UriBuilder.from(movieLabProps.getUrl())
                 .path(movieLabProps.getEpisodeSearch().getPath())
@@ -51,10 +52,5 @@ public class MovieLabExternalContentSearchStrategy implements ExternalContentSea
                 .orElseThrow();
 
         return seasonAdapter.toSeasonViewRsList(seasonList);
-    }
-
-    @Override
-    public ExternalSource getSource() {
-        return ExternalSource.MOVIE_LAB;
     }
 }

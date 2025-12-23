@@ -1,11 +1,16 @@
 package io.github.nikoir.series.tracker.adapter.series.shorts;
 
+import io.github.nikoir.series.tracker.adapter.series.KinopoiskExternalIdAdapter;
+import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskSeriesInfoRs;
 import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
 import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.Image;
 import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskExternalId;
 import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskSeriesSearchRs;
+import io.github.nikoir.series.tracker.enums.ExternalId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +23,9 @@ import static io.github.nikoir.series.tracker.enums.ExternalId.*;
 
 @Mapper(componentModel = "spring")
 public abstract class KinopoiskSeriesShortAdapter implements SeriesShortAdapter<KinopoiskSeriesSearchRs> {
+    @Autowired
+    private KinopoiskExternalIdAdapter externalIdAdapter;
+
     @Mapping(target="title", source = "name")
     @Mapping(target="posterUrl", source = "poster")
     @Mapping(target="externalIds", source = ".")
@@ -51,26 +59,7 @@ public abstract class KinopoiskSeriesShortAdapter implements SeriesShortAdapter<
         return new PagedModel<>(seriesPage);
     }
 
-    protected Map<String, String> mapExternalIds(KinopoiskSeriesSearchRs.Doc doc) {
-        if (doc == null || doc.externalId() == null) {
-            return Collections.emptyMap();
-        }
-
-        Map<String, String> externalIds = new HashMap<>();
-
-        if (doc.id() != null) {
-            externalIds.put(KINOPOISK.getSourceName(), String.valueOf(doc.id()));
-        }
-
-        Optional.ofNullable(doc.externalId().get(KinopoiskExternalId.IMDB.getName()))
-                .ifPresent(imdbId -> externalIds.put(IMDB.getSourceName(), imdbId));
-
-        Optional.ofNullable(doc.externalId().get(KinopoiskExternalId.TMDB.getName()))
-                .ifPresent(tmdbId -> externalIds.put(TMDB.getSourceName(), tmdbId));
-
-        Optional.ofNullable(doc.externalId().get(KinopoiskExternalId.KINOPOISK_HD.getName()))
-                .ifPresent(kpHDId -> externalIds.put(KINOPOISK_HD.getSourceName(), kpHDId));
-
-        return Collections.unmodifiableMap(externalIds);
+    protected Map<ExternalId, String> mapExternalIds(KinopoiskSeriesSearchRs.Doc doc) {
+        return externalIdAdapter.mapExternalIds(String.valueOf(doc.id()), doc.externalId());
     }
 }

@@ -1,28 +1,22 @@
 package io.github.nikoir.series.tracker.strategy.context;
 
-import io.github.nikoir.series.tracker.enums.ExternalSource;
-import io.github.nikoir.series.tracker.strategy.SeriesGetStrategy;
+import io.github.nikoir.series.tracker.dto.internal.SeriesDetailViewRs;
+import io.github.nikoir.series.tracker.enums.ExternalId;
+import io.github.nikoir.series.tracker.strategy.impl.KinopoiskSeriesGetStrategy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.EnumMap;
 import java.util.Map;
 
-import static io.github.nikoir.series.tracker.enums.ExternalSource.KINOPOISK;
-
 @Component
+@RequiredArgsConstructor
 public class SeriesGetStrategyContext {
-    private final Map<ExternalSource, SeriesGetStrategy> strategies = new EnumMap<>(ExternalSource.class);
+    private final KinopoiskSeriesGetStrategy seriesGetStrategy;
 
-    public SeriesGetStrategyContext(SeriesGetStrategy kinopoiskStrategy)
-    {
-        strategies.put(KINOPOISK, kinopoiskStrategy);
-    }
-
-    public SeriesGetStrategy getStrategy(ExternalSource source) {
-        SeriesGetStrategy strategy = strategies.get(source);
-        if (strategy == null) {
-            throw new IllegalArgumentException("Strategy not found for: " + source);
+    public SeriesDetailViewRs get(Map<ExternalId, String> externalIds) {
+        String kinopoiskId = externalIds.get(ExternalId.KINOPOISK);
+        if (kinopoiskId == null) {
+            throw new IllegalArgumentException("Not found kinopoiskId");
         }
-        return strategy;
+        return seriesGetStrategy.search(kinopoiskId);
     }
 }

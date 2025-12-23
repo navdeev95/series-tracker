@@ -1,6 +1,7 @@
 package io.github.nikoir.series.tracker.facade;
 
 import io.github.nikoir.series.tracker.domain.entity.Series;
+import io.github.nikoir.series.tracker.enums.ExternalId;
 import io.github.nikoir.series.tracker.service.SeriesCreateService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ public class SeriesCreateFacade {
     private final SeriesSynchronizationFacade synchronizationFacade;
 
     @Transactional
-    public void create(Map<String, String> externalIds) {
+    public void create(Map<ExternalId, String> externalIds) {
         Series createdSeries = createService.create(externalIds);
         synchronizationFacade.syncSeriesWithReleases(createdSeries);
     }

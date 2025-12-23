@@ -1,12 +1,12 @@
 package io.github.nikoir.series.tracker.domain.repo;
 
-import io.github.nikoir.series.tracker.domain.entity.Source;
+import io.github.nikoir.series.tracker.domain.entity.dictionary.DictSource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface SourceRepository extends JpaRepository<Source, Long> {
-    Optional<Source> findByName(String name);
+public interface SourceRepository extends JpaRepository<DictSource, Long> {
+    Optional<DictSource> findByName(String name);
 }

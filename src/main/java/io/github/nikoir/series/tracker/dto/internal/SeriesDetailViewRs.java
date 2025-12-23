@@ -1,5 +1,7 @@
 package io.github.nikoir.series.tracker.dto.internal;
 
+import io.github.nikoir.series.tracker.enums.ExternalId;
+
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +12,7 @@ public record SeriesDetailViewRs (
         String status,
         Integer releaseYear,
         String posterUrl,
-        Map<String, String> externalIds,
+        Map<ExternalId, String> externalIds,
         List<SeasonViewRs> seasons) {
 
 }

@@ -11,8 +11,6 @@ spring:
 api:
   connect-timeout: 20000
   read-timeout: 20000
-  series:
-    search-strategy: "movielab" #возможные значения: local|kinopoisk|movielab
   lumex-site:
     url: https://api.lumex.site/
     login:

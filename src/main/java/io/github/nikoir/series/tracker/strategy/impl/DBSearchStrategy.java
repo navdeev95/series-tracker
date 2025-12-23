@@ -5,6 +5,7 @@ import io.github.nikoir.series.tracker.domain.repo.SeriesRepository;
 import io.github.nikoir.series.tracker.dto.api.request.SeriesSearchRq;
 import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
 import io.github.nikoir.series.tracker.adapter.series.shorts.DatabaseSeriesShortAdapter;
+import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.strategy.SeriesSearchStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,5 +25,10 @@ public class DBSearchStrategy implements SeriesSearchStrategy {
                 request.limit()));
 
         return seriesMapper.toViewDtoPage(seriesPage);
+    }
+
+    @Override
+    public Source getDataSource() {
+        return Source.DATABASE;
     }
 }

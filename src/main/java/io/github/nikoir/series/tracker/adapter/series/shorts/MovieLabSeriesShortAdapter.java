@@ -2,6 +2,7 @@ package io.github.nikoir.series.tracker.adapter.series.shorts;
 
 import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
 import io.github.nikoir.series.tracker.dto.api.response.movielab.series.search.MovieLabSeriesSearchRs;
+import io.github.nikoir.series.tracker.enums.ExternalId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
@@ -20,12 +21,12 @@ public abstract class MovieLabSeriesShortAdapter implements SeriesShortAdapter<M
         return searchResult != null && "serial".equals(searchResult.type());
     }
 
-    protected Map<String, String> mapExternalIds(MovieLabSeriesSearchRs.SearchResult searchResult) {
-        Map<String, String> result = new HashMap<>();
+    protected Map<ExternalId, String> mapExternalIds(MovieLabSeriesSearchRs.SearchResult searchResult) {
+        Map<ExternalId, String> result = new HashMap<>();
 
         Optional.ofNullable(searchResult)
                 .map(MovieLabSeriesSearchRs.SearchResult::kinopoiskId)
-                .ifPresent(id -> result.put(KINOPOISK.getSourceName(), String.valueOf(id)));
+                .ifPresent(id -> result.put(KINOPOISK, String.valueOf(id)));
 
         return result;
     }

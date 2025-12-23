@@ -4,6 +4,8 @@ import io.github.nikoir.series.tracker.adapter.series.detail.SeriesDetailAdapter
 import io.github.nikoir.series.tracker.config.props.KinopoiskProps;
 import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskSeriesInfoRs;
 import io.github.nikoir.series.tracker.dto.internal.SeriesDetailViewRs;
+import io.github.nikoir.series.tracker.enums.Source;
+import io.github.nikoir.series.tracker.strategy.SearchStrategy;
 import io.github.nikoir.series.tracker.strategy.SeriesGetStrategy;
 import io.github.nikoir.series.tracker.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,7 @@ public class KinopoiskSeriesGetStrategy implements SeriesGetStrategy {
     private final KinopoiskProps kinopoiskProps;
 
     @Override
-    public SeriesDetailViewRs get(String kinopoiskId) {
+    public SeriesDetailViewRs search(String kinopoiskId) {
         String token = kinopoiskProps.getCredentials().get("token");
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
@@ -36,5 +38,10 @@ public class KinopoiskSeriesGetStrategy implements SeriesGetStrategy {
 
         ResponseEntity<KinopoiskSeriesInfoRs> response = restTemplate.exchange(url, HttpMethod.GET, entity, KinopoiskSeriesInfoRs.class);
         return seriesDetailAdapter.toViewDto(response.getBody());
+    }
+
+    @Override
+    public Source getDataSource() {
+        return Source.KINOPOISK;
     }
 }

@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.dto.internal;
 
-import io.github.nikoir.series.tracker.enums.ExternalSource;
+import io.github.nikoir.series.tracker.enums.Source;
 
 import java.util.Date;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
 public record SeasonViewRs(String name,
                            Integer number,
                            Date releaseDate,
-                           ExternalSource externalSource,
+                           Source externalSource,
                            Integer episodesCount,
                            List<EpisodeViewRs> episodes) {
 

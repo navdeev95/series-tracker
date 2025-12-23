@@ -1,5 +1,8 @@
 package io.github.nikoir.series.tracker.domain.entity;
 
+import io.github.nikoir.series.tracker.domain.entity.dictionary.DictDubStudio;
+import io.github.nikoir.series.tracker.domain.entity.dictionary.DictQuality;
+import io.github.nikoir.series.tracker.domain.entity.dictionary.DictSource;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -28,16 +31,16 @@ public class EpisodeRelease {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dub_studio_id")
-    private DubStudio dubStudio;
+    private DictDubStudio dubStudio;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_id", nullable = false)
-    private Source source;
+    private DictSource source;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quality_id")
-    private Quality quality;
+    private DictQuality quality;
 
     @CreatedDate
     @Column(name = "release_timestamp", nullable = false, updatable = false)
