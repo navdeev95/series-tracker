@@ -1,13 +1,13 @@
 package io.github.nikoir.series.tracker.telegram.handler.impl;
 
 import io.github.nikoir.series.tracker.telegram.bot.SeriesNotificationBot;
+import io.github.nikoir.series.tracker.telegram.dto.TelegramMessage;
 import io.github.nikoir.series.tracker.telegram.model.BotCommandEnum;
 import io.github.nikoir.series.tracker.telegram.handler.Command;
 import io.github.nikoir.series.tracker.telegram.model.ButtonEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -20,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StartCommand implements Command {
     //private final UserService userService;
+    private final SeriesNotificationBot bot;
 
     @Override
     public BotCommandEnum getCommand() {
@@ -27,20 +28,16 @@ public class StartCommand implements Command {
     }
 
     @Override
-    public void execute(Message message, SeriesNotificationBot bot) {
-        Long chatId = message.getChatId();
-        Long userId = message.getFrom().getId();
-        String userName = message.getFrom().getFirstName();
-
-        log.info("Пользователь {} ({}) запустил бота", userId, userName);
+    public void execute(TelegramMessage message) {
+        log.info("User {} ({}) has run bot", message.userId(), message.userName());
 
         // Регистрируем/получаем пользователя
         //userService.getOrCreateTelegramUser(userId, userName);
 
         // Отправляем сообщение с клавиатурой
         SendMessage response = new SendMessage();
-        response.setChatId(chatId.toString());
-        response.setText(getWelcomeMessage(userName, bot));
+        response.setChatId(message.chatId().toString());
+        response.setText(getWelcomeMessage(message.userName()));
         response.setReplyMarkup(createMainKeyboard());
 
         try {
@@ -50,7 +47,7 @@ public class StartCommand implements Command {
         }
     }
 
-    private String getWelcomeMessage(String userName, SeriesNotificationBot bot) {
+    private String getWelcomeMessage(String userName) {
         return String.format("""
             🎬 Привет, %s! Добро пожаловать в %s!
             

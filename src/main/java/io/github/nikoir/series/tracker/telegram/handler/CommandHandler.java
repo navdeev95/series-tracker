@@ -1,10 +1,14 @@
 package io.github.nikoir.series.tracker.telegram.handler;
 
 import io.github.nikoir.series.tracker.telegram.bot.SeriesNotificationBot;
+import io.github.nikoir.series.tracker.telegram.dto.TelegramMessage;
+import io.github.nikoir.series.tracker.telegram.event.TelegramUpdateEvent;
 import io.github.nikoir.series.tracker.telegram.service.UserSessionService;
 import io.github.nikoir.series.tracker.telegram.model.UserStateEnum;
+import io.github.nikoir.series.tracker.telegram.util.CommandUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -19,6 +23,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.List;
 import java.util.Objects;
 
+import static io.github.nikoir.series.tracker.telegram.model.BotCommandEnum.SEARCH;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -26,59 +32,48 @@ public class CommandHandler {
     private final CommandRegistry commandRegistry;
     //private final CallbackQueryHandler callbackHandler;
     private final UserSessionService userSessionService;
+    private final SeriesNotificationBot bot;
 
-    public void handleUpdate(Update update, SeriesNotificationBot bot) {
-        try {
-            if (update.hasMessage() && update.getMessage().hasText()) {
-                handleMessage(update.getMessage(), bot);
-            } else if (update.hasCallbackQuery()) {
-                //callbackHandler.handle(update.getCallbackQuery(), bot);
-            } else if (update.hasInlineQuery()) {
-                handleInlineQuery(update.getInlineQuery(), bot);
-            }
-        } catch (Exception e) {
-            log.error("Ошибка при обработке обновления", e);
-            sendErrorMessage(update, bot, e);
-        }
-    }
+    @EventListener
+    public void handleMessage(TelegramUpdateEvent updateEvent) {
+        TelegramMessage message = updateEvent.getTelegramMessage();
 
-    private void handleMessage(Message message, SeriesNotificationBot bot) {
-        String text = message.getText();
-        Long userId = message.getFrom().getId();
-        Long chatId = message.getChatId();
+        String text = message.text();
+        Long userId = message.userId();
+        Long chatId = message.chatId();
 
-        log.info("Сообщение от {} ({}): {}", userId, chatId, text);
+        log.info("Message from {} ({}): {}", userId, chatId, text);
 
         // Проверяем состояние пользователя (для многошаговых операций)
         UserStateEnum userState = userSessionService.getUserState(userId);
         if (userState != null) {
-            handleUserState(userId, chatId, message, userState, bot);
+            handleUserState(userState, message);
             return;
         }
 
         // Проверяем команду
-        if (text.startsWith("/")) {
-            handleCommand(message, bot);
+        if (CommandUtil.isCommand(text)) {
+            handleCommand(message);
         } else {
-            handleUnknownMessage(message, bot);
+            handleUnknownMessage(message);
         }
     }
 
-    private void handleCommand(Message message, SeriesNotificationBot bot) {
-        String text = message.getText();
-        String commandName = extractCommand(text);
+    private void handleCommand(TelegramMessage message) {
+        String text = message.text();
+        String commandName = CommandUtil.extractCommand(text);
 
         Command command = commandRegistry.getCommand(commandName);
         if (command != null) {
-            command.execute(message, bot);
+            command.execute(message);
         } else {
-            bot.sendTextMessage(message.getChatId(),
+            bot.sendTextMessage(message.chatId(),
                     "❌ Неизвестная команда. Используйте /help для списка команд");
         }
     }
 
-    private void handleUnknownMessage(Message message, SeriesNotificationBot bot) {
-        bot.sendTextMessage(message.getChatId(),
+    private void handleUnknownMessage(TelegramMessage message) {
+        bot.sendTextMessage(message.chatId(),
                 """
                         Ты совсем долбоеб? 😡
                         Ты командами общайся, блять.
@@ -89,20 +84,13 @@ public class CommandHandler {
                         /help тебе в помощь, уебище""");
     }
 
-    private String extractCommand(String text) {
-        // Извлекаем команду без параметров и без @username
-        String[] parts = text.split("\\s+")[0].split("@");
-        return parts[0].toLowerCase();
-    }
-
-    private void handleUserState(Long userId, Long chatId, Message message,
-                                 UserStateEnum state, SeriesNotificationBot bot) {
+    private void handleUserState(UserStateEnum state, TelegramMessage message) {
         if (Objects.requireNonNull(state) == UserStateEnum.AWAITING_SEARCH_QUERY) {
-            commandRegistry.getCommand("/search")
-                    .execute(message, bot);
+            commandRegistry.getCommand(SEARCH.getCommandText())
+                    .execute(message);
         } else {
-            bot.sendTextMessage(chatId, "Произошла ошибка. Пожалуйста, начните заново.");
-            userSessionService.clearUserState(userId);
+            bot.sendTextMessage(message.chatId(), "Произошла ошибка. Пожалуйста, начните заново.");
+            userSessionService.clearUserState(message.userId());
         }
     }
 

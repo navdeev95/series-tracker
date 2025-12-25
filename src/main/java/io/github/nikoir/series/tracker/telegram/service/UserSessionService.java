@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UserSessionService {
     private final ConcurrentHashMap<Long, UserStateEnum> userStates = new ConcurrentHashMap<>();
 
-    public void SetUserState(Long userId, UserStateEnum userState) {
+    public void setUserState(Long userId, UserStateEnum userState) {
         userStates.put(userId, userState);
     }
 

@@ -38,6 +38,7 @@ public class KinopoiskSearchStrategy implements SeriesSearchStrategy {
                 .param("page", request.page())
                 .param("limit", request.limit())
                 .param("query", request.title())
+                .disableEncoding()
                 .build();
 
         ResponseEntity<KinopoiskSeriesSearchRs> response = restTemplate.exchange(url, HttpMethod.GET, entity, KinopoiskSeriesSearchRs.class);

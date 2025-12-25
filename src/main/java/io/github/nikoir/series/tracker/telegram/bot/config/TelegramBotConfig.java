@@ -1,10 +1,12 @@
 package io.github.nikoir.series.tracker.telegram.bot.config;
 
 import io.github.nikoir.series.tracker.telegram.bot.SeriesNotificationBot;
+import io.github.nikoir.series.tracker.telegram.event.publisher.TelegramUpdateEventPublisher;
 import io.github.nikoir.series.tracker.telegram.handler.CommandHandler;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -28,9 +30,9 @@ public class TelegramBotConfig {
     private boolean enabled;
 
     @Bean
-    public SeriesNotificationBot seriesNotificationBot(CommandHandler commandHandler) {
+    public SeriesNotificationBot seriesNotificationBot(TelegramUpdateEventPublisher eventPublisher) {
         log.info("Создание бота с username: {}", userName);
-        return new SeriesNotificationBot(commandHandler, token, userName, name);
+        return new SeriesNotificationBot(token, userName, name, eventPublisher);
     }
 
     @Bean
