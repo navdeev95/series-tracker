@@ -6,10 +6,15 @@ import io.github.nikoir.series.tracker.telegram.bot.SeriesNotificationBot;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
@@ -24,15 +29,17 @@ public class MediaGroupService {
      * Отправка карусели сериалов (до 10)
      */
     public void sendSeriesCarousel(Long chatId,
-                                   List<SeriesShortViewRs> seriesList,
+                                   PagedModel<SeriesShortViewRs> seriesList,
                                    String title) {
-        if (seriesList.isEmpty()) {
+        if (CollectionUtils.isEmpty(seriesList.getContent())) {
             bot.sendHtmlMessage(chatId, "📭 Список пуст");
             return;
         }
 
         // Ограничиваем 10 сериалами (лимит Telegram)
-        List<SeriesShortViewRs> limitedList = seriesList.stream()
+        List<SeriesShortViewRs> limitedList = seriesList
+                .getContent()
+                .stream()
                 .limit(10)
                 .toList();
 
@@ -45,17 +52,45 @@ public class MediaGroupService {
             mediaGroup.add(media);
         }
 
+        //Создаем группу кнопок для навигации по списку сериалов
+        InlineKeyboardButton next = InlineKeyboardButton.builder()
+                .text("->")
+                .callbackData("next")
+                .build();
+
+        InlineKeyboardButton back = InlineKeyboardButton.builder()
+                .text("<-")
+                .callbackData("back")
+                .build();
+
+        InlineKeyboardMarkup keyboardMarkup = InlineKeyboardMarkup.builder()
+                .keyboardRow(List.of(back, next))
+                .build();
+
         try {
             // Отправляем заголовок отдельно
             bot.sendHtmlMessage(chatId,
-                    String.format("🎬 <b>%s</b> (%d результатов):", title, limitedList.size()));
+                    String.format("🎬 <b>%s</b> (%d из %d результатов):",
+                            title,
+                            limitedList.size(),
+                            seriesList.getMetadata().totalElements()));
 
             // Отправляем карусель
             bot.execute(new SendMediaGroup(chatId.toString(), mediaGroup));
 
+            if (seriesList.getMetadata().totalPages() > 1) {
+                // Отправляем клавиатуру для навигации
+                bot.execute(SendMessage.builder()
+                        .chatId(chatId.toString())
+                        .text(String.format("Страница %d из %d",
+                                seriesList.getMetadata().number(),
+                                seriesList.getMetadata().totalPages()))
+                        .replyMarkup(keyboardMarkup)
+                        .build());
+            }
         } catch (TelegramApiException e) {
             log.error("Ошибка отправки медиагруппы", e);
-            sendSeriesListAsText(chatId, seriesList, title);
+            sendSeriesListAsText(chatId, limitedList, title);
         }
     }
 

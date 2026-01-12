@@ -56,9 +56,7 @@ public class SearchCommand implements Command {
             userSessionService.clearUserState(message.userId());
             return;
         }
-        mediaGroupService.sendSeriesCarousel(message.chatId(),
-                result.getContent(),
-                title.get());
+        mediaGroupService.sendSeriesCarousel(message.chatId(), result, title.get());
         userSessionService.clearUserState(message.userId());
     }
 }
