@@ -26,7 +26,7 @@ public abstract class KinopoiskSeriesShortAdapter implements SeriesShortAdapter<
     @Autowired
     private KinopoiskExternalIdAdapter externalIdAdapter;
 
-    @Mapping(target="title", source = "name")
+    @Mapping(target="title", source = ".", qualifiedByName = "getTitleWithPriority")
     @Mapping(target="posterUrl", source = "poster")
     @Mapping(target="externalIds", source = ".")
     @Mapping(target="totalSeasons", ignore = true)
@@ -36,6 +36,20 @@ public abstract class KinopoiskSeriesShortAdapter implements SeriesShortAdapter<
         return Optional.ofNullable(poster)
                 .map(Image::previewUrl)
                 .orElse(null);
+    }
+
+    @Named("getTitleWithPriority")
+    protected String getTitleWithPriority(KinopoiskSeriesSearchRs.Doc doc) {
+        if (doc.name() != null && !doc.name().trim().isEmpty()) {
+            return doc.name();
+        }
+        if (doc.alternativeName() != null && !doc.alternativeName().trim().isEmpty()) {
+            return doc.alternativeName();
+        }
+        if (doc.enName() != null && !doc.enName().trim().isEmpty()) {
+            return doc.enName();
+        }
+        return ""; // или null, или значение по умолчанию
     }
 
     @Override
@@ -52,7 +66,7 @@ public abstract class KinopoiskSeriesShortAdapter implements SeriesShortAdapter<
                     .map(this::toViewDto)
                     .toList();
         }
-        PageRequest pageRequest = PageRequest.of(searchRs.page(), searchRs.limit());
+        PageRequest pageRequest = PageRequest.of(searchRs.page() - 1, searchRs.limit());
 
         PageImpl<SeriesShortViewRs> seriesPage = new PageImpl<>(content, pageRequest, searchRs.total());
 

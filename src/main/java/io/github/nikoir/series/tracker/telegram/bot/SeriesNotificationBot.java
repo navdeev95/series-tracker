@@ -33,6 +33,8 @@ public class SeriesNotificationBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             eventPublisher.publishMessageEvent(update.getMessage());
+        } else if (update.hasInlineQuery()) {
+            eventPublisher.publishInlineQueryEvent(update.getInlineQuery());
         }
 
     }

@@ -35,7 +35,7 @@ public class KinopoiskSearchStrategy implements SeriesSearchStrategy {
 
         String url = UriBuilder.from(kinopoiskProps.getUrl())
                 .path(kinopoiskProps.getSeriesSearch().getPath())
-                .param("page", request.page())
+                .param("page", request.page() + 1)
                 .param("limit", request.limit())
                 .param("query", request.title())
                 .disableEncoding()

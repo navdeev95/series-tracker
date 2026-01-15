@@ -30,6 +30,9 @@ public record KinopoiskSeriesSearchRs(
                           @JsonProperty("name")
                           String name,
 
+                          @JsonProperty("alternativeName")
+                          String alternativeName,
+
                           @JsonProperty("enName")
                           String enName,
 
@@ -55,7 +58,8 @@ public record KinopoiskSeriesSearchRs(
         PRE_PRODUCTION("pre-production"),
         COMPLETED("completed"),
         ANNOUNCED("announced"),
-        POST_PRODUCTION("post-production");
+        POST_PRODUCTION("post-production"),
+        DELETED("deleted");
 
         final String name;
 

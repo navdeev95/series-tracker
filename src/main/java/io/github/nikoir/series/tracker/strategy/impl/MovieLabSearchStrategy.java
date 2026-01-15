@@ -35,7 +35,7 @@ public class MovieLabSearchStrategy implements SeriesSearchStrategy {
         String url = UriBuilder.from(movieLabProps.getUrl())
                 .path(movieLabProps.getSeriesSearch().getPath())
                 .param("title", request.title())
-                .param("page", request.page())
+                .param("page", request.page() + 1)
                 .param("limit", request.limit())
                 .disableEncoding()
                 .build();

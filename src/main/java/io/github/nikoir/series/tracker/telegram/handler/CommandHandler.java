@@ -1,41 +1,33 @@
 package io.github.nikoir.series.tracker.telegram.handler;
 
+import io.github.nikoir.series.tracker.dto.api.request.SeriesSearchRq;
+import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
+import io.github.nikoir.series.tracker.strategy.context.SeriesSearchStrategyContext;
 import io.github.nikoir.series.tracker.telegram.bot.SeriesNotificationBot;
+import io.github.nikoir.series.tracker.telegram.dto.TelegramInlineQuery;
 import io.github.nikoir.series.tracker.telegram.dto.TelegramMessage;
-import io.github.nikoir.series.tracker.telegram.event.TelegramUpdateEvent;
-import io.github.nikoir.series.tracker.telegram.service.UserSessionService;
-import io.github.nikoir.series.tracker.telegram.model.UserStateEnum;
+import io.github.nikoir.series.tracker.telegram.event.TelegramInlineQueryUpdateEvent;
+import io.github.nikoir.series.tracker.telegram.event.TelegramMessageUpdateEvent;
+import io.github.nikoir.series.tracker.telegram.service.SeriesSendService;
 import io.github.nikoir.series.tracker.telegram.util.CommandUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.AnswerInlineQuery;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
-import org.telegram.telegrambots.meta.api.objects.inlinequery.inputmessagecontent.InputTextMessageContent;
-import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResultArticle;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-import java.util.List;
-import java.util.Objects;
-
-import static io.github.nikoir.series.tracker.telegram.model.BotCommandEnum.SEARCH;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class CommandHandler {
     private final CommandRegistry commandRegistry;
-    //private final CallbackQueryHandler callbackHandler;
-    private final UserSessionService userSessionService;
+    private final SeriesSearchStrategyContext searchStrategyContext;
     private final SeriesNotificationBot bot;
+    private final SeriesSendService seriesSendService;
 
     @EventListener
-    public void handleMessage(TelegramUpdateEvent updateEvent) {
+    public void handleMessage(TelegramMessageUpdateEvent updateEvent) {
         TelegramMessage message = updateEvent.getTelegramMessage();
 
         String text = message.text();
@@ -45,11 +37,11 @@ public class CommandHandler {
         log.info("Message from {} ({}): {}", userId, chatId, text);
 
         // Проверяем состояние пользователя (для многошаговых операций)
-        UserStateEnum userState = userSessionService.getUserState(userId);
+        /*UserStateEnum userState = userSessionService.getUserState(userId);
         if (userState != null) {
             handleUserState(userState, message);
             return;
-        }
+        }*/
 
         // Проверяем команду
         if (CommandUtil.isCommand(text)) {
@@ -57,6 +49,30 @@ public class CommandHandler {
         } else {
             handleUnknownMessage(message);
         }
+    }
+
+    @EventListener
+    public void handleInlineQuery(TelegramInlineQueryUpdateEvent updateEvent) {
+        PagedModel<SeriesShortViewRs> series = findSeries(updateEvent.getInlineQuery());
+        seriesSendService.sendSeriesInline(updateEvent.getInlineQuery().queryId(), series);
+    }
+
+    private PagedModel<SeriesShortViewRs> findSeries(TelegramInlineQuery inlineQuery) {
+        String query = inlineQuery.query().toLowerCase();
+        String offset = inlineQuery.offset();
+        int page = 0;
+
+        // Парсим offset для определения страницы
+        if (offset != null && !offset.isEmpty()) {
+            try {
+                page = Integer.parseInt(offset);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        int pageSize = 10;
+
+        return searchStrategyContext.search(new SeriesSearchRq(query, page, pageSize));
     }
 
     private void handleCommand(TelegramMessage message) {
@@ -82,61 +98,6 @@ public class CommandHandler {
                         Тут блять половина кода DeepSeek-ом сгенерирована.
                         Дебила кусок...
                         /help тебе в помощь, уебище""");
-    }
-
-    private void handleUserState(UserStateEnum state, TelegramMessage message) {
-        if (Objects.requireNonNull(state) == UserStateEnum.AWAITING_SEARCH_QUERY) {
-            commandRegistry.getCommand(SEARCH.getCommandText())
-                    .execute(message);
-        } else {
-            bot.sendTextMessage(message.chatId(), "Произошла ошибка. Пожалуйста, начните заново.");
-            userSessionService.clearUserState(message.userId());
-        }
-    }
-
-    private void handleInlineQuery(InlineQuery inlineQuery, SeriesNotificationBot bot) {
-        // Отправляем ответ
-        try {
-            AnswerInlineQuery answer = new AnswerInlineQuery();
-            answer.setInlineQueryId(inlineQuery.getId());
-            answer.setResults(List.of(createInlineDisabledResult(bot)));
-            answer.setCacheTime(1); // Кешируем на 1 секунду
-            answer.setIsPersonal(true);
-            answer.setSwitchPmText("Открыть бота для поиска");
-            answer.setSwitchPmParameter("inline_disabled");
-
-            bot.execute(answer);
-            log.debug("Отправлен ответ на inline-запрос (режим отключен)");
-
-        } catch (TelegramApiException e) {
-            log.error("Ошибка при отправке inline-ответа", e);
-        }
-    }
-
-    private InlineQueryResultArticle createInlineDisabledResult(SeriesNotificationBot bot) {
-        InlineQueryResultArticle article = new InlineQueryResultArticle();
-        article.setId("go_to_bot");
-
-        article.setTitle(String.format("🚀 Перейти в %s", bot.getBotName()));
-        article.setDescription("Нажмите, чтобы открыть бота для поиска сериалов");
-
-        // Сообщение с кнопкой для перехода
-        InputTextMessageContent messageContent = new InputTextMessageContent();
-        messageContent.setMessageText(String.format("Чтобы найти сериалы и получать уведомления о новых сериях, " +
-                "перейдите в %s 👇", bot.getBotUsername()));
-        article.setInputMessageContent(messageContent);
-
-        // Кнопка для быстрого запуска бота
-        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        InlineKeyboardButton button = new InlineKeyboardButton();
-        button.setText(String.format("🔍 Открыть %s", bot.getBotName()));
-        button.setUrl(String.format("https://t.me/%s?start=from_inline",
-                bot.getBotUsername().replace("@", "")));
-
-        keyboard.setKeyboard(List.of(List.of(button)));
-        article.setReplyMarkup(keyboard);
-
-        return article;
     }
 
     private void sendErrorMessage(Update update, SeriesNotificationBot bot, Exception e) {

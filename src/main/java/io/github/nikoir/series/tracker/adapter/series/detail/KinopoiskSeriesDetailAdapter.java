@@ -54,6 +54,7 @@ public abstract class KinopoiskSeriesDetailAdapter implements SeriesDetailAdapte
             case "pre-production" -> SeriesStatus.PRE_PRODUCTION;
             case "completed" -> SeriesStatus.COMPLETED;
             case "post-production" -> SeriesStatus.POST_PRODUCTION;
+            case "deleted" -> SeriesStatus.DELETED;
             default -> SeriesStatus.ANNOUNCED;
         };
     }
