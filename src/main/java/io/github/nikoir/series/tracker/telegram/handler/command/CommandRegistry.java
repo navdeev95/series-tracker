@@ -1,14 +1,14 @@
-package io.github.nikoir.series.tracker.telegram.handler;
+package io.github.nikoir.series.tracker.telegram.handler.command;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -21,13 +21,13 @@ public class CommandRegistry {
     public void init() {
         for (Command command : commands) {
             commandMap.put(command.getCommand().getCommandText(), command);
-            log.debug("Зарегистрирована команда: {}", command.getCommand());
+            log.debug("Command registered: {}", command.getCommand());
         }
-        log.info("Зарегистрировано команд: {}", commands.size());
+        log.info("Commands registered: {}", commands.size());
     }
 
-    public Command getCommand(String commandName) {
-        return commandMap.get(commandName);
+    public Optional<Command> getCommand(String commandText) {
+        return Optional.ofNullable(commandMap.get(commandText));
     }
 
     public boolean hasCommand(String commandName) {

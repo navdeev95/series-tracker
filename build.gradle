@@ -28,9 +28,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	// Для Telegram бота
-	// implementation 'org.telegram:telegrambots-spring-boot-starter:6.9.7.0'
-
 	// Для планировщика
 	// implementation 'org.springframework.boot:spring-boot-starter-quartz'
 
@@ -53,7 +50,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
 	//Telegram
-	implementation 'org.telegram:telegrambots:6.0.1'
+	implementation 'org.telegram:telegrambots-springboot-longpolling-starter:9.2.1'
+	implementation 'org.telegram:telegrambots-client:9.2.1'
 
 	// Тестирование
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

@@ -1,15 +1,16 @@
-package io.github.nikoir.series.tracker.telegram.handler.impl;
+package io.github.nikoir.series.tracker.telegram.handler.command.impl;
 
-import io.github.nikoir.series.tracker.telegram.bot.SeriesNotificationBot;
 import io.github.nikoir.series.tracker.telegram.dto.TelegramMessage;
-import io.github.nikoir.series.tracker.telegram.handler.Command;
-import io.github.nikoir.series.tracker.telegram.model.BotCommandEnum;
+import io.github.nikoir.series.tracker.telegram.handler.command.Command;
+import io.github.nikoir.series.tracker.telegram.model.CommandEnum;
+import io.github.nikoir.series.tracker.telegram.service.TelegramService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Collections;
@@ -19,20 +20,22 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class SearchCommand implements Command {
-    private final SeriesNotificationBot bot;
+    private final TelegramService telegramService;
 
     @Override
-    public BotCommandEnum getCommand() {
-        return BotCommandEnum.SEARCH;
+    public CommandEnum getCommand() {
+        return CommandEnum.SEARCH;
     }
 
     @Override
     public void execute(TelegramMessage message) {
+        InlineKeyboardRow keyboardRow = new InlineKeyboardRow(List.of(InlineKeyboardButton.builder()
+                .text("🔍 Поиск")
+                .switchInlineQueryCurrentChat("")
+                .build()));
+
         InlineKeyboardMarkup keyboard = InlineKeyboardMarkup.builder()
-                .keyboard(Collections.singleton(List.of(InlineKeyboardButton.builder()
-                        .text("🔍 Поиск")
-                        .switchInlineQueryCurrentChat("")
-                        .build())))
+                .keyboard(Collections.singleton(keyboardRow))
                 .build();
 
         SendMessage sendMessage = SendMessage.builder()
@@ -42,10 +45,10 @@ public class SearchCommand implements Command {
                 .replyMarkup(keyboard)
                 .build();
         try {
-            bot.execute(sendMessage);
+            telegramService.execute(sendMessage);
         } catch (TelegramApiException e) {
             log.error("Exception while sending search response to {}", message.userId());
-            bot.sendTextMessage(message.chatId(), "Произошла ошибка. Повторите запрос позже.");
+            telegramService.sendErrorMessage(message.chatId());
         }
     }
 }

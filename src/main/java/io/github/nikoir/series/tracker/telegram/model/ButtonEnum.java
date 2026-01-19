@@ -11,13 +11,13 @@ import java.util.stream.Collectors;
 @Getter
 @RequiredArgsConstructor
 public enum ButtonEnum {
-    SEARCH("🔍 Поиск сериалов", BotCommandEnum.SEARCH, true),
-    MY_SUBSCRIPTIONS("📋 Мои подписки", BotCommandEnum.MY_SUBSCRIPTIONS, true),
-    SETTINGS("⚙️ Настройки", BotCommandEnum.SETTINGS, true),
-    HELP("❓ Помощь", BotCommandEnum.HELP, true);
+    SEARCH("🔍 Поиск сериалов", CommandEnum.SEARCH, true),
+    MY_SUBSCRIPTIONS("📋 Мои подписки", CommandEnum.MY_SUBSCRIPTIONS, true),
+    SETTINGS("⚙️ Настройки", CommandEnum.SETTINGS, true),
+    HELP("❓ Помощь", CommandEnum.HELP, true);
 
     private final String displayText;
-    private final BotCommandEnum command;
+    private final CommandEnum command;
     private final boolean isInMainMenu;
 
     public static List<ButtonEnum> getMainMenuButtons() {

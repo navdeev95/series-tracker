@@ -1,7 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.service;
 
 import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
-import io.github.nikoir.series.tracker.telegram.bot.SeriesNotificationBot;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.web.PagedModel;
@@ -20,7 +19,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class SeriesSendService {
-    private final SeriesNotificationBot bot;
+    private final TelegramService telegramService;
 
     public void sendSeriesInline(String inlineQueryId,
                                  PagedModel<SeriesShortViewRs> seriesList) {
@@ -36,29 +35,29 @@ public class SeriesSendService {
             }
         }
 
-        AnswerInlineQuery answer = new AnswerInlineQuery();
-        answer.setInlineQueryId(inlineQueryId);
-        answer.setResults(results);
-        answer.setCacheTime(1); // Короткое кеширование
-        answer.setIsPersonal(true);
-        answer.setNextOffset(page < totalPages - 1 ? String.valueOf(page + 1) : "");
+        AnswerInlineQuery answer = AnswerInlineQuery.builder()
+                .inlineQueryId(inlineQueryId)
+                .cacheTime(1)
+                .isPersonal(true)
+                .results(results)
+                .nextOffset(page < totalPages - 1 ? String.valueOf(page + 1) : "")
+                .build();
 
         try {
-            bot.execute(answer);
+            telegramService.execute(answer);
         } catch (TelegramApiException e) {
-            log.error("Ошибка при отправке inline-ответа", e);
+            log.error("Error while sending inline-answer", e);
         }
     }
 
     private InlineQueryResultArticle createSeriesResult(SeriesShortViewRs series, int index) {
-        InputTextMessageContent messageContent = new InputTextMessageContent();
-
-        messageContent.setMessageText(String.format("%s (%d)\n%s",
-                series.title(),
-                series.year(),
-                series.isSeries() ? "Сериал": "Фильм"));
-
-        messageContent.setParseMode("Markdown");
+        InputTextMessageContent messageContent = InputTextMessageContent.builder()
+                .messageText(String.format("%s (%d)\n%s",
+                        series.title(),
+                        series.year(),
+                        series.isSeries() ? "Сериал": "Фильм"))
+                .parseMode("Markdown")
+                .build();
 
         return InlineQueryResultArticle
                 .builder()
@@ -66,13 +65,14 @@ public class SeriesSendService {
                 .title(series.title())
                 .description(String.format("%d %s", series.year(), series.isSeries() ? "Сериал": "Фильм"))
                 .inputMessageContent(messageContent)
-                .thumbUrl(series.posterUrl())
+                .thumbnailUrl(series.posterUrl())
                 .build();
     }
 
     private InlineQueryResultArticle createNoResultsArticle() {
-        InputTextMessageContent messageContent = new InputTextMessageContent();
-        messageContent.setMessageText("Ничего не найдено.\n\nПопробуйте другой запрос.");
+        InputTextMessageContent messageContent = InputTextMessageContent.builder()
+                .messageText("Ничего не найдено.\n\nПопробуйте другой запрос.")
+                .build();
 
         return InlineQueryResultArticle.builder()
                 .id("no_results")
