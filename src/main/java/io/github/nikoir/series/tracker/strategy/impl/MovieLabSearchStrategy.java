@@ -8,6 +8,7 @@ import io.github.nikoir.series.tracker.adapter.series.shorts.MovieLabSeriesShort
 import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.strategy.SeriesSearchStrategy;
 import io.github.nikoir.series.tracker.util.UriBuilder;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpEntity;
@@ -32,9 +33,18 @@ public class MovieLabSearchStrategy implements SeriesSearchStrategy {
     public PagedModel<SeriesShortViewRs> search(SeriesSearchRq request) {
         HttpEntity<String> entity = new HttpEntity<>(movieLabHeaders);
 
+        String title = "";
+        if (StringUtils.isNotEmpty(request.title())) {
+            if (request.title().length() > 40) {
+                title = request.title().substring(0, 40);
+            } else {
+                title = request.title();
+            }
+        }
+
         String url = UriBuilder.from(movieLabProps.getUrl())
                 .path(movieLabProps.getSeriesSearch().getPath())
-                .param("title", request.title())
+                .param("title", title)
                 .param("page", request.page() + 1)
                 .param("limit", request.limit())
                 .disableEncoding()

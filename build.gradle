@@ -53,6 +53,9 @@ dependencies {
 	implementation 'org.telegram:telegrambots-springboot-longpolling-starter:9.2.1'
 	implementation 'org.telegram:telegrambots-client:9.2.1'
 
+	//Caffeine cache
+	implementation 'com.github.ben-manes.caffeine:caffeine:3.2.3'
+
 	// Тестирование
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
