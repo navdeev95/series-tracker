@@ -1,13 +1,13 @@
-package io.github.nikoir.series.tracker.telegram.handler.impl;
+package io.github.nikoir.series.tracker.telegram.handler.command.impl;
 
-import io.github.nikoir.series.tracker.telegram.bot.SeriesNotificationBot;
-import io.github.nikoir.series.tracker.telegram.model.BotCommandEnum;
-import io.github.nikoir.series.tracker.telegram.handler.Command;
+import io.github.nikoir.series.tracker.telegram.dto.TelegramMessage;
+import io.github.nikoir.series.tracker.telegram.model.CommandEnum;
+import io.github.nikoir.series.tracker.telegram.handler.command.Command;
 import io.github.nikoir.series.tracker.telegram.model.ButtonEnum;
+import io.github.nikoir.series.tracker.telegram.service.TelegramService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -19,40 +19,38 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class StartCommand implements Command {
-    //private final UserService userService;
+    private final TelegramService telegramService;
 
     @Override
-    public BotCommandEnum getCommand() {
-        return BotCommandEnum.START;
+    public CommandEnum getCommand() {
+        return CommandEnum.START;
     }
 
     @Override
-    public void execute(Message message, SeriesNotificationBot bot) {
-        Long chatId = message.getChatId();
-        Long userId = message.getFrom().getId();
-        String userName = message.getFrom().getFirstName();
-
-        log.info("Пользователь {} ({}) запустил бота", userId, userName);
+    public void execute(TelegramMessage message) {
+        log.info("User {} ({}) has run bot", message.userId(), message.userName());
 
         // Регистрируем/получаем пользователя
         //userService.getOrCreateTelegramUser(userId, userName);
 
         // Отправляем сообщение с клавиатурой
-        SendMessage response = new SendMessage();
-        response.setChatId(chatId.toString());
-        response.setText(getWelcomeMessage(userName, bot));
-        response.setReplyMarkup(createMainKeyboard());
+        SendMessage response = SendMessage
+                .builder()
+                .chatId(message.chatId().toString())
+                .text(getWelcomeMessage(message.userName()))
+                .replyMarkup(createMainKeyboard())
+                .build();
 
         try {
-            bot.execute(response);
+            telegramService.execute(response);
         } catch (TelegramApiException e) {
-            log.error("Ошибка при отправке приветствия", e);
+            log.error("Error while sending welcome message", e);
         }
     }
 
-    private String getWelcomeMessage(String userName, SeriesNotificationBot bot) {
+    private String getWelcomeMessage(String userName) {
         return String.format("""
-            🎬 Привет, %s! Добро пожаловать в %s!
+            🎬 Привет, %s! Добро пожаловать!
             
             Я буду уведомлять тебя о выходе новых серий любимых сериалов.
             
@@ -62,12 +60,10 @@ public class StartCommand implements Command {
             • Управлять подписками
             
             🚀 Начни с команды /search чтобы найти первый сериал!
-            """, userName, bot.getBotName());
+            """, userName);
     }
 
     private ReplyKeyboardMarkup createMainKeyboard() {
-        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
-        keyboard.setResizeKeyboard(true);
 
         // Получаем кнопки для главного меню
         List<ButtonEnum> mainButtons = ButtonEnum.getMainMenuButtons();
@@ -85,8 +81,9 @@ public class StartCommand implements Command {
 
             rows.add(row);
         }
-
-        keyboard.setKeyboard(rows);
-        return keyboard;
+        return ReplyKeyboardMarkup.builder()
+                .resizeKeyboard(true)
+                .keyboard(rows)
+                .build();
     }
 }

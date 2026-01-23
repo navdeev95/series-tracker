@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum BotCommandEnum {
+public enum CommandEnum {
     START("/start", "Запустить бота"),
     HELP("/help", "Помощь и команды"),
     SEARCH("/search", "Найти сериал"),

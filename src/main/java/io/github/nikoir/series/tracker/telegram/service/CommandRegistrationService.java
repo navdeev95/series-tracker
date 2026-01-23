@@ -1,7 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.service;
 
-import io.github.nikoir.series.tracker.telegram.bot.SeriesNotificationBot;
-import io.github.nikoir.series.tracker.telegram.model.BotCommandEnum;
+import io.github.nikoir.series.tracker.telegram.model.CommandEnum;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,25 +18,27 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CommandRegistrationService {
-    private final SeriesNotificationBot bot;
+    private final TelegramService telegramService;
 
     @PostConstruct
     public void registerCommands() {
         try {
-            List<BotCommand> commands = Arrays.stream(BotCommandEnum.values())
+            List<BotCommand> commands = Arrays.stream(CommandEnum.values())
                     .map(cmd -> new BotCommand(cmd.getCommandText(), cmd.getDescription()))
                     .collect(Collectors.toList());
 
-            SetMyCommands setCommands = new SetMyCommands();
-            setCommands.setCommands(commands);
-            setCommands.setScope(new BotCommandScopeDefault());
-            setCommands.setLanguageCode("ru");
+            SetMyCommands setCommands = SetMyCommands
+                    .builder()
+                    .commands(commands)
+                    .scope(new BotCommandScopeDefault())
+                    .languageCode("ru")
+                    .build();
 
-            bot.execute(setCommands);
-            log.info("✅ Команды меню зарегистрированы в Telegram: {} команд", commands.size());
+            telegramService.execute(setCommands);
+            log.info("✅ Commands registered in Telegram: {} commands", commands.size());
 
         } catch (TelegramApiException e) {
-            log.error("❌ Ошибка при регистрации команд меню", e);
+            log.error("❌ Error while registering telegram commands", e);
         }
     }
 }

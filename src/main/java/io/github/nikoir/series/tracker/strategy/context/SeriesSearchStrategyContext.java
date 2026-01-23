@@ -1,7 +1,9 @@
 package io.github.nikoir.series.tracker.strategy.context;
 
 import io.github.nikoir.series.tracker.dto.api.request.SeriesSearchRq;
+import io.github.nikoir.series.tracker.dto.internal.SeriesSearchRs;
 import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
+import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.strategy.SeriesSearchStrategy;
 import io.github.nikoir.series.tracker.strategy.impl.DBSearchStrategy;
 import io.github.nikoir.series.tracker.strategy.impl.KinopoiskSearchStrategy;
@@ -16,9 +18,9 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
+import static io.github.nikoir.series.tracker.enums.Source.*;
 
 @Component
 @Slf4j
@@ -29,36 +31,52 @@ public class SeriesSearchStrategyContext {
     private final DBSearchStrategy dbSearchStrategy;
 
     private final List<SeriesSearchStrategy> searchChain = new LinkedList<>();
+    private final Map<Source, SeriesSearchStrategy> searchMap = new HashMap<>();
 
     @PostConstruct
     private void buildChain() {
-        searchChain.add(kinopoiskSearchStrategy);
+        searchMap.put(KINOPOISK, kinopoiskSearchStrategy);
+        searchMap.put(MOVIELAB, movieLabSearchStrategy);
+        searchMap.put(DATABASE, dbSearchStrategy);
+
         searchChain.add(movieLabSearchStrategy);
+        searchChain.add(kinopoiskSearchStrategy);
         searchChain.add(dbSearchStrategy);
     }
 
-    public PagedModel<SeriesShortViewRs> search(SeriesSearchRq request) {
+    public SeriesSearchRs search(SeriesSearchRq request, Source previousSource) {
+        if (request.page() > 1 && previousSource != null) {
+            SeriesSearchStrategy searchStrategy = searchMap.get(previousSource);
+            try {
+                return new SeriesSearchRs(searchStrategy.search(request),
+                        searchStrategy.getDataSource());
+
+            } catch(Exception ex) {
+                return createEmptyResult(request);
+            }
+        }
+
         PagedModel<SeriesShortViewRs> result;
         for (SeriesSearchStrategy searchStrategy: searchChain) {
             try {
                 result = searchStrategy.search(request);
                 if (!CollectionUtils.isEmpty(result.getContent())) {
-                    return result;
+                    return new SeriesSearchRs(result,
+                            searchStrategy.getDataSource());
                 }
             } catch(Exception ex) {
                 log.error("Failed search for strategy: {}", searchStrategy.getClass(), ex);
             }
-
         }
         return createEmptyResult(request);
     }
 
-    private PagedModel<SeriesShortViewRs> createEmptyResult(SeriesSearchRq request) {
+    private SeriesSearchRs createEmptyResult(SeriesSearchRq request) {
         Page<SeriesShortViewRs> emptyPage = new PageImpl<>(
                 Collections.emptyList(),
                 PageRequest.of(request.page(), request.limit()),
                 0
         );
-        return new PagedModel<>(emptyPage);
+        return new SeriesSearchRs(new PagedModel<>(emptyPage), null);
     }
 }
