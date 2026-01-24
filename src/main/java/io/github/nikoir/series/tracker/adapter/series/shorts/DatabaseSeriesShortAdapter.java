@@ -24,7 +24,7 @@ public abstract class DatabaseSeriesShortAdapter implements SeriesShortAdapter<P
     @Override
     public PagedModel<SeriesShortViewRs> toViewDtoPage(Page<Series> seriesPage) {
         return seriesPage == null ?
-                new PagedModel<>(Page.empty()):
+                SeriesShortAdapter.createEmptyPage():
                 new PagedModel<>(seriesPage.map(this::toViewDto));
     }
 

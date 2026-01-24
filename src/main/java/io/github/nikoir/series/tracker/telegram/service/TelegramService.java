@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMediaBotMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
@@ -37,6 +39,10 @@ public class TelegramService {
     }
 
     public <T extends Serializable> void execute(BotApiMethod<T> method) throws TelegramApiException {
+        client.execute(method);
+    }
+
+    public void execute(SendPhoto method) throws TelegramApiException {
         client.execute(method);
     }
 

@@ -11,6 +11,7 @@ import io.github.nikoir.series.tracker.strategy.impl.MovieLabSearchStrategy;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -45,8 +46,16 @@ public class SeriesSearchStrategyContext {
     }
 
     public SeriesSearchRs search(SeriesSearchRq request, Source previousSource) {
-        if (request.page() > 1 && previousSource != null) {
+        log.debug("page = {}", request.page());
+        log.debug("prev source = {}", previousSource);
+
+        if (StringUtils.isEmpty(request.title())) {
+            return createEmptyResult(request);
+        }
+        if (request.page() > 0 && previousSource != null) {
+            log.debug("Trying to get prev source: {}", previousSource);
             SeriesSearchStrategy searchStrategy = searchMap.get(previousSource);
+            log.debug("Get previousSource success");
             try {
                 return new SeriesSearchRs(searchStrategy.search(request),
                         searchStrategy.getDataSource());

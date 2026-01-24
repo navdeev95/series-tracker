@@ -33,8 +33,14 @@ public class InlineQueryHandler extends BaseHandler {
         userSessionService.setUserState(inlineQuery.getFrom().getId(),
                 UserStateEnum.SEARCHING);
 
+        if (StringUtils.isBlank(inlineQuery.getQuery()) ||
+                StringUtils.isEmpty(inlineQuery.getQuery())) {
+            return;
+        }
         PagedModel<SeriesShortViewRs> series = findSeries(inlineQuery);
-        seriesSendService.sendSeriesInline(inlineQuery.getId(), series);
+        seriesSendService.sendSeriesListInline(inlineQuery.getId(),
+                inlineQuery.getFrom().getId(),
+                series);
     }
 
     private PagedModel<SeriesShortViewRs> findSeries(InlineQuery inlineQuery) {
@@ -52,7 +58,10 @@ public class InlineQueryHandler extends BaseHandler {
             }
         }
 
+        log.debug("page = {}", page);
+
         if (page == 0) {
+            log.debug("reset context");
             session.resetContext();
         }
 
@@ -60,11 +69,13 @@ public class InlineQueryHandler extends BaseHandler {
         Source searchSource = null;
         if (session.getSearchContext() != null) {
             searchSource = session.getSearchContext().getSearchSource();
+            log.debug("get search source: {}", searchSource);
         }
 
         SeriesSearchRs response = searchStrategyContext.search(new SeriesSearchRq(query, page, pageSize), searchSource);
 
         userSessionService.initSearchContext(inlineQuery.getFrom().getId(), response.source());
+        log.debug("reset search context. set search source: {}", response.source());
 
         return response.seriesList();
     }

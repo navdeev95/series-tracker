@@ -12,6 +12,9 @@ public record SeriesDetailViewRs (
         String status,
         Integer releaseYear,
         String posterUrl,
+        String description,
+        List<String> countries,
+        Boolean isSeries,
         Map<ExternalId, String> externalIds,
         List<SeasonViewRs> seasons) {
 

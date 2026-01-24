@@ -11,6 +11,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -30,6 +31,7 @@ public abstract class KinopoiskSeriesDetailAdapter implements SeriesDetailAdapte
     @Mapping(target = "releaseYear", source = "year")
     @Mapping(target = "posterUrl", source = "poster.url")
     @Mapping(target = "externalIds", source = ".")
+    @Mapping(target = "countries", source = ".")
     public abstract SeriesDetailViewRs toViewDto(KinopoiskSeriesInfoRs source);
 
     @Named("extractTotalSeasons")
@@ -61,6 +63,17 @@ public abstract class KinopoiskSeriesDetailAdapter implements SeriesDetailAdapte
 
     protected Map<ExternalId, String> mapExternalIds(KinopoiskSeriesInfoRs source) {
         return externalIdAdapter.mapExternalIds(String.valueOf(source.id()), source.externalId());
+    }
+
+    protected List<String> mapCountries(KinopoiskSeriesInfoRs source) {
+        if (CollectionUtils.isEmpty(source.countries())) {
+            return Collections.emptyList();
+        }
+
+        return source.countries()
+                .stream()
+                .map(KinopoiskSeriesInfoRs.Country::name)
+                .toList();
     }
 
 }
