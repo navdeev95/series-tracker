@@ -2,25 +2,23 @@ package io.github.nikoir.series.tracker.telegram.model.session;
 
 import io.github.nikoir.series.tracker.telegram.model.session.context.SearchContext;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Optional;
 
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class UserSession {
     private Long userId;
     private UserStateEnum userState;
     private LocalDateTime lastActivity;
-
+    @Builder.Default
+    private Deque<SeriesHistoryItem> queue = new ArrayDeque<>();
     private SearchContext searchContext;
-
-    public UserSession(UserStateEnum state) {
-        this.userState = state;
-        this.lastActivity = LocalDateTime.now();
-    }
 
     public void updateActivity() {
         this.lastActivity = LocalDateTime.now();
@@ -28,5 +26,19 @@ public class UserSession {
 
     public void resetContext() {
         this.searchContext = null;
+    }
+
+    public void addToHistory(SeriesHistoryItem historyItem) {
+        queue.addLast(historyItem);
+        if (queue.size() > 50) {
+            queue.removeFirst();
+        }
+    }
+
+    public Optional<SeriesHistoryItem> getHistoryItem(String token) {
+        return queue
+                .stream()
+                .filter(item -> StringUtils.equals(item.token, token))
+                .findFirst();
     }
 }

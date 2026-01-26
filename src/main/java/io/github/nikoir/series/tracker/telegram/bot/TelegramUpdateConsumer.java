@@ -1,5 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.bot;
 
+import io.github.nikoir.series.tracker.telegram.handler.callback.CallbackQueryHandler;
 import io.github.nikoir.series.tracker.telegram.handler.command.CommandHandler;
 import io.github.nikoir.series.tracker.telegram.handler.inline.InlineQueryHandler;
 import io.github.nikoir.series.tracker.telegram.handler.message.MessageHandler;
@@ -21,15 +22,18 @@ public class TelegramUpdateConsumer implements LongPollingSingleThreadUpdateCons
     private final CommandHandler commandHandler;
     private final InlineQueryHandler inlineQueryHandler;
     private final MessageHandler messageHandler;
+    private final CallbackQueryHandler callbackQueryHandler;
 
     public TelegramUpdateConsumer(@Value("${telegram.bot.token}") String token,
                                   CommandHandler commandHandler,
                                   InlineQueryHandler inlineQueryHandler,
-                                  MessageHandler messageHandler) {
+                                  MessageHandler messageHandler,
+                                  CallbackQueryHandler callbackQueryHandler) {
         this.token = token;
         this.commandHandler = commandHandler;
         this.inlineQueryHandler = inlineQueryHandler;
         this.messageHandler = messageHandler;
+        this.callbackQueryHandler = callbackQueryHandler;
     }
 
     @Override
@@ -47,11 +51,13 @@ public class TelegramUpdateConsumer implements LongPollingSingleThreadUpdateCons
         if (update.hasMessage() && update.getMessage().hasText()) {
             if (CommandUtil.isCommand(update.getMessage().getText())) {
                 commandHandler.handle(update);
-            } else {
+            } else if (!update.getMessage().hasViaBot()){
                 messageHandler.handle(update);
             }
         } else if (update.hasInlineQuery()) {
             inlineQueryHandler.handle(update);
+        } else if (update.hasCallbackQuery()) {
+            callbackQueryHandler.handle(update);
         }
     }
 }

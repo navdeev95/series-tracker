@@ -58,14 +58,14 @@ public abstract class KinopoiskSeriesShortAdapter implements SeriesShortAdapter<
             return new PagedModel<>(Page.empty());
         }
 
-        List<SeriesShortViewRs> content = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(searchRs.docs())) {
-            content = searchRs
-                    .docs()
-                    .stream()
-                    .map(this::toViewDto)
-                    .toList();
+        if (CollectionUtils.isEmpty(searchRs.docs())) {
+            return SeriesShortAdapter.createEmptyPage();
         }
+        List<SeriesShortViewRs> content = searchRs
+                .docs()
+                .stream()
+                .map(this::toViewDto)
+                .toList();
         PageRequest pageRequest = PageRequest.of(searchRs.page() - 1, searchRs.limit());
 
         PageImpl<SeriesShortViewRs> seriesPage = new PageImpl<>(content, pageRequest, searchRs.total());

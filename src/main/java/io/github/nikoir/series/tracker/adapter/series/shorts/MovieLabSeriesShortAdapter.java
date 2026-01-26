@@ -46,13 +46,14 @@ public abstract class MovieLabSeriesShortAdapter implements SeriesShortAdapter<M
             return new PagedModel<>(Page.empty());
         }
 
-        List<SeriesShortViewRs> content = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(searchResponse.results())) {
-            content = searchResponse.results()
-                    .stream()
-                    .map(this::toViewDto)
-                    .toList();
+        if (CollectionUtils.isEmpty(searchResponse.results())) {
+            return SeriesShortAdapter.createEmptyPage();
         }
+
+        List<SeriesShortViewRs> content = searchResponse.results()
+                .stream()
+                .map(this::toViewDto)
+                .toList();
 
         var pagination = searchResponse.pagination();
         PageRequest pageRequest = PageRequest.of(

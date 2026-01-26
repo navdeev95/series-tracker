@@ -6,3 +6,9 @@ spring:
   liquibase:
     user: series_tracker_dbo
     password: ${DB_DBO_PWD}
+
+logging:
+  level:
+    root: INFO
+    io.github.nikoir.series.tracker.telegram: DEBUG
+    io.github.nikoir.series.tracker.strategy.context: DEBUG

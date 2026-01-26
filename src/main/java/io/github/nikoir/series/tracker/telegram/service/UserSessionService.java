@@ -3,6 +3,7 @@ package io.github.nikoir.series.tracker.telegram.service;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.github.nikoir.series.tracker.enums.Source;
+import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
 import io.github.nikoir.series.tracker.telegram.model.session.UserSession;
 import io.github.nikoir.series.tracker.telegram.model.session.UserStateEnum;
 import io.github.nikoir.series.tracker.telegram.model.session.context.SearchContext;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -77,5 +80,16 @@ public class UserSessionService {
 
     public void initSearchContext(Long userId, Source source) {
         updateSession(userId, session -> session.setSearchContext(new SearchContext(source)));
+    }
+
+    public void addHistoryItem(Long userId, SeriesHistoryItem historyItem) {
+        UserSession session = getOrCreateSession(userId);
+        session.addToHistory(historyItem);
+        log.debug("Set history item {} for user {}", historyItem, userId);
+    }
+
+    public Optional<SeriesHistoryItem> getHistoryItem(Long userId, String token) {
+        UserSession session = getOrCreateSession(userId);
+        return session.getHistoryItem(token);
     }
 }
