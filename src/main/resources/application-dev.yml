@@ -12,3 +12,4 @@ logging:
     root: INFO
     io.github.nikoir.series.tracker.telegram: DEBUG
     io.github.nikoir.series.tracker.strategy.context: DEBUG
+    io.github.nikoir.series.tracker.service: DEBUG

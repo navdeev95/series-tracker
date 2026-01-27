@@ -1,5 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.handler.command.impl;
 
+import io.github.nikoir.series.tracker.service.UserService;
 import io.github.nikoir.series.tracker.telegram.dto.TelegramMessage;
 import io.github.nikoir.series.tracker.telegram.model.CommandEnum;
 import io.github.nikoir.series.tracker.telegram.handler.command.Command;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StartCommand implements Command {
     private final TelegramService telegramService;
+    private final UserService userService;
 
     @Override
     public CommandEnum getCommand() {
@@ -29,6 +31,7 @@ public class StartCommand implements Command {
     @Override
     public void execute(TelegramMessage message) {
         log.info("User {} ({}) has run bot", message.userId(), message.userName());
+        userService.createIfNotExists(message.userId());
 
         // Регистрируем/получаем пользователя
         //userService.getOrCreateTelegramUser(userId, userName);
