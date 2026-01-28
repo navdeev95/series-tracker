@@ -1,7 +1,8 @@
 package io.github.nikoir.series.tracker.telegram.service;
 
-import io.github.nikoir.series.tracker.dto.internal.SeriesDetailViewRs;
-import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesDetailPersonalizedRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesDetailViewRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
 import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +21,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
-import static liquibase.util.StringUtil.escapeHtml;
 
 @Service
 @Slf4j
@@ -34,7 +34,7 @@ public class SeriesSendService {
 
     public void sendSeriesListInline(String inlineQueryId,
                                      Long userId,
-                                     PagedModel<SeriesShortViewRs> seriesList) {
+                                     PagedModel<SeriesListViewRs> seriesList) {
         long page = seriesList.getMetadata().number();
         long totalPages = seriesList.getMetadata().totalPages();
 
@@ -43,7 +43,7 @@ public class SeriesSendService {
             results.add(createNoResultsArticle());
         } else {
             for (int i = 0; i < seriesList.getContent().size(); i++) {
-                SeriesShortViewRs series = seriesList.getContent().get(i);
+                SeriesListViewRs series = seriesList.getContent().get(i);
                 String token = addHistoryItem(userId, series);
                 results.add(createSeriesResult(series, token, i));
             }
@@ -64,12 +64,13 @@ public class SeriesSendService {
         }
     }
 
-    public void sendSeriesDetailMessage(Long chatId, SeriesDetailViewRs seriesDetail) {
+    public void sendSeriesDetailMessage(Long chatId, SeriesDetailPersonalizedRs seriesDetail) {
         SendPhoto answer = SendPhoto.builder()
                 .chatId(chatId)
-                .photo(new InputFile(seriesDetail.posterUrl()))
-                .caption(buildSeriesCaption(seriesDetail))
+                .photo(new InputFile(seriesDetail.seriesInfo().posterUrl()))
+                .caption(buildSeriesDetailCaption(seriesDetail.seriesInfo()))
                 .parseMode("HTML")
+                .replyMarkup(createSeriesKeyboard(seriesDetail))
                 .build();
         try {
             telegramService.execute(answer);
@@ -79,7 +80,27 @@ public class SeriesSendService {
 
     }
 
-    private String buildSeriesCaption(SeriesDetailViewRs seriesDetail) {
+    private InlineKeyboardMarkup createSeriesKeyboard(SeriesDetailPersonalizedRs seriesDetail) {
+        InlineKeyboardRow keyboardRow;
+        if (seriesDetail.isUserSubscribed()) {
+            keyboardRow = new InlineKeyboardRow(List.of(InlineKeyboardButton.builder()
+                            .text("🔕 Отписаться")
+                            .callbackData("unsubscribe")
+                    .build()));
+
+        } else {
+            keyboardRow = new InlineKeyboardRow(List.of(InlineKeyboardButton.builder()
+                    .text("🔔 Подписаться")
+                    .callbackData("subscribe")
+                    .build()));
+        }
+
+        return InlineKeyboardMarkup.builder()
+                .keyboard(Collections.singleton(keyboardRow))
+                .build();
+    }
+
+    private String buildSeriesDetailCaption(SeriesDetailViewRs seriesInfo) {
         return String.format("""
             <b>%s</b> (%d)
             
@@ -93,17 +114,17 @@ public class SeriesSendService {
             %s
             
             """,
-                seriesDetail.title(),
-                seriesDetail.releaseYear(),
-                seriesDetail.isSeries()? "Сериал": "Фильм",
-                String.join(", ", seriesDetail.countries()),
-                seriesDetail.releaseYear(),
-                seriesDetail.totalSeasons(),
-                seriesDetail.description());
+                seriesInfo.title(),
+                seriesInfo.releaseYear(),
+                seriesInfo.isSeries()? "Сериал": "Фильм",
+                String.join(", ", seriesInfo.countries()),
+                seriesInfo.releaseYear(),
+                seriesInfo.totalSeasons(),
+                seriesInfo.description());
     }
 
 
-    private InlineQueryResultArticle createSeriesResult(SeriesShortViewRs series, String token, int index) {
+    private InlineQueryResultArticle createSeriesResult(SeriesListViewRs series, String token, int index) {
         InputTextMessageContent messageContent = InputTextMessageContent.builder()
                 .messageText(String.format("%s (%d)\n%s",
                         series.title(),
@@ -123,7 +144,7 @@ public class SeriesSendService {
                 .build();
     }
 
-    private String addHistoryItem(Long userId, SeriesShortViewRs series) {
+    private String addHistoryItem(Long userId, SeriesListViewRs series) {
         String token = UUID.randomUUID().toString();
         SeriesHistoryItem historyItem = new SeriesHistoryItem(token, series.externalIds());
         userSessionService.addHistoryItem(userId, historyItem);

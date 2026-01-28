@@ -1,7 +1,6 @@
 package io.github.nikoir.series.tracker.adapter.series;
 
-import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskExternalId;
-import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskSeriesInfoRs;
+import io.github.nikoir.series.tracker.dto.integration.response.kinopoisk.KinopoiskExternalId;
 import io.github.nikoir.series.tracker.enums.ExternalId;
 import org.springframework.stereotype.Component;
 

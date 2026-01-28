@@ -1,8 +1,8 @@
 package io.github.nikoir.series.tracker.strategy.context;
 
-import io.github.nikoir.series.tracker.dto.api.request.SeriesSearchRq;
-import io.github.nikoir.series.tracker.dto.internal.SeriesSearchRs;
-import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
+import io.github.nikoir.series.tracker.dto.external.request.SeriesSearchRq;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesSearchRs;
 import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.strategy.SeriesSearchStrategy;
 import io.github.nikoir.series.tracker.strategy.impl.DBSearchStrategy;
@@ -65,7 +65,7 @@ public class SeriesSearchStrategyContext {
             }
         }
 
-        PagedModel<SeriesShortViewRs> result;
+        PagedModel<SeriesListViewRs> result;
         for (SeriesSearchStrategy searchStrategy: searchChain) {
             try {
                 result = searchStrategy.search(request);
@@ -81,7 +81,7 @@ public class SeriesSearchStrategyContext {
     }
 
     private SeriesSearchRs createEmptyResult(SeriesSearchRq request) {
-        Page<SeriesShortViewRs> emptyPage = new PageImpl<>(
+        Page<SeriesListViewRs> emptyPage = new PageImpl<>(
                 Collections.emptyList(),
                 PageRequest.of(request.page(), request.limit()),
                 0

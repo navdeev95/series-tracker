@@ -3,8 +3,8 @@ import io.github.nikoir.series.tracker.domain.entity.*;
 import io.github.nikoir.series.tracker.domain.entity.dictionary.DictSource;
 import io.github.nikoir.series.tracker.domain.repo.EpisodeReleaseRepository;
 import io.github.nikoir.series.tracker.domain.repo.SourceRepository;
+import io.github.nikoir.series.tracker.dto.external.response.SeasonViewRs;
 import io.github.nikoir.series.tracker.dto.internal.SyncResult;
-import io.github.nikoir.series.tracker.dto.internal.SeasonViewRs;
 import io.github.nikoir.series.tracker.enums.Source;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +71,7 @@ public class SeriesContentSyncService {
     }
 
     private List<Episode> syncEpisodes(Series series, Season existingSeason,
-                              SeasonViewRs externalSeason, SyncResult result) {
+                                       SeasonViewRs externalSeason, SyncResult result) {
         List<SeasonViewRs.EpisodeViewRs> newEpisodes = seasonEpisodeService
                 .findMissingEpisodes(existingSeason, externalSeason);
 

@@ -1,7 +1,7 @@
 package io.github.nikoir.series.tracker.mapper;
 
 import io.github.nikoir.series.tracker.domain.entity.Series;
-import io.github.nikoir.series.tracker.dto.internal.SeriesDetailViewRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesDetailViewRs;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

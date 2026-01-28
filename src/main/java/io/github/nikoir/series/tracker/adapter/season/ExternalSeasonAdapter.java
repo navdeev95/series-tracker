@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.adapter.season;
 
-import io.github.nikoir.series.tracker.dto.internal.SeasonViewRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeasonViewRs;
 import org.springframework.util.CollectionUtils;
 import java.util.Collections;
 import java.util.List;

@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.strategy.context;
 
-import io.github.nikoir.series.tracker.dto.internal.SeasonViewRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeasonViewRs;
 import io.github.nikoir.series.tracker.enums.ExternalId;
 import io.github.nikoir.series.tracker.strategy.impl.MovieLabExternalContentSearchStrategy;
 import lombok.Getter;

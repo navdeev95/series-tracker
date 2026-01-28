@@ -2,11 +2,10 @@ package io.github.nikoir.series.tracker.adapter.series.shorts;
 
 import io.github.nikoir.series.tracker.domain.entity.ExternalIdSeries;
 import io.github.nikoir.series.tracker.domain.entity.Series;
-import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
 import io.github.nikoir.series.tracker.enums.ExternalId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedModel;
 
@@ -19,10 +18,10 @@ public abstract class DatabaseSeriesShortAdapter implements SeriesShortAdapter<P
     @Mapping(target="year", source="releaseYear")
     @Mapping(target = "isSeries", expression = "java(true)")
     @Mapping(target = "externalIds", source = "externalIds")
-    abstract SeriesShortViewRs toViewDto(Series series);
+    abstract SeriesListViewRs toViewDto(Series series);
 
     @Override
-    public PagedModel<SeriesShortViewRs> toViewDtoPage(Page<Series> seriesPage) {
+    public PagedModel<SeriesListViewRs> toViewDtoPage(Page<Series> seriesPage) {
         return seriesPage == null ?
                 SeriesShortAdapter.createEmptyPage():
                 new PagedModel<>(seriesPage.map(this::toViewDto));

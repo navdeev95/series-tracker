@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.strategy.context;
 
-import io.github.nikoir.series.tracker.dto.internal.SeriesDetailViewRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.enums.ExternalId;
 import io.github.nikoir.series.tracker.strategy.impl.KinopoiskSeriesGetStrategy;
 import lombok.RequiredArgsConstructor;

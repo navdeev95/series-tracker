@@ -3,7 +3,7 @@ package io.github.nikoir.series.tracker.facade;
 import io.github.nikoir.series.tracker.domain.entity.ExternalIdSeries;
 import io.github.nikoir.series.tracker.domain.entity.Series;
 import io.github.nikoir.series.tracker.dto.internal.SyncResult;
-import io.github.nikoir.series.tracker.dto.internal.SeasonViewRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeasonViewRs;
 import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.enums.ExternalId;
 import io.github.nikoir.series.tracker.service.SeriesContentSyncService;

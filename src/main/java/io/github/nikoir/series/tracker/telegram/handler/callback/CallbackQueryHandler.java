@@ -1,6 +1,8 @@
 package io.github.nikoir.series.tracker.telegram.handler.callback;
 
-import io.github.nikoir.series.tracker.dto.internal.SeriesDetailViewRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesDetailPersonalizedRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesDetailViewRs;
+import io.github.nikoir.series.tracker.facade.SeriesGetFacade;
 import io.github.nikoir.series.tracker.strategy.context.SeriesGetStrategyContext;
 import io.github.nikoir.series.tracker.telegram.handler.BaseHandler;
 import io.github.nikoir.series.tracker.telegram.model.CallbackQueryEnum;
@@ -24,7 +26,7 @@ import java.util.Optional;
 public class CallbackQueryHandler extends BaseHandler {
     private final UserSessionService userSessionService;
     private final TelegramService telegramService;
-    private final SeriesGetStrategyContext seriesGetStrategyContext;
+    private final SeriesGetFacade seriesGetFacade;
     private final SeriesSendService seriesSendService;
     @Override
     public void handle(Update update) {
@@ -44,9 +46,9 @@ public class CallbackQueryHandler extends BaseHandler {
             return;
         }
 
-        SeriesDetailViewRs seriesDetailView = seriesGetStrategyContext
-                .get(historyItem.get().getExternalIds());
+        SeriesDetailPersonalizedRs seriesDetailViewRs = seriesGetFacade
+                .getSeriesInfoForUser(user.getId(), historyItem.get().getExternalIds());
 
-        seriesSendService.sendSeriesDetailMessage(chatId, seriesDetailView);
+        seriesSendService.sendSeriesDetailMessage(chatId, seriesDetailViewRs);
     }
 }

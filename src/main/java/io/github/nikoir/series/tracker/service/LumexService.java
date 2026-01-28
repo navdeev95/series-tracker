@@ -2,10 +2,10 @@ package io.github.nikoir.series.tracker.service;
 
 import io.github.nikoir.series.tracker.config.props.LumexPortalProps;
 import io.github.nikoir.series.tracker.config.props.LumexSiteProps;
-import io.github.nikoir.series.tracker.dto.api.request.movielab.MovieLabLoginRq;
-import io.github.nikoir.series.tracker.dto.api.response.lumex.login.LoginRs;
-import io.github.nikoir.series.tracker.dto.api.response.lumex.shorts.ShortRs;
-import io.github.nikoir.series.tracker.dto.api.response.lumex.stream.StreamRs;
+import io.github.nikoir.series.tracker.dto.integration.request.movielab.MovieLabLoginRq;
+import io.github.nikoir.series.tracker.dto.integration.response.lumex.login.LoginRs;
+import io.github.nikoir.series.tracker.dto.integration.response.lumex.shorts.ShortRs;
+import io.github.nikoir.series.tracker.dto.integration.response.lumex.stream.StreamRs;
 import io.github.nikoir.series.tracker.util.JsonUtil;
 import io.github.nikoir.series.tracker.util.UriBuilder;
 import lombok.RequiredArgsConstructor;

@@ -3,7 +3,7 @@ package io.github.nikoir.series.tracker.serialization;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import io.github.nikoir.series.tracker.dto.api.response.lumex.ContentType;
+import io.github.nikoir.series.tracker.dto.integration.response.lumex.ContentType;
 
 import java.io.IOException;
 

@@ -5,7 +5,7 @@ import io.github.nikoir.series.tracker.domain.entity.Season;
 import io.github.nikoir.series.tracker.domain.entity.Series;
 import io.github.nikoir.series.tracker.domain.repo.EpisodeRepository;
 import io.github.nikoir.series.tracker.domain.repo.SeasonRepository;
-import io.github.nikoir.series.tracker.dto.internal.SeasonViewRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeasonViewRs;
 import io.github.nikoir.series.tracker.mapper.EpisodeMapper;
 import io.github.nikoir.series.tracker.mapper.SeasonMapper;
 import jakarta.transaction.Transactional;

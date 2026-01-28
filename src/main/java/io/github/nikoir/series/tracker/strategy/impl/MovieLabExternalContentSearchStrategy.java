@@ -1,12 +1,11 @@
 package io.github.nikoir.series.tracker.strategy.impl;
 
 import io.github.nikoir.series.tracker.config.props.MovieLabProps;
-import io.github.nikoir.series.tracker.dto.internal.SeasonViewRs;
-import io.github.nikoir.series.tracker.dto.api.response.movielab.episode.search.MovieLabEpisodeSearchRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeasonViewRs;
+import io.github.nikoir.series.tracker.dto.integration.response.movielab.episode.search.MovieLabEpisodeSearchRs;
 import io.github.nikoir.series.tracker.adapter.season.MovieLabSeasonAdapter;
 import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.strategy.ExternalContentSearchStrategy;
-import io.github.nikoir.series.tracker.strategy.SearchStrategy;
 import io.github.nikoir.series.tracker.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;

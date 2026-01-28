@@ -1,8 +1,8 @@
 package io.github.nikoir.series.tracker.telegram.handler.inline;
 
-import io.github.nikoir.series.tracker.dto.api.request.SeriesSearchRq;
-import io.github.nikoir.series.tracker.dto.internal.SeriesSearchRs;
-import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
+import io.github.nikoir.series.tracker.dto.external.request.SeriesSearchRq;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesSearchRs;
 import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.strategy.context.SeriesSearchStrategyContext;
 import io.github.nikoir.series.tracker.telegram.handler.BaseHandler;
@@ -37,13 +37,13 @@ public class InlineQueryHandler extends BaseHandler {
                 StringUtils.isEmpty(inlineQuery.getQuery())) {
             return;
         }
-        PagedModel<SeriesShortViewRs> series = findSeries(inlineQuery);
+        PagedModel<SeriesListViewRs> series = findSeries(inlineQuery);
         seriesSendService.sendSeriesListInline(inlineQuery.getId(),
                 inlineQuery.getFrom().getId(),
                 series);
     }
 
-    private PagedModel<SeriesShortViewRs> findSeries(InlineQuery inlineQuery) {
+    private PagedModel<SeriesListViewRs> findSeries(InlineQuery inlineQuery) {
         String query = inlineQuery.getQuery();
         String offset = inlineQuery.getOffset();
 
