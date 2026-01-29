@@ -10,7 +10,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 public enum CallbackQueryEnum {
-    SERIES_DETAIL("series_detail");
+    SERIES_DETAIL("series_detail"),
+    SUBSCRIBE("subscribe");
     private final String prefix;
 
     public static Optional<CallbackQueryEnum> fromPrefix(String prefix) {

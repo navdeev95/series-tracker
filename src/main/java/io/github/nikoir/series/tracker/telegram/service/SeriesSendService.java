@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static io.github.nikoir.series.tracker.telegram.model.CallbackQueryEnum.SUBSCRIBE;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -64,13 +66,15 @@ public class SeriesSendService {
         }
     }
 
-    public void sendSeriesDetailMessage(Long chatId, SeriesDetailPersonalizedRs seriesDetail) {
+    public void sendSeriesDetailMessage(Long chatId,
+                                        SeriesDetailPersonalizedRs seriesDetail,
+                                        String seriesToken) {
         SendPhoto answer = SendPhoto.builder()
                 .chatId(chatId)
                 .photo(new InputFile(seriesDetail.seriesInfo().posterUrl()))
                 .caption(buildSeriesDetailCaption(seriesDetail.seriesInfo()))
                 .parseMode("HTML")
-                .replyMarkup(createSeriesKeyboard(seriesDetail))
+                .replyMarkup(createSeriesKeyboard(seriesDetail, seriesToken))
                 .build();
         try {
             telegramService.execute(answer);
@@ -80,7 +84,7 @@ public class SeriesSendService {
 
     }
 
-    private InlineKeyboardMarkup createSeriesKeyboard(SeriesDetailPersonalizedRs seriesDetail) {
+    private InlineKeyboardMarkup createSeriesKeyboard(SeriesDetailPersonalizedRs seriesDetail, String seriesToken) {
         InlineKeyboardRow keyboardRow;
         if (seriesDetail.isUserSubscribed()) {
             keyboardRow = new InlineKeyboardRow(List.of(InlineKeyboardButton.builder()
@@ -91,7 +95,7 @@ public class SeriesSendService {
         } else {
             keyboardRow = new InlineKeyboardRow(List.of(InlineKeyboardButton.builder()
                     .text("🔔 Подписаться")
-                    .callbackData("subscribe")
+                    .callbackData(String.format("%s:%s", SUBSCRIBE.getPrefix(), seriesToken))
                     .build()));
         }
 

@@ -31,7 +31,7 @@ public class StartCommand implements Command {
     @Override
     public void execute(TelegramMessage message) {
         log.info("User {} ({}) has run bot", message.userId(), message.userName());
-        userService.createIfNotExists(message.userId());
+        userService.getOrCreate(message.userId());
 
         // Регистрируем/получаем пользователя
         //userService.getOrCreateTelegramUser(userId, userName);
