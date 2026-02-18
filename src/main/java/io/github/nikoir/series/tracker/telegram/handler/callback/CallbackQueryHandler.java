@@ -1,10 +1,8 @@
 package io.github.nikoir.series.tracker.telegram.handler.callback;
 
 import io.github.nikoir.series.tracker.dto.external.response.SeriesDetailPersonalizedRs;
-import io.github.nikoir.series.tracker.dto.external.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.facade.SeriesGetFacade;
 import io.github.nikoir.series.tracker.facade.SeriesSubscribeFacade;
-import io.github.nikoir.series.tracker.strategy.context.SeriesGetStrategyContext;
 import io.github.nikoir.series.tracker.telegram.handler.BaseHandler;
 import io.github.nikoir.series.tracker.telegram.model.CallbackQueryEnum;
 import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
@@ -45,8 +43,7 @@ public class CallbackQueryHandler extends BaseHandler {
             return;
         }
 
-        answerCallback(callbackQuery.getId(), "⏳", false);
-
+        answerCallback(callbackQuery.getId(), "Запрос обрабатывается, подождите...⏳", false);
         switch (query.get()) {
             case SERIES_DETAIL:
                 handleSeriesDetailData(callbackQuery);
@@ -68,29 +65,54 @@ public class CallbackQueryHandler extends BaseHandler {
             telegramService.sendErrorMessage(user.getId());
             return;
         }
-
         SeriesDetailPersonalizedRs seriesDetailViewRs = seriesGetFacade
                 .getSeriesInfoForUser(user.getId(), historyItem.get().getExternalIds());
 
-        seriesSendService.sendSeriesDetailMessage(user.getId(),
+        Optional<Integer> messageId = seriesSendService.sendSeriesDetailMessage(user.getId(),
                 seriesDetailViewRs,
                 historyItem.get().getToken());
+        messageId.ifPresent(integer -> setHistoryItemMessageId(callbackQuery, integer));
     }
 
     private void handleSubscribeData(CallbackQuery callbackQuery) {
         User user = callbackQuery.getFrom();
 
-        Optional<SeriesHistoryItem> historyItem = getHistoryItem(callbackQuery);
-        if (historyItem.isEmpty()) {
+        Optional<SeriesHistoryItem> historyItemOptional = getHistoryItem(callbackQuery);
+        if (historyItemOptional.isEmpty()) {
             telegramService.sendErrorMessage(user.getId());
             return;
         }
-        seriesSubscribeFacade.subscribe(user.getId(), historyItem.get().getExternalIds());
+        SeriesHistoryItem historyItem = historyItemOptional.get();
+
+        seriesSendService.updateSubscriptionButton(user.getId(),
+                historyItem.getMessageId(),
+                historyItem.getToken(),
+                SeriesSendService.SubscriptionStatus.WAITING);
+        try {
+            seriesSubscribeFacade.subscribe(user.getId(), historyItemOptional.get().getExternalIds());
+        } catch (Exception ex) {
+            answerCallback(callbackQuery.getId(), "Произошла ошибка при обработке запроса", false);
+            seriesSendService.updateSubscriptionButton(user.getId(),
+                    historyItem.getMessageId(),
+                    historyItem.getToken(),
+                    SeriesSendService.SubscriptionStatus.NOT_SUBSCRIBED);
+            return;
+        }
+
+        seriesSendService.updateSubscriptionButton(user.getId(),
+                historyItem.getMessageId(),
+                historyItem.getToken(),
+                SeriesSendService.SubscriptionStatus.SUBSCRIBED);
     }
 
     private Optional<SeriesHistoryItem> getHistoryItem(CallbackQuery callbackQuery) {
         String token = CallbackQueryUtil.extractParameter(callbackQuery.getData());
         return userSessionService.getHistoryItem(callbackQuery.getFrom().getId(), token);
+    }
+
+    private void setHistoryItemMessageId(CallbackQuery callbackQuery, Integer messageId) {
+        String token = CallbackQueryUtil.extractParameter(callbackQuery.getData());
+        userSessionService.setHistoryItemMessageId(callbackQuery.getFrom().getId(), token, messageId);
     }
 
     private void answerCallback(String callbackQueryId, String text, boolean showAlert) {

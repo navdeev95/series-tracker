@@ -42,8 +42,8 @@ public class TelegramService {
         client.execute(method);
     }
 
-    public void execute(SendPhoto method) throws TelegramApiException {
-        client.execute(method);
+    public Integer execute(SendPhoto method) throws TelegramApiException {
+        return client.execute(method).getMessageId();
     }
 
 }

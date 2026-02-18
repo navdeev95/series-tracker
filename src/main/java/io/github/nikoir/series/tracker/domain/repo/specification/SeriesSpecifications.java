@@ -4,6 +4,7 @@ import io.github.nikoir.series.tracker.domain.entity.ExternalIdSeries;
 import io.github.nikoir.series.tracker.domain.entity.Series;
 import io.github.nikoir.series.tracker.domain.entity.dictionary.DictExternalId;
 import io.github.nikoir.series.tracker.enums.ExternalId;
+import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -19,22 +20,21 @@ public class SeriesSpecifications {
                 return criteriaBuilder.conjunction();
             }
 
-            Join<Series, ExternalIdSeries> externalIdsJoin =
-                    root.join("externalIds", JoinType.INNER);
-            Join<ExternalIdSeries, DictExternalId> dictExternalIdJoin =
-                    externalIdsJoin.join("externalId", JoinType.INNER);
+            Fetch<Series, ExternalIdSeries> externalIdFetch =
+                    root.fetch("externalIds", JoinType.INNER);
+            externalIdFetch.fetch("externalId", JoinType.INNER);
 
             // Создаем OR условия для каждого externalId
             List<Predicate> predicates = externalIds.keySet().stream()
                     .map(externalId -> {
                         String value = externalIds.get(externalId);
                         return criteriaBuilder.and(
-                                criteriaBuilder.equal(dictExternalIdJoin.get("name"),
-                                        externalId.getName()),
-                                criteriaBuilder.equal(externalIdsJoin.get("value"), value)
-                        );
-                    })
-                    .toList();
+                                criteriaBuilder.equal(root.get("externalIds")
+                                                .get("externalId")
+                                                .get("name"), externalId.getName()),
+                                criteriaBuilder.equal(root.get("externalIds")
+                                        .get("value"), value));
+                    }).toList();
 
             return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
         };

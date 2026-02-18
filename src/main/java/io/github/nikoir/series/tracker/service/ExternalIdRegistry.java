@@ -10,6 +10,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -23,13 +24,10 @@ public class ExternalIdRegistry {
         try {
             List<DictExternalId> entities = externalIdRepository.findAll();
             entities.forEach(entity -> {
-                try {
-                    ExternalId source = ExternalId.fromEntity(entity);
-
-                    log.debug("Synced external id: {}", source.getName());
-                } catch(IllegalArgumentException e) {
-                    log.warn("Unknown external id in DB: {}", entity.getName());
-                }
+                ExternalId.fromEntity(entity)
+                        .ifPresentOrElse(
+                                value -> log.debug("Synced external id: {}", value.getName()),
+                                () -> log.warn("Unknown external id in DB: {}", entity.getName()));
             });
         }
         catch (Exception e) {

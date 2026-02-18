@@ -24,7 +24,7 @@ import java.util.Map;
 public class Series {
 
     public enum Status {
-        FILMING, PRE_PRODUCTION, COMPLETED, ANNOUNCED, POST_PRODUCTION
+        FILMING, PRE_PRODUCTION, COMPLETED, ANNOUNCED, POST_PRODUCTION, DELETED
     }
 
     @Id
@@ -52,6 +52,13 @@ public class Series {
 
     @Column(name = "poster_url")
     private String posterUrl;
+
+    @Column(name = "description")
+    private String description;
+
+    //TODO: добавить отдельную таблицу-справочник для стран
+    @Column(name = "countries")
+    private List<String> countries;
 
     @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExternalIdSeries> externalIds;

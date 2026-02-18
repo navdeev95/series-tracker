@@ -28,11 +28,6 @@ public abstract class DatabaseSeriesShortAdapter implements SeriesShortAdapter<P
     }
 
     protected Map<ExternalId, String> mapExternalIds(List<ExternalIdSeries> externalIds) {
-        Map<ExternalId, String> result = new HashMap<>();
-        for (ExternalIdSeries externalId: externalIds) {
-            ExternalId foundExternalId = ExternalId.fromId(externalId.getId());
-            result.put(foundExternalId, externalId.getValue());
-        }
-        return result;
+        return ExternalId.mapExternalIds(externalIds);
     }
 }

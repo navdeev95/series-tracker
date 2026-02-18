@@ -11,11 +11,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -91,5 +88,10 @@ public class UserSessionService {
     public Optional<SeriesHistoryItem> getHistoryItem(Long userId, String token) {
         UserSession session = getOrCreateSession(userId);
         return session.getHistoryItem(token);
+    }
+
+    public boolean setHistoryItemMessageId(Long userId, String token, Integer messageId) {
+        UserSession session = getOrCreateSession(userId);
+        return session.setHistoryItemMessageId(token, messageId);
     }
 }

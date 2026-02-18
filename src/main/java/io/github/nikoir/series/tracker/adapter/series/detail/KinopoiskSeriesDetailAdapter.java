@@ -19,7 +19,6 @@ public abstract class KinopoiskSeriesDetailAdapter implements SeriesDetailAdapte
     private KinopoiskExternalIdAdapter externalIdAdapter;
 
     @Override
-    @Mapping(target = "seasons", ignore = true)
     @Mapping(target = "title", source = "name")
     @Mapping(target = "engTitle", source = "enName")
     @Mapping(target = "totalSeasons", source = "seasonsInfo", qualifiedByName = "extractTotalSeasons")
@@ -44,7 +43,7 @@ public abstract class KinopoiskSeriesDetailAdapter implements SeriesDetailAdapte
     @Named("mapStatus")
     protected SeriesStatus mapStatus(String status) {
         if (status == null) {
-            return SeriesStatus.ANNOUNCED;
+            return null;
         }
 
         return switch (status.toLowerCase()) {
@@ -53,7 +52,8 @@ public abstract class KinopoiskSeriesDetailAdapter implements SeriesDetailAdapte
             case "completed" -> SeriesStatus.COMPLETED;
             case "post-production" -> SeriesStatus.POST_PRODUCTION;
             case "deleted" -> SeriesStatus.DELETED;
-            default -> SeriesStatus.ANNOUNCED;
+            case "announced" -> SeriesStatus.ANNOUNCED;
+            default -> null;
         };
     }
 

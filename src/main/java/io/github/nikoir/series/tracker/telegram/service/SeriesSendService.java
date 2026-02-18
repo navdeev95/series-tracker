@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.telegram.telegrambots.meta.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.inputmessagecontent.InputTextMessageContent;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResult;
@@ -20,17 +21,22 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static io.github.nikoir.series.tracker.telegram.model.CallbackQueryEnum.SUBSCRIBE;
+import static io.github.nikoir.series.tracker.telegram.service.SeriesSendService.SubscriptionStatus.NOT_SUBSCRIBED;
+import static io.github.nikoir.series.tracker.telegram.service.SeriesSendService.SubscriptionStatus.SUBSCRIBED;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class SeriesSendService {
+    public enum SubscriptionStatus {
+        SUBSCRIBED,
+        NOT_SUBSCRIBED,
+        WAITING
+    }
+
     private final TelegramService telegramService;
     private final UserSessionService userSessionService;
 
@@ -66,9 +72,9 @@ public class SeriesSendService {
         }
     }
 
-    public void sendSeriesDetailMessage(Long chatId,
-                                        SeriesDetailPersonalizedRs seriesDetail,
-                                        String seriesToken) {
+    public Optional<Integer> sendSeriesDetailMessage(Long chatId,
+                                                     SeriesDetailPersonalizedRs seriesDetail,
+                                                     String seriesToken) {
         SendPhoto answer = SendPhoto.builder()
                 .chatId(chatId)
                 .photo(new InputFile(seriesDetail.seriesInfo().posterUrl()))
@@ -77,30 +83,57 @@ public class SeriesSendService {
                 .replyMarkup(createSeriesKeyboard(seriesDetail, seriesToken))
                 .build();
         try {
-            telegramService.execute(answer);
+            return Optional.ofNullable(telegramService.execute(answer));
         } catch (TelegramApiException e) {
             log.error("Error while sending inline-answer", e);
+            return Optional.empty();
         }
 
     }
 
-    private InlineKeyboardMarkup createSeriesKeyboard(SeriesDetailPersonalizedRs seriesDetail, String seriesToken) {
-        InlineKeyboardRow keyboardRow;
-        if (seriesDetail.isUserSubscribed()) {
-            keyboardRow = new InlineKeyboardRow(List.of(InlineKeyboardButton.builder()
-                            .text("🔕 Отписаться")
-                            .callbackData("unsubscribe")
-                    .build()));
+    public void updateSubscriptionButton(Long chatId,
+                                         Integer messageId,
+                                         String seriesToken,
+                                         SubscriptionStatus status) {
+        try {
+            InlineKeyboardMarkup keyboard = createSubscriptionKeyboard(seriesToken, status);
 
-        } else {
-            keyboardRow = new InlineKeyboardRow(List.of(InlineKeyboardButton.builder()
+            EditMessageReplyMarkup editMarkup = EditMessageReplyMarkup.builder()
+                    .chatId(chatId)
+                    .messageId(messageId)
+                    .replyMarkup(keyboard)
+                    .build();
+
+            telegramService.execute(editMarkup);
+
+        } catch (TelegramApiException e) {
+            log.error("Error updating subscription button", e);
+        }
+    }
+
+    private InlineKeyboardMarkup createSeriesKeyboard(SeriesDetailPersonalizedRs seriesDetail, String seriesToken) {
+        return createSubscriptionKeyboard(seriesToken, seriesDetail.isUserSubscribed() ? SUBSCRIBED: NOT_SUBSCRIBED);
+    }
+
+    private InlineKeyboardMarkup createSubscriptionKeyboard(String seriesToken,
+                                                            SubscriptionStatus state) {
+        InlineKeyboardRow row = switch (state) {
+            case SUBSCRIBED -> new InlineKeyboardRow(List.of(InlineKeyboardButton.builder()
+                    .text("🔕 Отписаться")
+                    .callbackData("unsubscribe")
+                    .build()));
+            case NOT_SUBSCRIBED -> new InlineKeyboardRow(List.of(InlineKeyboardButton.builder()
                     .text("🔔 Подписаться")
                     .callbackData(String.format("%s:%s", SUBSCRIBE.getPrefix(), seriesToken))
                     .build()));
-        }
+            case WAITING -> new InlineKeyboardRow(List.of(InlineKeyboardButton.builder()
+                    .text("⏳ Обработка...")
+                    .callbackData("loading")
+                    .build()));
+        };
 
         return InlineKeyboardMarkup.builder()
-                .keyboard(Collections.singleton(keyboardRow))
+                .keyboard(Collections.singleton(row))
                 .build();
     }
 
@@ -150,7 +183,10 @@ public class SeriesSendService {
 
     private String addHistoryItem(Long userId, SeriesListViewRs series) {
         String token = UUID.randomUUID().toString();
-        SeriesHistoryItem historyItem = new SeriesHistoryItem(token, series.externalIds());
+        SeriesHistoryItem historyItem = SeriesHistoryItem.builder()
+                .token(token)
+                .externalIds(series.externalIds())
+                .build();
         userSessionService.addHistoryItem(userId, historyItem);
         return token;
     }

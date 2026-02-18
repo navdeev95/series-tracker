@@ -11,6 +11,8 @@ import io.github.nikoir.series.tracker.mapper.SeriesDetailMapper;
 import io.github.nikoir.series.tracker.strategy.context.SeriesGetStrategyContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -18,19 +20,23 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SeriesService {
-    private final SeriesGetStrategyContext seriesGetStrategyContext;
     private final SeriesDetailMapper detailMapper;
     private final SeriesRepository seriesRepository;
     private final ExternalIdRepository externalIdRepository;
 
     @Transactional
-    public Series create(Map<ExternalId, String> externalIds) {
-        SeriesDetailViewRs seriesDetailViewRs = seriesGetStrategyContext.get(externalIds);
+    public Series create(SeriesDetailViewRs series) {
+        Series entity = detailMapper.toEntity(series);
+        entity.setExternalIds(mapExternalIds(entity, series.externalIds()));
+        try {
+            return seriesRepository.save(entity);
+        } catch (DataIntegrityViolationException ex) {
+            log.error("Series entity already exists", ex);
+            return find(series.externalIds()).orElseThrow();
+        }
 
-        Series entity = detailMapper.toEntity(seriesDetailViewRs);
-        entity.setExternalIds(mapExternalIds(entity, externalIds));
-        return seriesRepository.save(entity);
     }
 
     public Optional<Series> find(Map<ExternalId, String> externalIds) {

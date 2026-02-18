@@ -41,4 +41,13 @@ public class UserSession {
                 .filter(item -> StringUtils.equals(item.token, token))
                 .findFirst();
     }
+
+    public boolean setHistoryItemMessageId(String token, Integer messageId) {
+        Optional<SeriesHistoryItem> historyItem = getHistoryItem(token);
+        if (historyItem.isEmpty()) {
+            return false;
+        }
+        historyItem.get().setMessageId(messageId);
+        return true;
+    }
 }
