@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.service;
 
-import io.github.nikoir.series.tracker.telegram.model.CommandEnum;
+import io.github.nikoir.series.tracker.telegram.command.enums.TextCommandEnum;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,23 +22,18 @@ public class CommandRegistrationService {
 
     @PostConstruct
     public void registerCommands() {
-        try {
-            List<BotCommand> commands = Arrays.stream(CommandEnum.values())
-                    .map(cmd -> new BotCommand(cmd.getCommandText(), cmd.getDescription()))
-                    .collect(Collectors.toList());
+        List<BotCommand> commands = Arrays.stream(TextCommandEnum.values())
+                .map(cmd -> new BotCommand(cmd.getText(), cmd.getDescription()))
+                .collect(Collectors.toList());
 
-            SetMyCommands setCommands = SetMyCommands
-                    .builder()
-                    .commands(commands)
-                    .scope(new BotCommandScopeDefault())
-                    .languageCode("ru")
-                    .build();
+        SetMyCommands setCommands = SetMyCommands
+                .builder()
+                .commands(commands)
+                .scope(new BotCommandScopeDefault())
+                .languageCode("ru")
+                .build();
 
-            telegramService.execute(setCommands);
-            log.info("✅ Commands registered in Telegram: {} commands", commands.size());
-
-        } catch (TelegramApiException e) {
-            log.error("❌ Error while registering telegram commands", e);
-        }
+        telegramService.execute(setCommands);
+        log.info("✅ Commands registered in Telegram: {} commands", commands.size());
     }
 }

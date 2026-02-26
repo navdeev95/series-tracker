@@ -1,6 +1,5 @@
 package io.github.nikoir.series.tracker.telegram.model.session;
 
-import io.github.nikoir.series.tracker.telegram.model.session.context.SearchContext;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 

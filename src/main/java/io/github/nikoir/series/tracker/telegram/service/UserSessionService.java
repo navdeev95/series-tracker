@@ -6,7 +6,7 @@ import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
 import io.github.nikoir.series.tracker.telegram.model.session.UserSession;
 import io.github.nikoir.series.tracker.telegram.model.session.UserStateEnum;
-import io.github.nikoir.series.tracker.telegram.model.session.context.SearchContext;
+import io.github.nikoir.series.tracker.telegram.model.session.SearchContext;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

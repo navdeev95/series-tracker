@@ -45,24 +45,11 @@ public class SeriesSearchStrategyContext {
         searchChain.add(dbSearchStrategy);
     }
 
-    public SeriesSearchRs search(SeriesSearchRq request, Source previousSource) {
-        log.debug("page = {}", request.page());
-        log.debug("prev source = {}", previousSource);
+    public SeriesSearchRs search(SeriesSearchRq request) {
+        logPageInfo(request.page());
 
         if (StringUtils.isEmpty(request.title())) {
             return createEmptyResult(request);
-        }
-        if (request.page() > 0 && previousSource != null) {
-            log.debug("Trying to get prev source: {}", previousSource);
-            SeriesSearchStrategy searchStrategy = searchMap.get(previousSource);
-            log.debug("Get previousSource success");
-            try {
-                return new SeriesSearchRs(searchStrategy.search(request),
-                        searchStrategy.getDataSource());
-
-            } catch(Exception ex) {
-                return createEmptyResult(request);
-            }
         }
 
         PagedModel<SeriesListViewRs> result;
@@ -78,6 +65,27 @@ public class SeriesSearchStrategyContext {
             }
         }
         return createEmptyResult(request);
+
+    }
+
+    public SeriesSearchRs search(SeriesSearchRq request, Source previousSource) {
+        logPageInfo(request.page());
+        log.debug("prev source = {}", previousSource);
+
+        if (StringUtils.isEmpty(request.title())) {
+            return createEmptyResult(request);
+        }
+
+        log.debug("Trying to get prev source: {}", previousSource);
+        SeriesSearchStrategy searchStrategy = searchMap.get(previousSource);
+        log.debug("Get previousSource success");
+        try {
+            return new SeriesSearchRs(searchStrategy.search(request),
+                    searchStrategy.getDataSource());
+
+        } catch(Exception ex) {
+            return createEmptyResult(request);
+        }
     }
 
     private SeriesSearchRs createEmptyResult(SeriesSearchRq request) {
@@ -87,5 +95,9 @@ public class SeriesSearchStrategyContext {
                 0
         );
         return new SeriesSearchRs(new PagedModel<>(emptyPage), null);
+    }
+
+    private void logPageInfo(int page) {
+        log.debug("page = {}", page);
     }
 }
