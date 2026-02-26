@@ -1,6 +1,7 @@
 package io.github.nikoir.series.tracker.telegram.command.handler.base;
 import io.github.nikoir.series.tracker.telegram.command.enums.CallbackCommandEnum;
 import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
+import io.github.nikoir.series.tracker.telegram.service.SeriesSendService;
 import io.github.nikoir.series.tracker.telegram.service.TelegramService;
 import io.github.nikoir.series.tracker.telegram.service.UserSessionService;
 import io.github.nikoir.series.tracker.telegram.command.util.CommandUtil;
@@ -17,6 +18,8 @@ import java.util.Optional;
 public abstract class BaseCallbackCommand extends BaseCommand<CallbackCommandEnum> {
     protected final TelegramService telegramService;
     private final UserSessionService userSessionService;
+    protected final SeriesSendService seriesSendService;
+
     @Override
     public void execute(Update update) {
         CallbackQuery callbackQuery = update.getCallbackQuery();
@@ -40,5 +43,20 @@ public abstract class BaseCallbackCommand extends BaseCommand<CallbackCommandEnu
 
     protected void handleMissingHistoryItem(User user) {
         telegramService.sendErrorMessage(user.getId());
+    }
+
+    protected void sendWaitingState(CallbackQuery query, SeriesHistoryItem historyItem) {
+        seriesSendService.sendWaitingSubscribeAnswer(query.getId());
+        seriesSendService.setWaitingButton(query.getFrom().getId(), historyItem);
+    }
+
+    protected void sendSubscribedState(CallbackQuery query, SeriesHistoryItem historyItem) {
+        seriesSendService.sendSuccessSubscribeAnswer(query.getId());
+        seriesSendService.setSubscribedButton(query.getFrom().getId(), historyItem);
+    }
+
+    protected void sendUnsubscribedState(CallbackQuery query, SeriesHistoryItem historyItem) {
+        seriesSendService.sendErrorSubscribeAnswer(query.getId());
+        seriesSendService.setUnsubscribedButton(query.getFrom().getId(), historyItem);
     }
 }

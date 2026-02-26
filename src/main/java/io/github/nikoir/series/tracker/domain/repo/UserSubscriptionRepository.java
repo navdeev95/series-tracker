@@ -1,9 +1,13 @@
 package io.github.nikoir.series.tracker.domain.repo;
 
 import io.github.nikoir.series.tracker.domain.entity.UserSubscription;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
 
 public interface UserSubscriptionRepository extends JpaRepository<UserSubscription, Long> {
     @Query("SELECT COUNT(us) > 0 FROM UserSubscription us " +
@@ -11,4 +15,11 @@ public interface UserSubscriptionRepository extends JpaRepository<UserSubscripti
             "WHERE u.telegramId = :telegramId AND us.series.id = :seriesId")
     boolean existsByTelegramIdAndSeriesId(@Param("telegramId") Long telegramId,
                                           @Param("seriesId") Long seriesId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM UserSubscription us " +
+            "WHERE us.user.telegramId = :telegramId " +
+            "AND us.series.id = :seriesId")
+    void deleteSubscription(Long telegramId, Long seriesId);
 }

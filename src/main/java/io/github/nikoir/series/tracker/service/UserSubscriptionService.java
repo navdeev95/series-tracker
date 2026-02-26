@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 public class UserSubscriptionService {
     private final UserSubscriptionRepository userSubscriptionRepository;
     private final SeriesRepository seriesRepository;
-    private final UserRepository userRepository;
-
     private final UserService userService;
 
     public boolean isUserSubscribed(Long userTelegramId, Long seriesId) {
@@ -35,5 +33,9 @@ public class UserSubscriptionService {
                         .user(user)
                         .series(seriesRepository.getReferenceById(seriesId))
                 .build());
+    }
+
+    public void unsubscribe(Long userTelegramId, Long seriesId) {
+        userSubscriptionRepository.deleteSubscription(userTelegramId, seriesId);
     }
 }

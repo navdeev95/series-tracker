@@ -19,15 +19,13 @@ import static io.github.nikoir.series.tracker.telegram.command.enums.CallbackCom
 @Component
 public class SeriesDetailCallbackCommand extends BaseCallbackCommand {
     private final SeriesGetFacade seriesGetFacade;
-    private final SeriesSendService seriesSendService;
 
     public SeriesDetailCallbackCommand(SeriesGetFacade seriesGetFacade,
                                        SeriesSendService seriesSendService,
                                        TelegramService telegramService,
                                        UserSessionService userSessionService) {
-        super(telegramService, userSessionService);
+        super(telegramService, userSessionService, seriesSendService);
         this.seriesGetFacade = seriesGetFacade;
-        this.seriesSendService = seriesSendService;
     }
 
     @Override
