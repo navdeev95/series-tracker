@@ -1,14 +1,20 @@
 package io.github.nikoir.series.tracker.facade;
 
+import io.github.nikoir.series.tracker.adapter.series.shorts.DatabaseSeriesShortAdapter;
 import io.github.nikoir.series.tracker.domain.entity.Series;
+import io.github.nikoir.series.tracker.dto.external.request.SeriesSubscriptionRq;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
 import io.github.nikoir.series.tracker.enums.ExternalId;
 import io.github.nikoir.series.tracker.service.SeriesService;
 import io.github.nikoir.series.tracker.service.UserSubscriptionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,6 +25,7 @@ public class SeriesSubscribeFacade {
     private final SeriesSyncFacade seriesSyncFacade;
     private final SeriesService seriesService;
     private final UserSubscriptionService subscriptionService;
+    private final DatabaseSeriesShortAdapter seriesShortAdapter;
 
     @Transactional
     public void subscribe(Long userTelegramId, Map<ExternalId, String> externalIds) {
@@ -48,5 +55,10 @@ public class SeriesSubscribeFacade {
             log.error("Error while unsubscribe from series: ", ex);
             throw ex;
         }
+    }
+
+    public PagedModel<SeriesListViewRs> getSubscriptionList(SeriesSubscriptionRq request) {
+        Page<Series> subscriptions = subscriptionService.getSubscriptionList(request);
+        return seriesShortAdapter.toViewDtoPage(subscriptions);
     }
 }

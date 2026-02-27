@@ -50,6 +50,12 @@ public class KeyboardFactory {
                 .build();
     }
 
+    public InlineKeyboardMarkup createSubscriptionsKeyboard() {
+        return InlineKeyboardMarkup.builder()
+                .keyboard(Collections.singleton(new InlineKeyboardRow(createSubscriptionsButton())))
+                .build();
+    }
+
     public ReplyKeyboardMarkup createMainKeyboard() {
         // Получаем кнопки для главного меню
         List<CommandButtonEnum> mainButtons = CommandButtonEnum.getMainMenuButtons();
@@ -105,6 +111,13 @@ public class KeyboardFactory {
         return InlineKeyboardButton.builder()
                 .text("🔍 Поиск")
                 .switchInlineQueryCurrentChat(createCommandString(InlineCommandEnum.SEARCH))
+                .build();
+    }
+
+    private InlineKeyboardButton createSubscriptionsButton() {
+        return InlineKeyboardButton.builder()
+                .text("📋 Подписки")
+                .switchInlineQueryCurrentChat(createCommandString(InlineCommandEnum.SUBSCRIPTIONS))
                 .build();
     }
 }
