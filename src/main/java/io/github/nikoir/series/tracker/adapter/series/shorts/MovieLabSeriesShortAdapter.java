@@ -1,7 +1,7 @@
 package io.github.nikoir.series.tracker.adapter.series.shorts;
 
-import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
-import io.github.nikoir.series.tracker.dto.api.response.movielab.series.search.MovieLabSeriesSearchRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.dto.integration.response.movielab.series.search.MovieLabSeriesSearchRs;
 import io.github.nikoir.series.tracker.enums.ExternalId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -37,11 +37,11 @@ public abstract class MovieLabSeriesShortAdapter implements SeriesShortAdapter<M
     @Mapping(target = "totalSeasons", ignore = true)
     @Mapping(target = "isSeries", source = ".")
     @Mapping(target = "externalIds", source = ".")
-    abstract SeriesShortViewRs toViewDto(MovieLabSeriesSearchRs.SearchResult searchResult);
+    abstract SeriesListViewRs toViewDto(MovieLabSeriesSearchRs.SearchResult searchResult);
 
 
     @Override
-    public PagedModel<SeriesShortViewRs> toViewDtoPage(MovieLabSeriesSearchRs searchResponse) {
+    public PagedModel<SeriesListViewRs> toViewDtoPage(MovieLabSeriesSearchRs searchResponse) {
         if (searchResponse == null || searchResponse.pagination() == null) {
             return new PagedModel<>(Page.empty());
         }
@@ -50,7 +50,7 @@ public abstract class MovieLabSeriesShortAdapter implements SeriesShortAdapter<M
             return SeriesShortAdapter.createEmptyPage();
         }
 
-        List<SeriesShortViewRs> content = searchResponse.results()
+        List<SeriesListViewRs> content = searchResponse.results()
                 .stream()
                 .map(this::toViewDto)
                 .toList();
@@ -61,7 +61,7 @@ public abstract class MovieLabSeriesShortAdapter implements SeriesShortAdapter<M
                 pagination.onPage()
         );
 
-        PageImpl<SeriesShortViewRs> seriesPage = new PageImpl<>(
+        PageImpl<SeriesListViewRs> seriesPage = new PageImpl<>(
                 content,
                 pageRequest,
                 pagination.results()

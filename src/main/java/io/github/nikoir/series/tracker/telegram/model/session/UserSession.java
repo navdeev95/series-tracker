@@ -1,6 +1,5 @@
 package io.github.nikoir.series.tracker.telegram.model.session;
 
-import io.github.nikoir.series.tracker.telegram.model.session.context.SearchContext;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,5 +39,14 @@ public class UserSession {
                 .stream()
                 .filter(item -> StringUtils.equals(item.token, token))
                 .findFirst();
+    }
+
+    public boolean setHistoryItemMessageId(String token, Integer messageId) {
+        Optional<SeriesHistoryItem> historyItem = getHistoryItem(token);
+        if (historyItem.isEmpty()) {
+            return false;
+        }
+        historyItem.get().setMessageId(messageId);
+        return true;
     }
 }

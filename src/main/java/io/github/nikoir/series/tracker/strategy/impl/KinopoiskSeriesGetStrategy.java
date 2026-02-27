@@ -2,10 +2,9 @@ package io.github.nikoir.series.tracker.strategy.impl;
 
 import io.github.nikoir.series.tracker.adapter.series.detail.SeriesDetailAdapter;
 import io.github.nikoir.series.tracker.config.props.KinopoiskProps;
-import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskSeriesInfoRs;
-import io.github.nikoir.series.tracker.dto.internal.SeriesDetailViewRs;
+import io.github.nikoir.series.tracker.dto.integration.response.kinopoisk.KinopoiskSeriesInfoRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.enums.Source;
-import io.github.nikoir.series.tracker.strategy.SearchStrategy;
 import io.github.nikoir.series.tracker.strategy.SeriesGetStrategy;
 import io.github.nikoir.series.tracker.util.UriBuilder;
 import lombok.RequiredArgsConstructor;

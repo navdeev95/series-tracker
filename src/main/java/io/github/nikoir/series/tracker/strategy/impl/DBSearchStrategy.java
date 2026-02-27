@@ -2,8 +2,8 @@ package io.github.nikoir.series.tracker.strategy.impl;
 
 import io.github.nikoir.series.tracker.domain.entity.Series;
 import io.github.nikoir.series.tracker.domain.repo.SeriesRepository;
-import io.github.nikoir.series.tracker.dto.api.request.SeriesSearchRq;
-import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
+import io.github.nikoir.series.tracker.dto.external.request.SeriesSearchRq;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
 import io.github.nikoir.series.tracker.adapter.series.shorts.DatabaseSeriesShortAdapter;
 import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.strategy.SeriesSearchStrategy;
@@ -19,7 +19,7 @@ public class DBSearchStrategy implements SeriesSearchStrategy {
     private final SeriesRepository seriesRepository;
     private final DatabaseSeriesShortAdapter seriesMapper;
 
-    public PagedModel<SeriesShortViewRs> search(SeriesSearchRq request) {
+    public PagedModel<SeriesListViewRs> search(SeriesSearchRq request) {
         Page<Series> seriesPage = seriesRepository.searchByTitleOrEngTitle(request.title(),
                 PageRequest.of(request.page(),
                 request.limit()));

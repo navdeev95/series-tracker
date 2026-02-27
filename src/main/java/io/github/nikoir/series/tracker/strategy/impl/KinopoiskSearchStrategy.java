@@ -1,9 +1,9 @@
 package io.github.nikoir.series.tracker.strategy.impl;
 
 import io.github.nikoir.series.tracker.config.props.KinopoiskProps;
-import io.github.nikoir.series.tracker.dto.api.request.SeriesSearchRq;
-import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
-import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskSeriesSearchRs;
+import io.github.nikoir.series.tracker.dto.external.request.SeriesSearchRq;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.dto.integration.response.kinopoisk.KinopoiskSeriesSearchRs;
 import io.github.nikoir.series.tracker.adapter.series.shorts.KinopoiskSeriesShortAdapter;
 import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.strategy.SeriesSearchStrategy;
@@ -24,7 +24,7 @@ public class KinopoiskSearchStrategy implements SeriesSearchStrategy {
 
     private final RestTemplate restTemplate;
 
-    public PagedModel<SeriesShortViewRs> search(SeriesSearchRq request) {
+    public PagedModel<SeriesListViewRs> search(SeriesSearchRq request) {
         String token = kinopoiskProps.getCredentials().get("token");
 
         HttpHeaders headers = new HttpHeaders();

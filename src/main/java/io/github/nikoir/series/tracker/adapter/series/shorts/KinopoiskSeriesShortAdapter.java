@@ -1,11 +1,9 @@
 package io.github.nikoir.series.tracker.adapter.series.shorts;
 
 import io.github.nikoir.series.tracker.adapter.series.KinopoiskExternalIdAdapter;
-import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskSeriesInfoRs;
-import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
-import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.Image;
-import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskExternalId;
-import io.github.nikoir.series.tracker.dto.api.response.kinopoisk.KinopoiskSeriesSearchRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.dto.integration.response.kinopoisk.Image;
+import io.github.nikoir.series.tracker.dto.integration.response.kinopoisk.KinopoiskSeriesSearchRs;
 import io.github.nikoir.series.tracker.enums.ExternalId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,8 +17,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
-import static io.github.nikoir.series.tracker.enums.ExternalId.*;
-
 @Mapper(componentModel = "spring")
 public abstract class KinopoiskSeriesShortAdapter implements SeriesShortAdapter<KinopoiskSeriesSearchRs> {
     @Autowired
@@ -30,7 +26,7 @@ public abstract class KinopoiskSeriesShortAdapter implements SeriesShortAdapter<
     @Mapping(target="posterUrl", source = "poster")
     @Mapping(target="externalIds", source = ".")
     @Mapping(target="totalSeasons", ignore = true)
-    abstract SeriesShortViewRs toViewDto(KinopoiskSeriesSearchRs.Doc doc);
+    abstract SeriesListViewRs toViewDto(KinopoiskSeriesSearchRs.Doc doc);
 
     protected String mapPosterToPosterUrl(Image poster) {
         return Optional.ofNullable(poster)
@@ -53,7 +49,7 @@ public abstract class KinopoiskSeriesShortAdapter implements SeriesShortAdapter<
     }
 
     @Override
-    public PagedModel<SeriesShortViewRs> toViewDtoPage(KinopoiskSeriesSearchRs searchRs) {
+    public PagedModel<SeriesListViewRs> toViewDtoPage(KinopoiskSeriesSearchRs searchRs) {
         if (searchRs == null) {
             return new PagedModel<>(Page.empty());
         }
@@ -61,14 +57,14 @@ public abstract class KinopoiskSeriesShortAdapter implements SeriesShortAdapter<
         if (CollectionUtils.isEmpty(searchRs.docs())) {
             return SeriesShortAdapter.createEmptyPage();
         }
-        List<SeriesShortViewRs> content = searchRs
+        List<SeriesListViewRs> content = searchRs
                 .docs()
                 .stream()
                 .map(this::toViewDto)
                 .toList();
         PageRequest pageRequest = PageRequest.of(searchRs.page() - 1, searchRs.limit());
 
-        PageImpl<SeriesShortViewRs> seriesPage = new PageImpl<>(content, pageRequest, searchRs.total());
+        PageImpl<SeriesListViewRs> seriesPage = new PageImpl<>(content, pageRequest, searchRs.total());
 
         return new PagedModel<>(seriesPage);
     }

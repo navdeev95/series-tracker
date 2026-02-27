@@ -11,4 +11,5 @@
     <include file="2025/005-drop-slug-columns.sql" relativeToChangelogFile="true"/>
     <include file="2025/006-add-external-id-table.sql" relativeToChangelogFile="true"/>
     <include file="2025/007-alter-user-table.sql" relativeToChangelogFile="true"/>
+    <include file="2025/008-alter-series-table.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

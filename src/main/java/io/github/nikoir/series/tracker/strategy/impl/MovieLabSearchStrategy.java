@@ -1,9 +1,9 @@
 package io.github.nikoir.series.tracker.strategy.impl;
 
 import io.github.nikoir.series.tracker.config.props.MovieLabProps;
-import io.github.nikoir.series.tracker.dto.api.request.SeriesSearchRq;
-import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
-import io.github.nikoir.series.tracker.dto.api.response.movielab.series.search.MovieLabSeriesSearchRs;
+import io.github.nikoir.series.tracker.dto.external.request.SeriesSearchRq;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.dto.integration.response.movielab.series.search.MovieLabSeriesSearchRs;
 import io.github.nikoir.series.tracker.adapter.series.shorts.MovieLabSeriesShortAdapter;
 import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.strategy.SeriesSearchStrategy;
@@ -30,7 +30,7 @@ public class MovieLabSearchStrategy implements SeriesSearchStrategy {
     private final RestTemplate restTemplate;
 
     @Override
-    public PagedModel<SeriesShortViewRs> search(SeriesSearchRq request) {
+    public PagedModel<SeriesListViewRs> search(SeriesSearchRq request) {
         HttpEntity<String> entity = new HttpEntity<>(movieLabHeaders);
 
         String title = "";

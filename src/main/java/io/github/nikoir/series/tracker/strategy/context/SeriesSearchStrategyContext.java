@@ -1,8 +1,8 @@
 package io.github.nikoir.series.tracker.strategy.context;
 
-import io.github.nikoir.series.tracker.dto.api.request.SeriesSearchRq;
-import io.github.nikoir.series.tracker.dto.internal.SeriesSearchRs;
-import io.github.nikoir.series.tracker.dto.internal.SeriesShortViewRs;
+import io.github.nikoir.series.tracker.dto.external.request.SeriesSearchRq;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.dto.external.response.SeriesSearchRs;
 import io.github.nikoir.series.tracker.enums.Source;
 import io.github.nikoir.series.tracker.strategy.SeriesSearchStrategy;
 import io.github.nikoir.series.tracker.strategy.impl.DBSearchStrategy;
@@ -45,27 +45,14 @@ public class SeriesSearchStrategyContext {
         searchChain.add(dbSearchStrategy);
     }
 
-    public SeriesSearchRs search(SeriesSearchRq request, Source previousSource) {
-        log.debug("page = {}", request.page());
-        log.debug("prev source = {}", previousSource);
+    public SeriesSearchRs search(SeriesSearchRq request) {
+        logPageInfo(request.page());
 
         if (StringUtils.isEmpty(request.title())) {
             return createEmptyResult(request);
         }
-        if (request.page() > 0 && previousSource != null) {
-            log.debug("Trying to get prev source: {}", previousSource);
-            SeriesSearchStrategy searchStrategy = searchMap.get(previousSource);
-            log.debug("Get previousSource success");
-            try {
-                return new SeriesSearchRs(searchStrategy.search(request),
-                        searchStrategy.getDataSource());
 
-            } catch(Exception ex) {
-                return createEmptyResult(request);
-            }
-        }
-
-        PagedModel<SeriesShortViewRs> result;
+        PagedModel<SeriesListViewRs> result;
         for (SeriesSearchStrategy searchStrategy: searchChain) {
             try {
                 result = searchStrategy.search(request);
@@ -78,14 +65,39 @@ public class SeriesSearchStrategyContext {
             }
         }
         return createEmptyResult(request);
+
+    }
+
+    public SeriesSearchRs search(SeriesSearchRq request, Source previousSource) {
+        logPageInfo(request.page());
+        log.debug("prev source = {}", previousSource);
+
+        if (StringUtils.isEmpty(request.title())) {
+            return createEmptyResult(request);
+        }
+
+        log.debug("Trying to get prev source: {}", previousSource);
+        SeriesSearchStrategy searchStrategy = searchMap.get(previousSource);
+        log.debug("Get previousSource success");
+        try {
+            return new SeriesSearchRs(searchStrategy.search(request),
+                    searchStrategy.getDataSource());
+
+        } catch(Exception ex) {
+            return createEmptyResult(request);
+        }
     }
 
     private SeriesSearchRs createEmptyResult(SeriesSearchRq request) {
-        Page<SeriesShortViewRs> emptyPage = new PageImpl<>(
+        Page<SeriesListViewRs> emptyPage = new PageImpl<>(
                 Collections.emptyList(),
                 PageRequest.of(request.page(), request.limit()),
                 0
         );
         return new SeriesSearchRs(new PagedModel<>(emptyPage), null);
+    }
+
+    private void logPageInfo(int page) {
+        log.debug("page = {}", page);
     }
 }

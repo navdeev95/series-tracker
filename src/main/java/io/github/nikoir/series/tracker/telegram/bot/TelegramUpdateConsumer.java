@@ -1,10 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.bot;
 
-import io.github.nikoir.series.tracker.telegram.handler.callback.CallbackQueryHandler;
-import io.github.nikoir.series.tracker.telegram.handler.command.CommandHandler;
-import io.github.nikoir.series.tracker.telegram.handler.inline.InlineQueryHandler;
-import io.github.nikoir.series.tracker.telegram.handler.message.MessageHandler;
-import io.github.nikoir.series.tracker.telegram.util.CommandUtil;
+import io.github.nikoir.series.tracker.telegram.bot.dispatcher.UpdateDispatcher;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,21 +15,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Getter
 public class TelegramUpdateConsumer implements LongPollingSingleThreadUpdateConsumer, SpringLongPollingBot {
     private final String token;
-    private final CommandHandler commandHandler;
-    private final InlineQueryHandler inlineQueryHandler;
-    private final MessageHandler messageHandler;
-    private final CallbackQueryHandler callbackQueryHandler;
+    private final UpdateDispatcher updateDispatcher;
 
     public TelegramUpdateConsumer(@Value("${telegram.bot.token}") String token,
-                                  CommandHandler commandHandler,
-                                  InlineQueryHandler inlineQueryHandler,
-                                  MessageHandler messageHandler,
-                                  CallbackQueryHandler callbackQueryHandler) {
+                                  UpdateDispatcher updateDispatcher) {
         this.token = token;
-        this.commandHandler = commandHandler;
-        this.inlineQueryHandler = inlineQueryHandler;
-        this.messageHandler = messageHandler;
-        this.callbackQueryHandler = callbackQueryHandler;
+        this.updateDispatcher = updateDispatcher;
     }
 
     @Override
@@ -48,16 +35,6 @@ public class TelegramUpdateConsumer implements LongPollingSingleThreadUpdateCons
 
     @Override
     public void consume(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            if (CommandUtil.isCommand(update.getMessage().getText())) {
-                commandHandler.handle(update);
-            } else if (!update.getMessage().hasViaBot()){
-                messageHandler.handle(update);
-            }
-        } else if (update.hasInlineQuery()) {
-            inlineQueryHandler.handle(update);
-        } else if (update.hasCallbackQuery()) {
-            callbackQueryHandler.handle(update);
-        }
+        updateDispatcher.dispatch(update);
     }
 }

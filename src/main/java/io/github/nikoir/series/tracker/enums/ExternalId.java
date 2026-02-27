@@ -1,12 +1,12 @@
 package io.github.nikoir.series.tracker.enums;
 
+import io.github.nikoir.series.tracker.domain.entity.ExternalIdSeries;
 import io.github.nikoir.series.tracker.domain.entity.dictionary.DictExternalId;
 import io.github.nikoir.series.tracker.domain.entity.dictionary.DictSource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 @Getter
 @RequiredArgsConstructor
@@ -26,25 +26,30 @@ public enum ExternalId {
         }
     }
 
-    public static ExternalId fromName(String name) {
+    public static Optional<ExternalId> fromName(String name) {
         return Arrays.stream(values())
                 .filter(source -> source.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Unknown external id: " + name));
+                .findFirst();
     }
 
-    public static ExternalId fromEntity(DictExternalId entity) {
-        ExternalId source = fromName(entity.getName());
-        source.initFromEntity(entity);
+    public static Optional<ExternalId> fromEntity(DictExternalId entity) {
+        Optional<ExternalId> source = fromName(entity.getName());
+        source.ifPresent(externalId -> externalId.initFromEntity(entity));
         return source;
     }
 
-    public static ExternalId fromId(Long id) {
+    public static Optional<ExternalId> fromId(Long id) {
         return Arrays.stream(values())
                 .filter(source -> Objects.equals(id, source.getEntityId()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Unknown external id: " + id));
+                .findFirst();
+    }
+
+    public static Map<ExternalId, String> mapExternalIds(List<ExternalIdSeries> externalIds) {
+        Map<ExternalId, String> result = new HashMap<>();
+        for (ExternalIdSeries externalId: externalIds) {
+            ExternalId.fromId(externalId.getExternalId().getId())
+                    .ifPresent(value -> result.put(value, externalId.getValue()));
+        }
+        return result;
     }
 }
