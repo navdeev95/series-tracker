@@ -1,7 +1,7 @@
 package io.github.nikoir.series.tracker.content.service;
 
-import io.github.nikoir.series.tracker.content.config.props.LumexPortalProps;
-import io.github.nikoir.series.tracker.content.config.props.LumexSiteProps;
+import io.github.nikoir.series.tracker.content.config.api.props.LumexPortalProps;
+import io.github.nikoir.series.tracker.content.config.api.props.LumexSiteProps;
 import io.github.nikoir.series.tracker.content.dto.integration.request.movielab.MovieLabLoginRq;
 import io.github.nikoir.series.tracker.content.dto.integration.response.lumex.login.LoginRs;
 import io.github.nikoir.series.tracker.content.dto.integration.response.lumex.shorts.ShortRs;

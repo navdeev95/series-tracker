@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +19,10 @@ public class SeriesGetFacade {
     public SeriesDetailPersonalizedRs getSeriesInfoForUser(Long userTelegramId,
                                                            Map<ExternalId, String> externalIds) {
         SeriesDetailViewRs seriesInfo = seriesFinderFacade.findSeries(externalIds);
-        Long seriesId = seriesInfo.id();
-        boolean isUserSubscribed = false;
 
-        if (seriesId != null) {
-            isUserSubscribed = subscriptionService.isUserSubscribed(userTelegramId, seriesId);
-        }
+        boolean isUserSubscribed = Optional.ofNullable(seriesInfo.id())
+                .map(id -> subscriptionService.isUserSubscribed(userTelegramId, id))
+                .orElse(false);
 
         return new SeriesDetailPersonalizedRs(seriesInfo, isUserSubscribed);
     }

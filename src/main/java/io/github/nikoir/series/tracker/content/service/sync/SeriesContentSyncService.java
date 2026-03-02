@@ -1,15 +1,15 @@
-package io.github.nikoir.series.tracker.content.service;
+package io.github.nikoir.series.tracker.content.service.sync;
 import io.github.nikoir.series.tracker.content.domain.entity.Episode;
 import io.github.nikoir.series.tracker.content.domain.entity.EpisodeRelease;
 import io.github.nikoir.series.tracker.content.domain.entity.Season;
 import io.github.nikoir.series.tracker.content.domain.entity.Series;
-import io.github.nikoir.series.tracker.domain.entity.*;
 import io.github.nikoir.series.tracker.content.domain.entity.dictionary.DictSource;
 import io.github.nikoir.series.tracker.content.domain.repo.EpisodeReleaseRepository;
 import io.github.nikoir.series.tracker.content.domain.repo.SourceRepository;
 import io.github.nikoir.series.tracker.common.dto.response.SeasonViewRs;
 import io.github.nikoir.series.tracker.content.dto.internal.SyncResult;
 import io.github.nikoir.series.tracker.content.enums.Source;
+import io.github.nikoir.series.tracker.content.service.SeasonEpisodeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -31,6 +31,7 @@ public class SeriesContentSyncService {
     private final SeasonEpisodeService seasonEpisodeService;
     private final EpisodeReleaseRepository episodeReleaseRepository;
     private final SourceRepository sourceRepository;
+
 
     public SyncResult syncSeriesContent(Series series,
                                         List<SeasonViewRs> externalSeasons,

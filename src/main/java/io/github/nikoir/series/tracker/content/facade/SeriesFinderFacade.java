@@ -17,28 +17,26 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SeriesFinderFacade {
+class SeriesFinderFacade {
     private final SeriesService seriesService;
     private final SeriesGetStrategyContext getStrategyContext;
     private final DBSeriesDetailAdapter detailAdapter;
 
-    @Transactional
-    Series findOrCreateSeries(Map<ExternalId, String> externalIds) {
-        return seriesService
-                .find(externalIds)
+    SeriesDetailViewRs findOrCreateSeries(Map<ExternalId, String> externalIds) {
+        return seriesService.find(externalIds)
+                .map(detailAdapter::toViewDto)
                 .orElseGet(() -> createSeries(externalIds));
     }
 
     SeriesDetailViewRs findSeries(Map<ExternalId, String> externalIds) {
-        Optional<Series> series = seriesService.find(externalIds);
-        if (series.isPresent()) {
-            return detailAdapter.toViewDto(series.get());
-        }
-        return getStrategyContext.get(externalIds);
+        return seriesService.find(externalIds)
+                .map(detailAdapter::toViewDto)
+                .orElseGet(() -> getStrategyContext.get(externalIds));
     }
 
-    private Series createSeries(Map<ExternalId, String> externalIds) {
+    private SeriesDetailViewRs createSeries(Map<ExternalId, String> externalIds) {
         SeriesDetailViewRs seriesInfo = getStrategyContext.get(externalIds);
-        return seriesService.create(seriesInfo);
+        Series series = seriesService.create(seriesInfo);
+        return detailAdapter.toViewDto(series);
     }
 }

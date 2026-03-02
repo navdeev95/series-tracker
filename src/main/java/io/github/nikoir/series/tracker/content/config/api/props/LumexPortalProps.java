@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.content.config.props;
+package io.github.nikoir.series.tracker.content.config.api.props;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

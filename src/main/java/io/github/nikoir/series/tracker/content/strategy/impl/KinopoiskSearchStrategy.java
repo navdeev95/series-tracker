@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.content.strategy.impl;
 
-import io.github.nikoir.series.tracker.content.config.props.KinopoiskProps;
+import io.github.nikoir.series.tracker.content.config.api.props.KinopoiskProps;
 import io.github.nikoir.series.tracker.common.dto.request.SeriesSearchRq;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
 import io.github.nikoir.series.tracker.content.dto.integration.response.kinopoisk.KinopoiskSeriesSearchRs;

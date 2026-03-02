@@ -1,5 +1,6 @@
 package io.github.nikoir.series.tracker.content.facade;
 
+import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.content.adapter.series.shorts.DatabaseSeriesShortAdapter;
 import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.common.dto.request.SeriesSubscriptionRq;
@@ -17,47 +18,31 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Optional;
 
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class SeriesSubscribeFacade {
-    private final SeriesSyncFacade seriesSyncFacade;
-    private final SeriesService seriesService;
+    private final SeriesSyncFacade syncFacade;
     private final UserSubscriptionService subscriptionService;
     private final DatabaseSeriesShortAdapter seriesShortAdapter;
 
     @Transactional
     public void subscribe(Long userTelegramId, Map<ExternalId, String> externalIds) {
-        try {
-            Series series = seriesSyncFacade.findOrCreateWithSync(externalIds);
+        SeriesDetailViewRs seriesDto = syncFacade.findOrCreateWithSync(externalIds);
 
-            if (!subscriptionService.isUserSubscribed(userTelegramId, series.getId())) {
-                subscriptionService.subscribe(userTelegramId, series.getId());
-            }
-        } catch (Exception ex) {
-            log.error("Error while subscribe to series: ", ex);
-            throw ex;
+        if (seriesDto.id() != null) {
+            subscriptionService.subscribeIfNotExists(userTelegramId, seriesDto.id());
         }
-
     }
 
     public void unsubscribe(Long userTelegramId, Map<ExternalId, String> externalIds) {
-        try {
-            Optional<Series> series = seriesService.find(externalIds);
-            if (series.isEmpty()) {
-                throw new IllegalArgumentException("Not found series");
-            }
-            if (subscriptionService.isUserSubscribed(userTelegramId, series.get().getId())) {
-                subscriptionService.unsubscribe(userTelegramId, series.get().getId());
-            }
-        } catch (Exception ex) {
-            log.error("Error while unsubscribe from series: ", ex);
-            throw ex;
-        }
+        subscriptionService.unsubscribeByExternalIds(userTelegramId, externalIds);
     }
 
     public PagedModel<SeriesListViewRs> getSubscriptionList(SeriesSubscriptionRq request) {
-        Page<Series> subscriptions = subscriptionService.getSubscriptionList(request);
-        return seriesShortAdapter.toViewDtoPage(subscriptions);
+        return seriesShortAdapter.toViewDtoPage(
+                subscriptionService.getSubscriptionList(request)
+        );
     }
 }

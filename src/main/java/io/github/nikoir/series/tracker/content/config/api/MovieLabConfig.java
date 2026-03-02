@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.content.config.api;
 
-import io.github.nikoir.series.tracker.content.config.props.MovieLabProps;
+import io.github.nikoir.series.tracker.content.config.api.props.MovieLabProps;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

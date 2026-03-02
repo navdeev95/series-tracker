@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.common.dto.request;
+package io.github.nikoir.series.tracker.content.dto.internal;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;

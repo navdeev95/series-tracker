@@ -5,7 +5,7 @@ import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.content.domain.repo.ExternalIdRepository;
 import io.github.nikoir.series.tracker.content.domain.repo.SeriesRepository;
 import io.github.nikoir.series.tracker.content.domain.repo.specification.SeriesSpecifications;
-import io.github.nikoir.series.tracker.common.dto.request.SeriesSyncRq;
+import io.github.nikoir.series.tracker.content.dto.internal.SeriesSyncRq;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import io.github.nikoir.series.tracker.content.mapper.SeriesDetailMapper;
@@ -27,21 +27,15 @@ import static io.github.nikoir.series.tracker.content.domain.entity.Series.Statu
 @RequiredArgsConstructor
 @Slf4j
 public class SeriesService {
-    private final SeriesDetailMapper detailMapper;
     private final SeriesRepository seriesRepository;
     private final ExternalIdRepository externalIdRepository;
+    private final SeriesDetailMapper detailMapper;
 
     @Transactional
-    public Series create(SeriesDetailViewRs series) {
-        Series entity = detailMapper.toEntity(series);
-        entity.setExternalIds(mapExternalIds(entity, series.externalIds()));
-        try {
-            return seriesRepository.save(entity);
-        } catch (DataIntegrityViolationException ex) {
-            log.error("Series entity already exists", ex);
-            return find(series.externalIds()).orElseThrow();
-        }
-
+    public Series create(SeriesDetailViewRs seriesDto) {
+        Series entity = detailMapper.toEntity(seriesDto);
+        entity.setExternalIds(mapExternalIds(entity, seriesDto.externalIds()));
+        return seriesRepository.save(entity);
     }
 
     public Optional<Series> find(Map<ExternalId, String> externalIds) {
@@ -62,23 +56,23 @@ public class SeriesService {
         return Optional.of(seriesList.getFirst());
 
     }
-
-    public Page<Series> findUncompletedSeries(SeriesSyncRq syncRq) {
-        return seriesRepository.searchSeriesWithStatus(true,
-                List.of(COMPLETED, DELETED),
-                PageRequest.of(syncRq.page(), syncRq.limit()));
+    public Page<Series> findUncompletedSeries(int page, int size) {
+        return seriesRepository.searchSeriesWithStatus(
+                true,
+                List.of(Series.Status.COMPLETED, Series.Status.DELETED),
+                PageRequest.of(page, size)
+        );
     }
-    
+
     private List<ExternalIdSeries> mapExternalIds(Series entity, Map<ExternalId, String> externalIds) {
-        List<ExternalIdSeries> result = new LinkedList<>();
-        for (ExternalId externalId: externalIds.keySet()) {
-            String value = externalIds.get(externalId);
-            result.add(ExternalIdSeries.builder()
-                            .value(value)
-                            .externalId(externalIdRepository.getReferenceById(externalId.getEntityId()))
-                            .series(entity)
-                    .build());
-        }
-        return result;
+        return externalIds.entrySet().stream()
+                .map(entry -> ExternalIdSeries.builder()
+                        .value(entry.getValue())
+                        .externalId(externalIdRepository.getReferenceById(entry.getKey().getEntityId()))
+                        .series(entity)
+                        .build())
+                .toList();
     }
 }
+
+

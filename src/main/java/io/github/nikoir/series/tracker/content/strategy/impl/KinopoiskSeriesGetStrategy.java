@@ -1,7 +1,7 @@
 package io.github.nikoir.series.tracker.content.strategy.impl;
 
 import io.github.nikoir.series.tracker.content.adapter.series.detail.SeriesDetailAdapter;
-import io.github.nikoir.series.tracker.content.config.props.KinopoiskProps;
+import io.github.nikoir.series.tracker.content.config.api.props.KinopoiskProps;
 import io.github.nikoir.series.tracker.content.dto.integration.response.kinopoisk.KinopoiskSeriesInfoRs;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.content.enums.Source;

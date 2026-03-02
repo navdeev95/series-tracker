@@ -20,8 +20,11 @@ public interface SeriesRepository extends JpaRepository<Series, Long>, JpaSpecif
     Page<Series> searchByTitleOrEngTitle(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     @Query("SELECT s FROM Series s " +
-            "WHERE (s.status IS NULL AND :includeUnknownStatus) " +
-            "   OR (s.status IS NOT NULL AND s.status NOT IN :excludedStatus)")
+            "JOIN FETCH s.externalIds ei " +
+            "JOIN FETCH ei.externalId e WHERE " +
+            "(:includeUnknownStatus = true AND s.status IS NULL) " +
+            "OR (s.status IS NOT NULL AND (:#{#excludedStatus.isEmpty()} = true OR s.status NOT IN :excludedStatus)) " +
+            "ORDER BY s.id ASC")
     Page<Series> searchSeriesWithStatus(@Param("includeUnknownStatus") boolean includeUnknownStatus,
                                         @Param("excludedStatus") List<Series.Status> excludedStatus,
                                         Pageable pageable);

@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.content.strategy.impl;
 
-import io.github.nikoir.series.tracker.content.config.props.MovieLabProps;
+import io.github.nikoir.series.tracker.content.config.api.props.MovieLabProps;
 import io.github.nikoir.series.tracker.common.dto.response.SeasonViewRs;
 import io.github.nikoir.series.tracker.content.dto.integration.response.movielab.episode.search.MovieLabEpisodeSearchRs;
 import io.github.nikoir.series.tracker.content.adapter.season.MovieLabSeasonAdapter;

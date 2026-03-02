@@ -1,7 +1,7 @@
 package io.github.nikoir.series.tracker.content.config.api;
 
-import io.github.nikoir.series.tracker.content.config.props.LumexPortalProps;
-import io.github.nikoir.series.tracker.content.config.props.LumexSiteProps;
+import io.github.nikoir.series.tracker.content.config.api.props.LumexPortalProps;
+import io.github.nikoir.series.tracker.content.config.api.props.LumexSiteProps;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
