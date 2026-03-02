@@ -2,7 +2,7 @@ package io.github.nikoir.series.tracker.telegram.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import io.github.nikoir.series.tracker.enums.Source;
+import io.github.nikoir.series.tracker.content.enums.Source;
 import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
 import io.github.nikoir.series.tracker.telegram.model.session.UserSession;
 import io.github.nikoir.series.tracker.telegram.model.session.UserStateEnum;

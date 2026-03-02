@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.model.session;
 
-import io.github.nikoir.series.tracker.enums.ExternalId;
+import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import lombok.*;
 
 import java.util.Map;

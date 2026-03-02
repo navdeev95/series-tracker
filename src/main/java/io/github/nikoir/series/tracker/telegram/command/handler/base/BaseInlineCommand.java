@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.command.handler.base;
 
-import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
 import io.github.nikoir.series.tracker.telegram.command.enums.InlineCommandEnum;
 import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
 import io.github.nikoir.series.tracker.telegram.service.SeriesSendService;

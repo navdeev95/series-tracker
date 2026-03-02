@@ -1,8 +1,8 @@
 package io.github.nikoir.series.tracker.telegram.command.handler.inline;
 
-import io.github.nikoir.series.tracker.dto.external.request.SeriesSubscriptionRq;
-import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
-import io.github.nikoir.series.tracker.facade.SeriesSubscribeFacade;
+import io.github.nikoir.series.tracker.common.dto.request.SeriesSubscriptionRq;
+import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.content.facade.SeriesSubscribeFacade;
 import io.github.nikoir.series.tracker.telegram.command.enums.InlineCommandEnum;
 import io.github.nikoir.series.tracker.telegram.command.handler.base.BaseInlineCommand;
 import io.github.nikoir.series.tracker.telegram.service.SeriesSendService;

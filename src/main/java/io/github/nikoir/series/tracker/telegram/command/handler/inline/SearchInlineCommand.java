@@ -1,9 +1,9 @@
 package io.github.nikoir.series.tracker.telegram.command.handler.inline;
 
-import io.github.nikoir.series.tracker.dto.external.request.SeriesSearchRq;
-import io.github.nikoir.series.tracker.dto.external.response.SeriesSearchRs;
-import io.github.nikoir.series.tracker.enums.Source;
-import io.github.nikoir.series.tracker.strategy.context.SeriesSearchStrategyContext;
+import io.github.nikoir.series.tracker.common.dto.request.SeriesSearchRq;
+import io.github.nikoir.series.tracker.common.dto.response.SeriesSearchRs;
+import io.github.nikoir.series.tracker.content.enums.Source;
+import io.github.nikoir.series.tracker.content.strategy.context.SeriesSearchStrategyContext;
 import io.github.nikoir.series.tracker.telegram.command.handler.base.BaseInlineCommand;
 import io.github.nikoir.series.tracker.telegram.command.enums.InlineCommandEnum;
 import io.github.nikoir.series.tracker.telegram.model.session.UserSession;

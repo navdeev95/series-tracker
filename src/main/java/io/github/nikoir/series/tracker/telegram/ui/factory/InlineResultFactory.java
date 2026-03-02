@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.ui.factory;
 
-import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;

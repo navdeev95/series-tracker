@@ -1,8 +1,8 @@
 package io.github.nikoir.series.tracker.telegram.ui.factory;
 
-import io.github.nikoir.series.tracker.dto.external.response.SeriesDetailPersonalizedRs;
-import io.github.nikoir.series.tracker.dto.external.response.SeriesDetailViewRs;
-import io.github.nikoir.series.tracker.dto.external.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailPersonalizedRs;
+import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
+import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

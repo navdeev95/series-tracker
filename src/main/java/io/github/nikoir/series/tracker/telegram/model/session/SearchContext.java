@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.model.session;
 
-import io.github.nikoir.series.tracker.enums.Source;
+import io.github.nikoir.series.tracker.content.enums.Source;
 import lombok.*;
 
 @Getter
