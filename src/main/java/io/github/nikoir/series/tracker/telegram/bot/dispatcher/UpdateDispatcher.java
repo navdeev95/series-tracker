@@ -27,7 +27,7 @@ public class UpdateDispatcher {
         Optional<BaseCommand<?>> foundCommand = findCommand(update);
         foundCommand.ifPresentOrElse(
                 command -> command.execute(update),
-                () -> handleUnknownUpdate(update));
+                () -> handleUnknownCommand(update));
     }
 
     private boolean canSkipUpdate(Update update) {
@@ -90,11 +90,9 @@ public class UpdateDispatcher {
                 .findFirst();
     }
 
-    private void handleUnknownUpdate(Update update) {
+    private void handleUnknownCommand(Update update) {
         if (update.hasMessage()) {
             telegramService.sendUnknownCommandMessage(update.getMessage().getChatId());
-        } else if (update.hasInlineQuery()) {
-            telegramService.sendErrorMessage(update.getInlineQuery().getFrom().getId());
         } else if (update.hasCallbackQuery()) {
             telegramService.sendErrorMessage(update.getCallbackQuery().getFrom().getId());
         }

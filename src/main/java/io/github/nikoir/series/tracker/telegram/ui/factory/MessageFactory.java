@@ -47,6 +47,15 @@ public class MessageFactory {
                 .build();
     }
 
+    public SendMessage createSubscriptionsSendMessage(Long chatId) {
+        return SendMessage.builder()
+                .chatId(String.valueOf(chatId))
+                .text("Для просмотра подписок нажмите на кнопку ниже")
+                .parseMode("Markdown")
+                .replyMarkup(keyboardFactory.createSubscriptionsKeyboard())
+                .build();
+    }
+
     public SendMessage createWelcomeMessage(User user) {
         return SendMessage
                 .builder()
