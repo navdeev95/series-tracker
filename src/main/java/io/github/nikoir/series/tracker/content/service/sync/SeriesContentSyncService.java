@@ -33,49 +33,49 @@ public class SeriesContentSyncService {
     private final SourceRepository sourceRepository;
 
 
-    public SyncResult syncSeriesContent(Series series,
+    public SyncResult syncSeriesContent(Long seriesId,
                                         List<SeasonViewRs> externalSeasons,
                                         Source source) {
-        log.info("Starting content sync for series: {}", series.getTitle());
-        SeriesContent currentContent = new SeriesContent(seasonEpisodeService.loadCurrentContent(series.getId()));
+        log.info("Starting content sync for series with id: {}", seriesId);
+        SeriesContent currentContent = new SeriesContent(seasonEpisodeService.loadCurrentContent(seriesId));
 
         List<Episode> createdEpisodes = new ArrayList<>();
         SyncResult result = new SyncResult();
 
         for (SeasonViewRs externalSeason : externalSeasons) {
-            createdEpisodes.addAll(syncSeasonContent(series, externalSeason, currentContent, result));
+            createdEpisodes.addAll(syncSeasonContent(seriesId, externalSeason, currentContent, result));
         }
 
-        result.addNewReleases(createReleases(createdEpisodes, source));
+        createReleases(createdEpisodes, source);
 
         log.info("Sync completed: {} new seasons, {} new episodes, {} new releases",
                 result.getNewSeasonsCnt(), result.getNewEpisodesCnt(), result.getNewReleasesCnt());
         return result;
     }
 
-    private List<Episode> syncSeasonContent(Series series, SeasonViewRs externalSeason,
+    private List<Episode> syncSeasonContent(Long seriesId, SeasonViewRs externalSeason,
                                    SeriesContent currentContent, SyncResult result) {
         Season existingSeason = currentContent.getSeasonByNumber(externalSeason.number());
 
         if (existingSeason == null) {
-            return createNewSeason(series, externalSeason, result).getEpisodes();
+            return createNewSeason(seriesId, externalSeason, result).getEpisodes();
         } else {
-            return syncEpisodes(series, existingSeason, externalSeason, result);
+            return syncEpisodes(seriesId, existingSeason, externalSeason, result);
         }
     }
 
-    private Season createNewSeason(Series series, SeasonViewRs externalSeason, SyncResult result) {
-        log.info("New season detected for series '{}': season {}",
-                series.getTitle(), externalSeason.number());
+    private Season createNewSeason(Long seriesId, SeasonViewRs externalSeason, SyncResult result) {
+        log.info("New season detected for series with id'{}': season {}",
+                seriesId, externalSeason.number());
 
-        Season season = seasonEpisodeService.createSeason(series, externalSeason);
+        Season season = seasonEpisodeService.createSeason(seriesId, externalSeason);
         result.addNewSeason();
         result.addNewEpisodes(season.getEpisodes().size());
 
         return season;
     }
 
-    private List<Episode> syncEpisodes(Series series, Season existingSeason,
+    private List<Episode> syncEpisodes(Long seriesId, Season existingSeason,
                                        SeasonViewRs externalSeason, SyncResult result) {
         List<SeasonViewRs.EpisodeViewRs> newEpisodes = seasonEpisodeService
                 .findMissingEpisodes(existingSeason, externalSeason);
@@ -84,8 +84,8 @@ public class SeriesContentSyncService {
             return Collections.emptyList();
         }
 
-        log.info("New episodes detected for series '{}' season {}: {} episodes",
-                series.getTitle(), externalSeason.number(), newEpisodes.size());
+        log.info("New episodes detected for series with id '{}' season {}: {} episodes",
+                seriesId, externalSeason.number(), newEpisodes.size());
 
         List<Episode> createdEpisodes = seasonEpisodeService.createEpisodes(existingSeason, newEpisodes);
         result.addNewEpisodes(createdEpisodes.size());
@@ -98,7 +98,7 @@ public class SeriesContentSyncService {
         // TODO: Добавить обновление существующих эпизодов
     }
 
-    private List<EpisodeRelease> createReleases(List<Episode> createdEpisodes,
+    private void createReleases(List<Episode> createdEpisodes,
                                                 Source source) {
         DictSource sourceEntity = sourceRepository.findByName(source.getName()).orElseThrow();
 
@@ -111,7 +111,7 @@ public class SeriesContentSyncService {
                             .source(sourceEntity)
                             .build())
                 .toList();
-        return episodeReleaseRepository.saveAll(episodeReleases);
+        episodeReleaseRepository.saveAll(episodeReleases);
     }
 
     // Вспомогательный класс для хранения текущего состояния

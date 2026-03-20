@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.content.config.api;
 
-import io.github.nikoir.series.tracker.content.config.logging.LoggingInterceptor;
+import io.github.nikoir.series.tracker.content.config.LoggingInterceptorConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +27,7 @@ public class RestTemplateConfig {
                 .requestFactory(() -> new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
                 .connectTimeout(Duration.ofMillis(connectTimeout))
                 .readTimeout(Duration.ofMillis(readTimeout))
-                .additionalInterceptors(Collections.singletonList(new LoggingInterceptor()))
+                .additionalInterceptors(Collections.singletonList(new LoggingInterceptorConfig()))
                 .build();
     }
 }

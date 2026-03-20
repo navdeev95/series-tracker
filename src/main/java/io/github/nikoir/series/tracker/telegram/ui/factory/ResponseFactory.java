@@ -1,6 +1,7 @@
 package io.github.nikoir.series.tracker.telegram.ui.factory;
 
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailPersonalizedRs;
+import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
 import io.github.nikoir.series.tracker.telegram.model.SubscriptionStatus;
 import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
@@ -59,6 +60,16 @@ public class ResponseFactory {
                                                                     SubscriptionStatus subscriptionStatus) {
         InlineKeyboardMarkup keyboardMarkup = keyboardFactory.createSubscriptionKeyboard(historyItem.getToken(), subscriptionStatus);
         return createEditMarkup(userId, historyItem.getMessageId(), keyboardMarkup);
+    }
+
+    public SendPhoto createNewSeasonAnswer(Long chatId,
+                                           SeriesDetailViewRs seriesDetail) {
+        return messageFactory.createNewSeasonMessage(chatId, seriesDetail);
+    }
+
+    public SendPhoto createNewEpisodeAnswer(Long chatId,
+                                            SeriesDetailViewRs seriesDetail) {
+        return messageFactory.createNewEpisodeMessage(chatId, seriesDetail);
     }
 
     private AnswerInlineQuery createInlineQueryAnswer(String inlineQueryId,

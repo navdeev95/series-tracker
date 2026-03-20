@@ -22,7 +22,7 @@ public class MessageFactory {
         return SendPhoto.builder()
                 .chatId(chatId)
                 .photo(new InputFile(seriesDetail.seriesInfo().posterUrl()))
-                .caption(buildSeriesDetailCaption(seriesDetail.seriesInfo()))
+                .caption(buildSeriesDetailCaption(seriesDetail.seriesInfo(), false, false))
                 .parseMode("HTML")
                 .replyMarkup(keyboardFactory.createSeriesKeyboard(seriesDetail, seriesToken))
                 .build();
@@ -65,8 +65,31 @@ public class MessageFactory {
                 .build();
     }
 
-    private String buildSeriesDetailCaption(SeriesDetailViewRs seriesInfo) {
+    public SendPhoto createNewSeasonMessage(Long chatId,
+                                            SeriesDetailViewRs seriesDetail) {
+        return SendPhoto.builder()
+                .chatId(chatId)
+                .photo(new InputFile(seriesDetail.posterUrl()))
+                .caption(buildSeriesDetailCaption(seriesDetail, false, true))
+                .parseMode("HTML")
+                .build();
+    }
+
+    public SendPhoto createNewEpisodeMessage(Long chatId,
+                                             SeriesDetailViewRs seriesDetail) {
+        return SendPhoto.builder()
+                .chatId(chatId)
+                .photo(new InputFile(seriesDetail.posterUrl()))
+                .caption(buildSeriesDetailCaption(seriesDetail, true, false))
+                .parseMode("HTML")
+                .build();
+    }
+
+    private String buildSeriesDetailCaption(SeriesDetailViewRs seriesInfo,
+                                            boolean isNewEpisodeEvent,
+                                            boolean isNewSeasonEvent) {
         return String.format("""
+            %s
             <b>%s</b> (%d)
             
             <i>%s</i>
@@ -78,6 +101,7 @@ public class MessageFactory {
             <b>Описание:</b>
             %s
             """,
+                buildTypeInfo(isNewEpisodeEvent, isNewSeasonEvent),
                 seriesInfo.title(),
                 seriesInfo.releaseYear(),
                 seriesInfo.isSeries() ? "Сериал" : "Фильм",
@@ -85,6 +109,17 @@ public class MessageFactory {
                 seriesInfo.releaseYear(),
                 seriesInfo.totalSeasons(),
                 seriesInfo.description());
+    }
+
+    private String buildTypeInfo(boolean isNewEpisodeEvent, boolean isNewSeasonEvent) {
+        if (isNewEpisodeEvent) {
+            return "🎬 <i>Новый эпизод</i>";
+        }
+        if (isNewSeasonEvent) {
+            return "📺 <i>Новый сезон</i>";
+        }
+
+        return "";
     }
 
     private String getWelcomeMessage(String userName) {

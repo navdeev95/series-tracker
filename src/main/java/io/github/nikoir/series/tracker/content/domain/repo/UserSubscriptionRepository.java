@@ -1,6 +1,7 @@
 package io.github.nikoir.series.tracker.content.domain.repo;
 
 import io.github.nikoir.series.tracker.content.domain.entity.Series;
+import io.github.nikoir.series.tracker.content.domain.entity.User;
 import io.github.nikoir.series.tracker.content.domain.entity.UserSubscription;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -25,7 +26,7 @@ public interface UserSubscriptionRepository extends JpaRepository<UserSubscripti
     void deleteSubscription(Long telegramId, Long seriesId);
 
 
-    @Query("SELECT s FROM Series s " +
+    @Query("SELECT DISTINCT s FROM Series s " +
             "JOIN FETCH s.externalIds ei " +
             "WHERE s.id IN " +
             "(SELECT us.series.id FROM " +
@@ -33,4 +34,12 @@ public interface UserSubscriptionRepository extends JpaRepository<UserSubscripti
                 "JOIN us.user u " +
                 "WHERE u.telegramId = :telegramId)")
     Page<Series> getUserSubscriptions(@Param("telegramId") Long telegramId, Pageable pageable);
+
+    @Query("SELECT u FROM User u " +
+            "WHERE u.id IN " +
+            "(SELECT us.user.id FROM " +
+            "UserSubscription us " +
+            "JOIN us.series s " +
+            "WHERE us.series.id = :seriesId)")
+    Page<User> getSerisSubscribers(@Param("seriesId") Long seriesId, Pageable pageable);
 }

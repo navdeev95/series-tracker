@@ -13,28 +13,16 @@ public class SyncResult {
     private int newEpisodesCnt;
     private final List<EpisodeRelease> newReleases = new ArrayList<>();
 
-    public List<EpisodeRelease> getNewReleases() {
-        return List.copyOf(newReleases);
-    }
-
     public int getNewReleasesCnt() {
-        return newReleases.size();
+        return newEpisodesCnt;
     }
 
     public boolean hasNewContent() {
-        return !newReleases.isEmpty();
-    }
-
-    public void addNewReleases(List<EpisodeRelease> episodeReleases) {
-        this.newReleases.addAll(episodeReleases);
+        return newEpisodesCnt > 0;
     }
 
     public void addNewSeason() {
         this.newSeasonsCnt++;
-    }
-
-    public void addNewEpisode() {
-        this.newEpisodesCnt++;
     }
 
     public void addNewEpisodes(int episodesCnt) {

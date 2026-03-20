@@ -1,10 +1,12 @@
 package io.github.nikoir.series.tracker.content.facade;
 
+import io.github.nikoir.series.tracker.common.dto.request.SeriesSubscribersRq;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.content.adapter.series.shorts.DatabaseSeriesShortAdapter;
 import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.common.dto.request.SeriesSubscriptionRq;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.content.domain.entity.User;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import io.github.nikoir.series.tracker.content.service.SeriesService;
 import io.github.nikoir.series.tracker.content.service.UserSubscriptionService;
@@ -42,7 +44,11 @@ public class SeriesSubscribeFacade {
 
     public PagedModel<SeriesListViewRs> getSubscriptionList(SeriesSubscriptionRq request) {
         return seriesShortAdapter.toViewDtoPage(
-                subscriptionService.getSubscriptionList(request)
-        );
+                subscriptionService.getSubscriptionList(request));
+    }
+
+    public PagedModel<Long> getSubscribersTelegramIds(SeriesSubscribersRq request) {
+        Page<User> subscribers = subscriptionService.getSubscribersList(request);
+        return new PagedModel<>(subscribers.map(User::getTelegramId));
     }
 }

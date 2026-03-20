@@ -1,5 +1,6 @@
 package io.github.nikoir.series.tracker.content.service;
 
+import io.github.nikoir.series.tracker.common.dto.request.SeriesSubscribersRq;
 import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.content.domain.entity.User;
 import io.github.nikoir.series.tracker.content.domain.entity.UserSubscription;
@@ -63,5 +64,10 @@ public class UserSubscriptionService {
     public Page<Series> getSubscriptionList(SeriesSubscriptionRq rq) {
         PageRequest request = PageRequest.of(rq.page(), rq.limit());
         return userSubscriptionRepository.getUserSubscriptions(rq.userTelegramId(), request);
+    }
+
+    public Page<User> getSubscribersList(SeriesSubscribersRq rq) {
+        PageRequest request = PageRequest.of(rq.page(), rq.limit());
+        return userSubscriptionRepository.getSerisSubscribers(rq.seriesId(), request);
     }
 }

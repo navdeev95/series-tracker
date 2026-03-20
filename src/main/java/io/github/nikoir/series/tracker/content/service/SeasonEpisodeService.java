@@ -2,10 +2,10 @@ package io.github.nikoir.series.tracker.content.service;
 
 import io.github.nikoir.series.tracker.content.domain.entity.Episode;
 import io.github.nikoir.series.tracker.content.domain.entity.Season;
-import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.content.domain.repo.EpisodeRepository;
 import io.github.nikoir.series.tracker.content.domain.repo.SeasonRepository;
 import io.github.nikoir.series.tracker.common.dto.response.SeasonViewRs;
+import io.github.nikoir.series.tracker.content.domain.repo.SeriesRepository;
 import io.github.nikoir.series.tracker.content.mapper.EpisodeMapper;
 import io.github.nikoir.series.tracker.content.mapper.SeasonMapper;
 import jakarta.transaction.Transactional;
@@ -25,16 +25,17 @@ public class SeasonEpisodeService {
 
     private final SeasonRepository seasonRepository;
     private final EpisodeRepository episodeRepository;
+    private final SeriesRepository seriesRepository;
     private final SeasonMapper seasonMapper;
     private final EpisodeMapper episodeMapper;
 
-    public Season createSeason(Series series, SeasonViewRs seasonData) {
-        log.info("Creating new season for series '{}': season {}",
-                series.getTitle(), seasonData.number());
+    public Season createSeason(Long seriesId, SeasonViewRs seasonData) {
+        log.info("Creating new season for series with id '{}': season {}",
+                seriesId, seasonData.number());
 
         Season newSeason = seasonMapper.toEntity(seasonData);
         newSeason.getEpisodes().forEach(episode -> episode.setSeason(newSeason));
-        newSeason.setSeries(series);
+        newSeason.setSeries(seriesRepository.getReferenceById(seriesId));
 
         return seasonRepository.save(newSeason);
     }

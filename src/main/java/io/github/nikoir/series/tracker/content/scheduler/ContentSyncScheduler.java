@@ -4,7 +4,6 @@ import io.github.nikoir.series.tracker.content.facade.SeriesSyncFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +14,6 @@ public class ContentSyncScheduler {
     @Scheduled(fixedRate = 60000)
     @Async
     public void syncContent() {
-        syncFacade.syncAllSeries();
+        syncFacade.syncAndNotifyAllSeries();
     }
 }

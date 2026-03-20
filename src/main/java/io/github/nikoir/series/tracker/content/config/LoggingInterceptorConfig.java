@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.content.config.logging;
+package io.github.nikoir.series.tracker.content.config;
 
 import lombok.NonNull;
 import org.slf4j.Logger;
@@ -12,9 +12,9 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class LoggingInterceptor implements ClientHttpRequestInterceptor {
+public class LoggingInterceptorConfig implements ClientHttpRequestInterceptor {
 
-    private static final Logger log = LoggerFactory.getLogger(LoggingInterceptor.class);
+    private static final Logger log = LoggerFactory.getLogger(LoggingInterceptorConfig.class);
 
     @NonNull
     @Override
