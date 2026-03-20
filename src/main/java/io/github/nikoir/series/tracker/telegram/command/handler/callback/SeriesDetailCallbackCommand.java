@@ -1,7 +1,7 @@
 package io.github.nikoir.series.tracker.telegram.command.handler.callback;
 
-import io.github.nikoir.series.tracker.dto.external.response.SeriesDetailPersonalizedRs;
-import io.github.nikoir.series.tracker.facade.SeriesGetFacade;
+import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailPersonalizedRs;
+import io.github.nikoir.series.tracker.content.facade.SeriesGetFacade;
 import io.github.nikoir.series.tracker.telegram.command.handler.base.BaseCallbackCommand;
 import io.github.nikoir.series.tracker.telegram.command.enums.CallbackCommandEnum;
 import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;

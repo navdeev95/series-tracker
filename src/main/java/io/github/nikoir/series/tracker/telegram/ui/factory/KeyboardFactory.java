@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.ui.factory;
 
-import io.github.nikoir.series.tracker.dto.external.response.SeriesDetailPersonalizedRs;
+import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailPersonalizedRs;
 import io.github.nikoir.series.tracker.telegram.command.enums.InlineCommandEnum;
 import io.github.nikoir.series.tracker.telegram.ui.CommandButtonEnum;
 import io.github.nikoir.series.tracker.telegram.model.SubscriptionStatus;
