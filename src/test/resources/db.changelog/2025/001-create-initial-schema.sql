@@ -19,7 +19,8 @@ CREATE TABLE "series" (
     'PRE_PRODUCTION',
     'COMPLETED',
     'ANNOUNCED',
-    'POST_PRODUCTION'
+    'POST_PRODUCTION',
+    'DELETED'
   ))
 );
 
