@@ -3,6 +3,8 @@ package io.github.nikoir.series.tracker.builder.domain;
 import io.github.nikoir.series.tracker.content.domain.entity.ExternalIdSeries;
 import io.github.nikoir.series.tracker.content.domain.entity.Season;
 import io.github.nikoir.series.tracker.content.domain.entity.Series;
+import io.github.nikoir.series.tracker.content.domain.entity.dictionary.DictExternalId;
+import io.github.nikoir.series.tracker.content.enums.ExternalId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +77,7 @@ public class SeriesBuilder {
         return this;
     }
 
-    public SeriesBuilder addCountry(String country) {
+    public SeriesBuilder withCountry(String country) {
         if (this.countries == null) {
             this.countries = new ArrayList<>();
         }
@@ -83,8 +85,11 @@ public class SeriesBuilder {
         return this;
     }
 
-    public SeriesBuilder withExternalIds(List<ExternalIdSeries> externalIds) {
-        this.externalIds = externalIds != null ? new ArrayList<>(externalIds) : new ArrayList<>();
+    public SeriesBuilder withExternalId(DictExternalId externalId, String value) {
+        this.externalIds.add(ExternalIdSeries.builder()
+                        .externalId(externalId)
+                        .value(value).build());
+
         return this;
     }
 
@@ -93,7 +98,7 @@ public class SeriesBuilder {
         return this;
     }
 
-    public SeriesBuilder addSeason(Season season) {
+    public SeriesBuilder withSeason(Season season) {
         if (this.seasons == null) {
             this.seasons = new ArrayList<>();
         }
@@ -128,6 +133,10 @@ public class SeriesBuilder {
         // Устанавливаем обратную связь для сезонов
         if (seasons != null) {
             seasons.forEach(season -> season.setSeries(series));
+        }
+
+        if (externalIds != null) {
+            externalIds.forEach(externalId -> externalId.setSeries(series));
         }
 
         return series;

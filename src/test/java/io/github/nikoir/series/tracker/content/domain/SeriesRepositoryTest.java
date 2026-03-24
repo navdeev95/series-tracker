@@ -2,7 +2,11 @@ package io.github.nikoir.series.tracker.content.domain;
 
 import io.github.nikoir.series.tracker.builder.domain.SeriesBuilder;
 import io.github.nikoir.series.tracker.content.domain.entity.Series;
+import io.github.nikoir.series.tracker.content.domain.entity.dictionary.DictExternalId;
+import io.github.nikoir.series.tracker.content.domain.repo.ExternalIdRepository;
 import io.github.nikoir.series.tracker.content.domain.repo.SeriesRepository;
+import io.github.nikoir.series.tracker.content.domain.repo.specification.SeriesSpecifications;
+import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +14,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,18 +27,31 @@ public class SeriesRepositoryTest {
     @Autowired
     private SeriesRepository seriesRepository;
 
+    @Autowired
+    private ExternalIdRepository externalIdRepository;
+
     private Long seriesId1;
     private Long seriesId2;
     private Long seriesId3;
 
     @BeforeEach
     void setUp() {
+        DictExternalId kinopoiskId = externalIdRepository.save(DictExternalId.builder()
+                        .name(ExternalId.KINOPOISK.getName())
+                .build());
+
+        DictExternalId movielabId = externalIdRepository.save(DictExternalId.builder()
+                .name(ExternalId.MOVIELAB.getName())
+                .build());
+
         // Сериал 1: Game of Thrones
         Series series1 = new SeriesBuilder()
                 .withTitle("Game of Thrones")
                 .withEngTitle("Game of Thrones")
                 .withStatus(Series.Status.COMPLETED)
                 .withReleaseYear(2011)
+                .withExternalId(kinopoiskId, "123")
+                .withExternalId(movielabId, "456")
                 .build();
         series1 = seriesRepository.save(series1);
         seriesId1 = series1.getId();
@@ -251,5 +270,33 @@ public class SeriesRepositoryTest {
 
         // Проверяем, что на второй странице остался последний сериал
         assertEquals(seriesId3, secondPageResult.getContent().get(0).getId());
+    }
+
+    @Test
+    public void searchSeriesSpecification_ExistingId_ReturnSeries() {
+        Specification<Series> seriesSpecification = SeriesSpecifications
+                .hasAnyExternalIdFromList(Map.of(ExternalId.KINOPOISK, "123"));
+
+        List<Series> seriesList = seriesRepository
+                .findAll(seriesSpecification)
+                .stream()
+                .toList();
+
+        assertEquals(1, seriesList.size());
+
+        assertEquals(seriesId1, seriesList.getFirst().getId());
+    }
+
+    @Test
+    public void searchSeriesSpecification_unexistingId_ReturnEmptyList() {
+        Specification<Series> seriesSpecification = SeriesSpecifications
+                .hasAnyExternalIdFromList(Map.of(ExternalId.KINOPOISK, "456"));
+
+        List<Series> seriesList = seriesRepository
+                .findAll(seriesSpecification)
+                .stream()
+                .toList();
+
+        assertTrue(seriesList.isEmpty());
     }
 }
