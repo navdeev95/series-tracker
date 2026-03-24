@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -63,11 +64,20 @@ public class UserSubscriptionService {
 
     public Page<Series> getSubscriptionList(SeriesSubscriptionRq rq) {
         PageRequest request = PageRequest.of(rq.page(), rq.limit());
-        return userSubscriptionRepository.getUserSubscriptions(rq.userTelegramId(), request);
+        Page<UserSubscription> subscriptions = userSubscriptionRepository
+                .getUserSubscriptions(rq.userTelegramId(), request);
+
+        return new PageImpl<>(subscriptions.stream().map(UserSubscription::getSeries).toList(),
+                subscriptions.getPageable(),
+                subscriptions.getTotalElements());
     }
 
     public Page<User> getSubscribersList(SeriesSubscribersRq rq) {
         PageRequest request = PageRequest.of(rq.page(), rq.limit());
-        return userSubscriptionRepository.getSerisSubscribers(rq.seriesId(), request);
+
+        Page<UserSubscription> subscribers = userSubscriptionRepository.getSeriesSubscribers(rq.seriesId(), request);
+        return new PageImpl<>(subscribers.stream().map(UserSubscription::getUser).toList(),
+                subscribers.getPageable(),
+                subscribers.getTotalElements());
     }
 }

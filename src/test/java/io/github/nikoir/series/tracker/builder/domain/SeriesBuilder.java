@@ -1,13 +1,11 @@
 package io.github.nikoir.series.tracker.builder.domain;
 
-import io.github.nikoir.series.tracker.content.domain.entity.Episode;
 import io.github.nikoir.series.tracker.content.domain.entity.ExternalIdSeries;
 import io.github.nikoir.series.tracker.content.domain.entity.Season;
 import io.github.nikoir.series.tracker.content.domain.entity.Series;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -35,12 +33,6 @@ public class SeriesBuilder {
         this.countries = new ArrayList<>();
         this.externalIds = new ArrayList<>();
         this.seasons = new ArrayList<>();
-    }
-
-    // Базовые методы билдера
-    public SeriesBuilder withId(Long id) {
-        // ID обычно не устанавливаем вручную для тестов
-        return this;
     }
 
     public SeriesBuilder withTitle(String title) {

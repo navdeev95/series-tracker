@@ -27,13 +27,6 @@ public class SeasonBuilder {
         this.name = "Season " + number;
     }
 
-    // Базовые методы билдера
-    public SeasonBuilder withId(Long id) {
-        // Обычно id не устанавливаем вручную для тестов,
-        // но оставляем для особых случаев
-        return this;
-    }
-
     public SeasonBuilder withName(String name) {
         this.name = name;
         return this;

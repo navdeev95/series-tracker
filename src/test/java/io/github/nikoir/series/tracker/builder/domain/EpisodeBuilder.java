@@ -19,12 +19,6 @@ public class EpisodeBuilder {
         this.releaseDate = LocalDate.now();
     }
 
-    // Базовые методы билдера
-    public EpisodeBuilder withId(Long id) {
-        // Обычно id не устанавливаем вручную для тестов
-        return this;
-    }
-
     public EpisodeBuilder withName(String name) {
         this.name = name;
         return this;
