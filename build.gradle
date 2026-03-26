@@ -65,6 +65,18 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+
+	jvmArgs "-Xshare:off"
+	jvmArgs "-XX:+EnableDynamicAgentLoading"
+
+	doFirst {
+		def mockitoAgent = configurations.testRuntimeClasspath.find {
+			it.name.contains('mockito-core') && !it.name.contains('javadoc')
+		}
+		if (mockitoAgent) {
+			jvmArgs "-javaagent:${mockitoAgent.absolutePath}"
+		}
+	}
 }
 
 bootJar {

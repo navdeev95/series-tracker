@@ -8,8 +8,8 @@ import java.util.List;
 public record SeasonViewRs(String name,
                            Integer number,
                            Date releaseDate,
-                           Source externalSource,
-                           Integer episodesCount,
+                           //Source externalSource,
+                           //Integer episodesCount,
                            List<EpisodeViewRs> episodes) {
 
     public record EpisodeViewRs(String name,

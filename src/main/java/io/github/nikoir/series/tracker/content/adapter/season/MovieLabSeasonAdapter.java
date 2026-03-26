@@ -16,7 +16,6 @@ public abstract class MovieLabSeasonAdapter implements ExternalSeasonAdapter<Mov
     @Override
     @Mapping(source = "seasonNumber", target = "number")
     @Mapping(source = "episodes", target = "episodes", qualifiedByName = "mapEpisodes")
-    @Mapping(target = "externalSource", constant = "MOVIELAB")
     public abstract SeasonViewRs toSeasonViewRs(MovieLabEpisodeSearchRs.Season source);
 
     @Mapping(source = "episode", target = "number")
