@@ -45,6 +45,9 @@ api:
 
     credentials:
       token: ${KINOPOISK_TOKEN}
+sync:
+  scheduler:
+    cron: "0 0 * * * *"
 
 telegram:
   bot:
