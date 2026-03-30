@@ -2,10 +2,10 @@ package io.github.nikoir.series.tracker.content.service;
 
 import io.github.nikoir.series.tracker.builder.domain.EpisodeBuilder;
 import io.github.nikoir.series.tracker.builder.domain.SeasonBuilder;
-import io.github.nikoir.series.tracker.builder.dto.SeasonViewRsBuilder;
 import io.github.nikoir.series.tracker.common.dto.response.SeasonViewRs;
 import io.github.nikoir.series.tracker.content.domain.entity.Episode;
 import io.github.nikoir.series.tracker.content.domain.entity.Season;
+import io.github.nikoir.series.tracker.factory.SeasonTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,8 +32,7 @@ public class SeasonEpisodeServiceTest {
                 .withRandomEpisodes(10)
                 .build();
 
-        SeasonViewRsBuilder seasonViewBuilder = new SeasonViewRsBuilder();
-        foundSeason = seasonViewBuilder.fromSeason(existingSeason);
+        foundSeason = SeasonTestFactory.fromSeason(existingSeason);
     }
 
     @Test
