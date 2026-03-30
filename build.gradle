@@ -58,11 +58,25 @@ dependencies {
 
 	// Тестирование
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	testImplementation 'com.h2database:h2'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+
+	jvmArgs "-Xshare:off"
+	jvmArgs "-XX:+EnableDynamicAgentLoading"
+
+	doFirst {
+		def mockitoAgent = configurations.testRuntimeClasspath.find {
+			it.name.contains('mockito-core') && !it.name.contains('javadoc')
+		}
+		if (mockitoAgent) {
+			jvmArgs "-javaagent:${mockitoAgent.absolutePath}"
+		}
+	}
 }
 
 bootJar {

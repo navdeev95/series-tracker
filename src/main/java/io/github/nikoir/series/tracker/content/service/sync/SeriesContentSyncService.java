@@ -2,7 +2,6 @@ package io.github.nikoir.series.tracker.content.service.sync;
 import io.github.nikoir.series.tracker.content.domain.entity.Episode;
 import io.github.nikoir.series.tracker.content.domain.entity.EpisodeRelease;
 import io.github.nikoir.series.tracker.content.domain.entity.Season;
-import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.content.domain.entity.dictionary.DictSource;
 import io.github.nikoir.series.tracker.content.domain.repo.EpisodeReleaseRepository;
 import io.github.nikoir.series.tracker.content.domain.repo.SourceRepository;
@@ -16,10 +15,7 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -45,8 +41,9 @@ public class SeriesContentSyncService {
         for (SeasonViewRs externalSeason : externalSeasons) {
             createdEpisodes.addAll(syncSeasonContent(seriesId, externalSeason, currentContent, result));
         }
-
-        createReleases(createdEpisodes, source);
+        if (!createdEpisodes.isEmpty()) {
+            createReleases(createdEpisodes, source);
+        }
 
         log.info("Sync completed: {} new seasons, {} new episodes, {} new releases",
                 result.getNewSeasonsCnt(), result.getNewEpisodesCnt(), result.getNewReleasesCnt());
@@ -55,13 +52,9 @@ public class SeriesContentSyncService {
 
     private List<Episode> syncSeasonContent(Long seriesId, SeasonViewRs externalSeason,
                                    SeriesContent currentContent, SyncResult result) {
-        Season existingSeason = currentContent.getSeasonByNumber(externalSeason.number());
-
-        if (existingSeason == null) {
-            return createNewSeason(seriesId, externalSeason, result).getEpisodes();
-        } else {
-            return syncEpisodes(seriesId, existingSeason, externalSeason, result);
-        }
+        Optional<Season> existingSeason = currentContent.getSeasonByNumber(externalSeason.number());
+        return existingSeason.map(season -> syncEpisodes(seriesId, season, externalSeason, result))
+                .orElseGet(() -> createNewSeason(seriesId, externalSeason, result).getEpisodes());
     }
 
     private Season createNewSeason(Long seriesId, SeasonViewRs externalSeason, SyncResult result) {
@@ -116,16 +109,16 @@ public class SeriesContentSyncService {
 
     // Вспомогательный класс для хранения текущего состояния
     @Value
-    private static class SeriesContent {
+    public static class SeriesContent {
         Map<Integer, Season> seasonsByNumber;
 
-        SeriesContent(List<Season> seasons) {
+        public SeriesContent(List<Season> seasons) {
             this.seasonsByNumber = seasons.stream()
                     .collect(Collectors.toMap(Season::getNumber, Function.identity()));
         }
 
-        Season getSeasonByNumber(Integer number) {
-            return seasonsByNumber.get(number);
+        Optional<Season> getSeasonByNumber(Integer number) {
+            return Optional.ofNullable(seasonsByNumber.get(number));
         }
     }
 }
