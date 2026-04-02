@@ -35,9 +35,24 @@ services:
       - ./docker/series_tracker_db/container_conf:/etc/postgresql
     ports:
       - 5432:5432
-  series-tracker-app:
+  series-tracker-app-build:
     build:
       context: ./
+    profiles: ["dev"]
+    env_file: .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://series-tracker-db:5432/series_tracker_dev?currentSchema=series_tracker
+    volumes:
+      - ./logs:/app/logs
+    ports:
+      - 8090:8090
+    restart: unless-stopped
+    depends_on:
+      series-tracker-db:
+        condition: service_healthy
+  series-tracker-app-run:
+    image: series-tracker-app:latest
+    profiles: [ "prod" ]
     env_file: .env
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://series-tracker-db:5432/series_tracker_dev?currentSchema=series_tracker
