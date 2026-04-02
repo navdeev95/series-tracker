@@ -16,7 +16,4 @@ RUN ./gradlew clean build -x test
 # Проверяем структуру
 RUN ls -la build/libs/
 
-# Копируем собранный JAR
-COPY build/libs/series-tracker.jar app.jar
-
 ENTRYPOINT ["java","-jar","app.jar"]
