@@ -1,11 +1,6 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/series_tracker_dev?currentSchema=series_tracker
-    username: series_tracker_api
-    password: ${DB_API_PWD}
-  liquibase:
-    user: series_tracker_dbo
-    password: ${DB_DBO_PWD}
   jpa:
     show-sql: true
     properties:
