@@ -27,6 +27,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    //Actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    //Prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
 	// Для планировщика
 	// implementation 'org.springframework.boot:spring-boot-starter-quartz'
 

@@ -77,3 +77,15 @@ logging:
       max-file-size: 10MB
       max-history: 30
       total-size-cap: 1GB
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true

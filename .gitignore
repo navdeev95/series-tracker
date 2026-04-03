@@ -41,3 +41,7 @@ out/
 **/container_data/
 
 logs/
+
+prometheus/data
+
+*.tar

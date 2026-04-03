@@ -1,7 +1,7 @@
 name: series-tracker
 
 services:
-  #БД для сервиса series-tracker
+  # БД для сервиса series-tracker
   series-tracker-db:
     image: postgres:17.5
     command:
@@ -12,19 +12,15 @@ services:
     environment:
       POSTGRES_DB: series_tracker_dev
       POSTGRES_SCHEMA: series_tracker
-
       POSTGRES_PASSWORD: ${DB_SU_PWD}
-
       PG_DBO_USER: series_tracker_dbo
       PG_DBO_PWD: ${DB_DBO_PWD}
-
       PG_API_USER: series_tracker_api
       PG_API_PWD: ${DB_API_PWD}
-
       PGDATA: /var/lib/postgresql/data/pgdata
       PGTZ: Asia/Tomsk
       TZ: Asia/Tomsk
-    healthcheck: # Проверка готовности PostgreSQL
+    healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$PG_DBO_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
@@ -35,10 +31,9 @@ services:
       - ./docker/series_tracker_db/container_conf:/etc/postgresql
     ports:
       - 5432:5432
-  series-tracker-app-build:
-    build:
-      context: ./
-    profiles: ["dev"]
+
+  # Spring Boot приложение (общая конфигурация)
+  series-tracker-app:
     env_file: .env
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://series-tracker-db:5432/series_tracker_dev?currentSchema=series_tracker
@@ -50,17 +45,19 @@ services:
     depends_on:
       series-tracker-db:
         condition: service_healthy
-  series-tracker-app-run:
-    image: series-tracker-app:latest
-    profiles: [ "prod" ]
-    env_file: .env
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://series-tracker-db:5432/series_tracker_dev?currentSchema=series_tracker
+
+  # Prometheus (общая конфигурация)
+  prometheus:
+    image: prom/prometheus:latest
     volumes:
-      - ./logs:/app/logs
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/data/:/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
     ports:
-      - 8090:8090
+      - 9090:9090
     restart: unless-stopped
-    depends_on:
-      series-tracker-db:
-        condition: service_healthy
+    environment:
+      TZ: Asia/Tomsk
