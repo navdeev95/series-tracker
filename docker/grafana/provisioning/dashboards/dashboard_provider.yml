@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: 'Java Dashboards'
+    orgId: 1
+    folder: 'Java & Spring'
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

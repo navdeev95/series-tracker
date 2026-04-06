@@ -43,5 +43,6 @@ docker/.env
 logs/
 
 docker/prometheus/data
+docker/grafana/data
 
 *.tar
