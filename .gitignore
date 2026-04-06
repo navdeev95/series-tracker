@@ -36,12 +36,12 @@ out/
 ### VS Code ###
 .vscode/
 
-.env
+docker/.env
 
 **/container_data/
 
 logs/
 
-prometheus/data
+docker/prometheus/data
 
 *.tar

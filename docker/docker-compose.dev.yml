@@ -2,7 +2,7 @@ services:
   # Переопределяем способ запуска для разработки (сборка из исходников)
   series-tracker-app:
     build:
-      context: ./
+      context: ./series_tracker_app/
     profiles: ["dev"]
 
   # Prometheus для разработки (targets dev)
