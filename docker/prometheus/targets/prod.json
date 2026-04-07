@@ -1,5 +1,5 @@
 [
   {
-    "targets": ["series-tracker-app-run:8090"]
+    "targets": ["series-tracker-app:8090"]
   }
 ]
