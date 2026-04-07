@@ -36,6 +36,7 @@ services:
   series-tracker-app:
     env_file: .env
     environment:
+      LOKI_URL: http://loki:3100/loki/api/v1/push
       SPRING_DATASOURCE_URL: jdbc:postgresql://series-tracker-db:5432/series_tracker_dev?currentSchema=series_tracker
     volumes:
       - ./logs:/app/logs
@@ -61,6 +62,14 @@ services:
     restart: unless-stopped
     environment:
       TZ: Asia/Tomsk
+
+  #loki (общая конфигурация)
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - 3100:3100
+    volumes:
+      - ./loki/data:/loki
 
   # Grafana (общая конфигурация)
   grafana:

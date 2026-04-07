@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Подключаем стандартные настройки консольного вывода Spring -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+    <!-- Настройка аппендера для Loki -->
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <!-- Адрес вашего экземпляра Loki -->
+            <url>${LOKI_URL}</url>
+        </http>
+        <format>
+            <label>
+                <!-- Эти метки будут отображаться в Grafana для фильтрации -->
+                <pattern>app=my-app,host=${HOSTNAME},level=%level</pattern>
+            </label>
+            <message>
+                <!-- Формат сообщения (используем стандартный от Spring) -->
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </message>
+        </format>
+    </appender>
+
+    <!-- Активные аппендеры -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="LOKI" />
+    </root>
+</configuration>
