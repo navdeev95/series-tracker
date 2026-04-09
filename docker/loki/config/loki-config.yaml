@@ -1,7 +1,7 @@
 auth_enabled: false
+
 server:
   http_listen_port: 3100
-  grpc_listen_port: 9095
 
 common:
   path_prefix: /tmp/loki
@@ -11,22 +11,16 @@ common:
       rules_directory: /tmp/loki/rules
   replication_factor: 1
   ring:
+    instance_addr: 127.0.0.1
     kvstore:
       store: inmemory
 
 schema_config:
   configs:
-    - from: 2024-01-01 # Use current date
-      store: boltdb-shipper
+    - from: 2020-05-15
+      store: tsdb         # Рекомендуемый тип индекса для версий 2.8+
       object_store: filesystem
-      schema: v13 # Use latest schema
+      schema: v13
       index:
         prefix: index_
         period: 24h
-
-ruler:
-  storage:
-    type: local
-    local:
-      directory: /tmp/loki/rules
-  rule_path: /tmp/loki/rules-temp
