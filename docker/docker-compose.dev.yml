@@ -9,7 +9,7 @@ services:
 
   # Prometheus для разработки (targets dev)
   prometheus:
-    container_name: prometheus-dev
+    container_name: prometheus
     volumes:
       - ./prometheus/targets/dev.json:/etc/prometheus/targets/targets.json
     environment:

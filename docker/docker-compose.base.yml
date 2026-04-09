@@ -66,6 +66,7 @@ services:
 
   #loki (общая конфигурация)
   loki:
+    container_name: loki
     image: grafana/loki:latest
     ports:
       - 3100:3100

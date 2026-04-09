@@ -8,7 +8,7 @@ services:
 
   # Prometheus для продакшена (targets prod)
   prometheus:
-    container_name: prometheus-prod
+    container_name: prometheus
     volumes:
       - ./prometheus/targets/prod.json:/etc/prometheus/targets/targets.json
     environment:
