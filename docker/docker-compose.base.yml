@@ -34,6 +34,7 @@ services:
 
   # Spring Boot приложение (общая конфигурация)
   series-tracker-app:
+    mem_limit: 500m
     env_file: .env
     environment:
       LOKI_URL: http://loki:3100/loki/api/v1/push

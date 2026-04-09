@@ -18,6 +18,9 @@ spring:
     password: ${DB_DBO_PWD}
     change-log: classpath:db/changelog/master.xml
     enabled: true
+  threads:
+    virtual:
+      enabled: true
 api:
   connect-timeout: 20000
   read-timeout: 20000

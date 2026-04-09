@@ -2,7 +2,7 @@ services:
   # Переопределяем способ запуска для разработки (сборка из исходников)
   series-tracker-app:
     build:
-*      context: ..
+      context: ..
     environment:
       SPRING_PROFILES_ACTIVE: dev
     profiles: ["dev"]
