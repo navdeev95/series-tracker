@@ -34,7 +34,7 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
 	// Аппендер для отправки логов в Loki
-	implementation 'com.github.loki4j:loki-logback-appender:1.6.0'
+	//implementation 'com.github.loki4j:loki-logback-appender:1.6.0'
 
 	// Для планировщика
 	// implementation 'org.springframework.boot:spring-boot-starter-quartz'
