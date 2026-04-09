@@ -1,7 +1,7 @@
 services:
   # Переопределяем способ запуска для продакшена (готовый образ)
   series-tracker-app:
-    image: series-tracker-app:latest
+    image: navdeev95/series-tracker-app:latest
     profiles: ["prod"]
     environment:
       SPRING_PROFILES_ACTIVE: prod
