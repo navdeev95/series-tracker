@@ -1,104 +1,32 @@
 auth_enabled: false
-
 server:
   http_listen_port: 3100
   grpc_listen_port: 9095
-  # Важно: таймауты для HTTP-запросов
-  http_server_read_timeout: 30s
-  http_server_write_timeout: 30s
-  http_server_idle_timeout: 120s
 
-# Минимальная конфигурация ring без memberlist (для одного инстанса)
 common:
-  instance_addr: 127.0.0.1
+  path_prefix: /tmp/loki
+  storage:
+    filesystem:
+      chunks_directory: /tmp/loki/chunks
+      rules_directory: /tmp/loki/rules
+  replication_factor: 1
   ring:
     kvstore:
       store: inmemory
-  replication_factor: 1
-  path_prefix: /loki
 
-# Схема для индексов - простая для одного контейнера
 schema_config:
   configs:
-    - from: 2024-01-01
-      store: tsdb
+    - from: 2024-01-01 # Use current date
+      store: boltdb-shipper
       object_store: filesystem
-      schema: v13
+      schema: v13 # Use latest schema
       index:
         prefix: index_
         period: 24h
 
-# Хранение данных в файловой системе (без S3/GCS)
-storage_config:
-  tsdb_shipper:
-    active_index_directory: /loki/tsdb-index
-    cache_location: /loki/tsdb-cache
-  filesystem:
-    directory: /loki/chunks
-
-# Оптимизация Ingester для одного контейнера
-ingester:
-  # Не ждать формирования чанка - сразу доступен для запросов
-  chunk_idle_period: 5m
-  # Максимальный размер чанка до сброса на диск
-  chunk_block_size: 262144
-  # Максимальный возраст чанка
-  max_chunk_age: 1h
-  # Восстановление из WAL при перезапуске
-  wal:
-    enabled: true
-    dir: /loki/wal
-    replay_memory_ceiling: 500MB
-
-# Лимиты для одного контейнера (без rate limiting)
-limits_config:
-  allow_structured_metadata: true
-  reject_old_samples: false
-  reject_old_samples_max_age: 168h
-  # Максимальный размер одного запроса на запись
-  ingestion_rate_mb: 16
-  ingestion_burst_size_mb: 32
-  # Максимальное количество активных потоков (лейблов)
-  max_global_streams_per_user: 100000
-  # Таймауты для запросов
-  query_timeout: 30s
-  # Отключаем rate limiting
-  per_stream_rate_limit: 100MB
-  per_stream_rate_limit_burst: 200MB
-
-# Настройки для записи логов (Distributor)
-distributor:
-  ring:
-    kvstore:
-      store: inmemory
-
-# Настройки для запросов (Querier)
-querier:
-  max_concurrent: 10
-  query_ingesters_within: 2h
-  engine:
-    timeout: 30s
-
-# Настройки для Query Frontend
-frontend:
-  max_outstanding_per_tenant: 100
-  compress_responses: true
-
-# Настройки для Query Scheduler
-query_scheduler:
-  max_outstanding_requests_per_tenant: 100
-
-# Отключаем compactor для одного контейнера (опционально)
-compactor:
-  working_directory: /loki/compactor
-  shared_store: filesystem
-  compaction_interval: 10m
-  retention_enabled: false
-
-# Отключаем ruler если не нужен
 ruler:
-  enable_api: false
-
-# Аналитика - можно отключить
-analytics:
-  reporting_enabled: false
+  storage:
+    type: local
+    local:
+      directory: /tmp/loki/rules
+  rule_path: /tmp/loki/rules-temp
