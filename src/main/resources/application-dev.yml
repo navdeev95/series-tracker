@@ -6,10 +6,3 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-logging:
-  level:
-    root: INFO
-    io.github.nikoir.series.tracker.telegram: DEBUG
-    io.github.nikoir.series.tracker.strategy.context: DEBUG
-    io.github.nikoir.series.tracker.service: DEBUG
