@@ -16,7 +16,7 @@ jobs:
         with:
           distribution: 'semeru'
           java-version: '25'
-          cache: maven
+          cache: gradle
 
       - name: Build with Gradle
         run: ./gradlew clean bootJar
