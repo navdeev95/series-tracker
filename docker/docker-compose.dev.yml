@@ -1,0 +1,17 @@
+services:
+  # Переопределяем способ запуска для разработки (сборка из исходников)
+  series-tracker-app:
+    build:
+      context: ..
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    profiles: ["dev"]
+
+  # Prometheus для разработки (targets dev)
+  prometheus:
+    container_name: prometheus
+    volumes:
+      - ./prometheus/targets/dev.json:/etc/prometheus/targets/targets.json
+    environment:
+      PROMETHEUS_ENV: dev
+    profiles: ["dev"]

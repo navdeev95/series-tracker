@@ -1,39 +1,96 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.5.7' apply false
-	id 'io.spring.dependency-management' version '1.1.7' apply false
+	id 'org.springframework.boot' version '3.5.7'
+	id 'io.spring.dependency-management' version '1.1.7'
 }
+group = 'io.github.nikoir'
+version = '0.0.1-SNAPSHOT'
 
-allprojects {
-	group = 'io.github.nikoir'
-	version = '0.0.1-SHAPSHOT'
-
-	repositories {
-		mavenCentral()
-	}
-}
-
-subprojects {
-	apply plugin: 'java'
-	apply plugin: 'org.springframework.boot'
-	apply plugin: 'io.spring.dependency-management'
-
+java {
 	sourceCompatibility = '17'
 	targetCompatibility = '17'
+}
 
-	configurations {
-		compileOnly {
-			extendsFrom annotationProcessor
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// Spring Boot Starters
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    //Actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    //Prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+	// Аппендер для отправки логов в Loki
+	//implementation 'com.github.loki4j:loki-logback-appender:1.6.0'
+
+	// Для планировщика
+	// implementation 'org.springframework.boot:spring-boot-starter-quartz'
+
+	// Database
+	implementation 'org.liquibase:liquibase-core'
+	runtimeOnly 'org.postgresql:postgresql'
+
+	// Hibernate utilities
+	implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.11.0'
+
+	// MapStruct
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// Для работы Lombok с MapStruct
+	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+	//Telegram
+	implementation 'org.telegram:telegrambots-springboot-longpolling-starter:9.2.1'
+	implementation 'org.telegram:telegrambots-client:9.2.1'
+
+	//Caffeine cache
+	implementation 'com.github.ben-manes.caffeine:caffeine:3.2.3'
+
+	// Тестирование
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	testImplementation 'com.h2database:h2'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+
+	jvmArgs "-Xshare:off"
+	jvmArgs "-XX:+EnableDynamicAgentLoading"
+
+	doFirst {
+		def mockitoAgent = configurations.testRuntimeClasspath.find {
+			it.name.contains('mockito-core') && !it.name.contains('javadoc')
+		}
+		if (mockitoAgent) {
+			jvmArgs "-javaagent:${mockitoAgent.absolutePath}"
 		}
 	}
+}
 
-	dependencies {
-		compileOnly 'org.projectlombok:lombok'
-		annotationProcessor 'org.projectlombok:lombok'
-		testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	}
+bootJar {
+	archiveFileName = "series-tracker.jar"
+}
 
-	tasks.named('test') {
-		useJUnitPlatform()
-	}
+jar {
+	enabled = false
 }

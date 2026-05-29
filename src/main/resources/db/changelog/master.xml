@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.19.xsd">
+    <include file="2025/001-create-initial-schema.sql" relativeToChangelogFile="true"/>
+    <include file="2025/002-alter-status-constraint.sql" relativeToChangelogFile="true"/>
+    <include file="2025/003-add-sources.sql" relativeToChangelogFile="true"/>
+    <include file="2025/004-alter-source-id-column.sql" relativeToChangelogFile="true"/>
+    <include file="2025/005-drop-slug-columns.sql" relativeToChangelogFile="true"/>
+    <include file="2025/006-add-external-id-table.sql" relativeToChangelogFile="true"/>
+    <include file="2025/007-alter-user-table.sql" relativeToChangelogFile="true"/>
+    <include file="2025/008-alter-series-table.sql" relativeToChangelogFile="true"/>
+</databaseChangeLog>

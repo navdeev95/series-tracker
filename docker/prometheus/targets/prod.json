@@ -1,0 +1,5 @@
+[
+  {
+    "targets": ["series-tracker-app:8090"]
+  }
+]

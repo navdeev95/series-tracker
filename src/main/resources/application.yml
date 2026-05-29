@@ -1,0 +1,95 @@
+server:
+  port: 8090
+  servlet.context-path: /api
+
+spring:
+  datasource:
+    username: series_tracker_api
+    password: ${DB_API_PWD}
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  application:
+    name: seriesparser
+  liquibase:
+    user: series_tracker_dbo
+    password: ${DB_DBO_PWD}
+    change-log: classpath:db/changelog/master.xml
+    enabled: true
+  threads:
+    virtual:
+      enabled: true
+api:
+  connect-timeout: 20000
+  read-timeout: 20000
+  lumex-site:
+    url: https://api.lumex.site/
+    login:
+      path: login
+    stream-info:
+      path: stream-info
+
+    credentials:
+      client-id: ${LUMEX_CLIENT_ID}
+      username: ${LUMEX_USERNAME}
+      password: ${LUMEX_PASSWORD}
+
+  lumex-portal:
+    url: https://portal.lumex.host/api/
+    short-info:
+      path: short
+
+    credentials:
+      token: ${LUMEX_TOKEN}
+  movielab:
+    url: https://api.movielab.guru/api/v1/
+    series-search:
+      path: new-search/movies
+    episode-search:
+      path: movies
+  kinopoisk:
+    url: https://api.poiskkino.dev/v1.4/
+    series-search:
+      path: movie/search
+    series-info:
+      path: movie
+
+    credentials:
+      token: ${KINOPOISK_TOKEN}
+sync:
+  scheduler:
+    cron: "0 0 * * * *"
+
+telegram:
+  bot:
+    token: ${TG_BOT_TOKEN}
+    name: ${TG_BOT_NAME}
+    username: ${TG_BOT_USERNAME}
+    enabled: true
+
+logging:
+  file:
+    path: logs/
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 1GB
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,info
+      base-path: /actuator
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true

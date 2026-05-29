@@ -1,0 +1,16 @@
+services:
+  # Переопределяем способ запуска для продакшена (готовый образ)
+  series-tracker-app:
+    image: navdeev95/series-tracker-app:latest
+    profiles: ["prod"]
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+
+  # Prometheus для продакшена (targets prod)
+  prometheus:
+    container_name: prometheus
+    volumes:
+      - ./prometheus/targets/prod.json:/etc/prometheus/targets/targets.json
+    environment:
+      PROMETHEUS_ENV: prod
+    profiles: ["prod"]

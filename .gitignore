@@ -36,6 +36,18 @@ out/
 ### VS Code ###
 .vscode/
 
-.env
+### env data ###
+/*.env
+docker/.env
 
+### logs ###
+logs/
+
+### docker container data ###
+docker/loki/data
+docker/prometheus/data
+docker/grafana/data
 **/container_data/
+
+### docker images
+*.tar
