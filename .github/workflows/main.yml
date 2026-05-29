@@ -37,13 +37,13 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/series-tracker-app:latest
           
-      - name: ssh-action-deploy
-        uses: sebastianjnuwu/ssh-action-deploy@v4
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          IP: ${{ secrets.VPS_HOST }}
-          USER: ${{ secrets.VPS_USERNAME }}
-          KEY: ${{ secrets.VPS_SSH_KEY }}
-          RUN: |
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
             cd /opt/series-tracker
             git pull origin main
             docker-compose down
