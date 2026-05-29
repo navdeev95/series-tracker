@@ -47,4 +47,4 @@ jobs:
             cd /opt/series-tracker
             git pull origin main
             docker compose down
-            docker compose up -f docker-compose.base.yml -f docker-compose.prod.yml -d --build
+            docker compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d --build
