@@ -13,36 +13,44 @@ import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Slf4j
-public abstract class BaseCallbackCommand extends BaseCommand<CallbackCommandEnum> {
-    protected final TelegramService telegramService;
+public abstract class BaseCallbackCommand extends BaseCommand<CallbackCommandEnum, CallbackQuery> {
     private final UserSessionService userSessionService;
     protected final SeriesSendService seriesSendService;
 
-    @Override
-    public void execute(Update update) {
-        CallbackQuery callbackQuery = update.getCallbackQuery();
-        this.innerExecute(callbackQuery);
+    public BaseCallbackCommand(TelegramService telegramService,
+                               UserSessionService userSessionService,
+                               SeriesSendService seriesSendService) {
+        super(telegramService);
+        this.userSessionService = userSessionService;
+        this.seriesSendService = seriesSendService;
     }
 
-    protected abstract void innerExecute(CallbackQuery callbackQuery);
+    @Override
+    protected CallbackQuery extractRequest(Update update) {
+        return update.getCallbackQuery();
+    }
 
-    protected Optional<SeriesHistoryItem> getHistoryItem(org.telegram.telegrambots.meta.api.objects.CallbackQuery callbackQuery) {
+    @Override
+    protected User extractUser(CallbackQuery callbackQuery) {
+        return callbackQuery.getFrom();
+    }
+
+    protected Optional<SeriesHistoryItem> getHistoryItem(CallbackQuery callbackQuery) {
         Optional<String> token = CommandUtil.extractFirstParameter(getCommand(), callbackQuery.getData());
         if (token.isPresent()) {
-            return userSessionService.getHistoryItem(callbackQuery.getFrom().getId(), token.get());
+            return userSessionService.getHistoryItem(extractChatId(callbackQuery), token.get());
         }
         return Optional.empty();
     }
 
-    protected void setHistoryItemMessageId(org.telegram.telegrambots.meta.api.objects.CallbackQuery callbackQuery, Integer messageId) {
+    protected void setHistoryItemMessageId(CallbackQuery callbackQuery, Integer messageId) {
         Optional<String> token = CommandUtil.extractFirstParameter(getCommand(), callbackQuery.getData());
-        token.ifPresent(string -> userSessionService.setHistoryItemMessageId(callbackQuery.getFrom().getId(), string, messageId));
+        token.ifPresent(string -> userSessionService.setHistoryItemMessageId(extractChatId(callbackQuery), string, messageId));
     }
 
-    protected void handleMissingHistoryItem(User user) {
-        telegramService.sendErrorMessage(user.getId());
+    protected void handleMissingHistoryItem(CallbackQuery callbackQuery) {
+        telegramService.sendErrorMessage(extractChatId(callbackQuery));
     }
 
     protected void sendWaitingState(CallbackQuery query, SeriesHistoryItem historyItem) {

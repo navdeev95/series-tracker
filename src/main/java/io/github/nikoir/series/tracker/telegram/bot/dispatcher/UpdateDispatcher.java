@@ -17,14 +17,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Component
 public class UpdateDispatcher {
-    private final List<BaseCommand<?>> commands;
+    private final List<BaseCommand<?, ?>> commands;
     private final TelegramService telegramService;
 
     public void dispatch(Update update) {
         if (canSkipUpdate(update)) {
             return;
         }
-        Optional<BaseCommand<?>> foundCommand = findCommand(update);
+        Optional<BaseCommand<?, ?>> foundCommand = findCommand(update);
         foundCommand.ifPresentOrElse(
                 command -> command.execute(update),
                 () -> handleUnknownCommand(update));
@@ -42,7 +42,7 @@ public class UpdateDispatcher {
         return update.hasCallbackQuery() && StringUtils.isBlank(update.getCallbackQuery().getData());
     }
 
-    private Optional<BaseCommand<?>> findCommand(Update update) {
+    private Optional<BaseCommand<?, ?>> findCommand(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String messageText = update.getMessage().getText();
             Optional<TextCommandEnum> textCommandEnum;
@@ -84,7 +84,7 @@ public class UpdateDispatcher {
         return CommandUtil.fromCommandText(CallbackCommandEnum.class, commandText);
     }
 
-    private <T extends Enum<T> & CommandEnum> Optional<BaseCommand<?>> getCommand(T commandEnum) {
+    private <T extends Enum<T> & CommandEnum> Optional<BaseCommand<?, ?>> getCommand(T commandEnum) {
         return commands.stream()
                 .filter(c -> c.getCommand() == commandEnum)
                 .findFirst();

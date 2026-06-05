@@ -10,6 +10,7 @@ import io.github.nikoir.series.tracker.telegram.model.session.UserSession;
 import io.github.nikoir.series.tracker.telegram.model.session.UserStateEnum;
 import io.github.nikoir.series.tracker.telegram.model.session.SearchContext;
 import io.github.nikoir.series.tracker.telegram.service.SeriesSendService;
+import io.github.nikoir.series.tracker.telegram.service.TelegramService;
 import io.github.nikoir.series.tracker.telegram.service.UserSessionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -25,10 +26,11 @@ import static io.github.nikoir.series.tracker.telegram.command.util.CommandUtil.
 public class SearchInlineCommand extends BaseInlineCommand {
     private final SeriesSearchStrategyContext searchStrategyContext;
 
-    public SearchInlineCommand(SeriesSendService seriesSendService,
+    public SearchInlineCommand(TelegramService telegramService,
+                               SeriesSendService seriesSendService,
                                SeriesSearchStrategyContext searchStrategyContext,
                                UserSessionService userSessionService) {
-        super(userSessionService, seriesSendService);
+        super(telegramService, userSessionService, seriesSendService);
         this.searchStrategyContext = searchStrategyContext;
     }
 
@@ -38,18 +40,18 @@ public class SearchInlineCommand extends BaseInlineCommand {
     }
 
     @Override
-    protected void innerExecute(InlineQuery inlineQuery) {
-        Long userId = inlineQuery.getFrom().getId();
-        userSessionService.setUserState(userId, UserStateEnum.SEARCHING);
+    protected void doExecute(InlineQuery inlineQuery) {
+        Long chatId = extractChatId(inlineQuery);
+        userSessionService.setUserState(chatId, UserStateEnum.SEARCHING);
 
         Optional<String> searchText = extractSearchText(inlineQuery);
         if (searchText.isEmpty()) {
             return;
         }
 
-        SeriesSearchRs response = performSearch(inlineQuery, searchText.get(), userId);
+        SeriesSearchRs response = performSearch(inlineQuery, searchText.get(), chatId);
 
-        List<String> seriesTokens = saveSeriesListToHistory(userId, response.foundSeries().getContent());
+        List<String> seriesTokens = saveSeriesListToHistory(chatId, response.foundSeries().getContent());
 
         sendResponse(inlineQuery, response, seriesTokens);
     }

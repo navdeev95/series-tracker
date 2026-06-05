@@ -6,6 +6,7 @@ import io.github.nikoir.series.tracker.content.facade.SeriesSubscribeFacade;
 import io.github.nikoir.series.tracker.telegram.command.enums.InlineCommandEnum;
 import io.github.nikoir.series.tracker.telegram.command.handler.base.BaseInlineCommand;
 import io.github.nikoir.series.tracker.telegram.service.SeriesSendService;
+import io.github.nikoir.series.tracker.telegram.service.TelegramService;
 import io.github.nikoir.series.tracker.telegram.service.UserSessionService;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Component;
@@ -19,10 +20,11 @@ import static io.github.nikoir.series.tracker.telegram.command.enums.InlineComma
 public class SubscriptionsInlineCommand extends BaseInlineCommand {
     private final SeriesSubscribeFacade subscribeFacade;
 
-    public SubscriptionsInlineCommand(SeriesSendService seriesSendService,
+    public SubscriptionsInlineCommand(TelegramService telegramService,
+                                      SeriesSendService seriesSendService,
                                       SeriesSubscribeFacade subscribeFacade,
                                       UserSessionService userSessionService) {
-        super(userSessionService, seriesSendService);
+        super(telegramService, userSessionService, seriesSendService);
         this.subscribeFacade = subscribeFacade;
     }
 
@@ -32,7 +34,7 @@ public class SubscriptionsInlineCommand extends BaseInlineCommand {
     }
 
     @Override
-    protected void innerExecute(InlineQuery inlineQuery) {
+    protected void doExecute(InlineQuery inlineQuery) {
         SeriesSubscriptionRq request = createRq(inlineQuery);
 
         PagedModel<SeriesListViewRs> subscriptionList =  subscribeFacade.getSubscriptionList(request);
@@ -45,8 +47,7 @@ public class SubscriptionsInlineCommand extends BaseInlineCommand {
 
     private SeriesSubscriptionRq createRq(InlineQuery inlineQuery) {
         int page = parsePageNumber(inlineQuery.getOffset());
-        Long userTelegramId = inlineQuery.getFrom().getId();
 
-        return new SeriesSubscriptionRq(userTelegramId, page, PAGE_SIZE);
+        return new SeriesSubscriptionRq(extractChatId(inlineQuery), page, PAGE_SIZE);
     }
 }

@@ -11,19 +11,22 @@ import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import static io.github.nikoir.series.tracker.telegram.command.enums.TextCommandEnum.MY_SUBSCRIPTIONS;
 
-@RequiredArgsConstructor
 @Component
 public class SubscriptionsTextCommand extends BaseTextCommand {
-    private final TelegramService telegramService;
     private final MessageFactory messageFactory;
+    public SubscriptionsTextCommand(TelegramService telegramService,
+                                    MessageFactory messageFactory) {
+        super(telegramService);
+        this.messageFactory = messageFactory;
+    }
 
     @Override
     public TextCommandEnum getCommand() {
         return MY_SUBSCRIPTIONS;
     }
     @Override
-    protected void innerExecute(Message message) {
-        SendMessage sendMessage = messageFactory.createSubscriptionsSendMessage(message.getFrom().getId());
+    protected void doExecute(Message message) {
+        SendMessage sendMessage = messageFactory.createSubscriptionsSendMessage(extractChatId(message));
         telegramService.execute(sendMessage);
     }
 }

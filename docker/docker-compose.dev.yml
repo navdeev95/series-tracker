@@ -1,11 +1,6 @@
 services:
   # Переопределяем способ запуска для разработки (сборка из исходников)
-  series-tracker-app:
-    build:
-      context: ..
-    environment:
-      SPRING_PROFILES_ACTIVE: dev
-    profiles: ["dev"]
+  series-tracker-app: !reset []
 
   # Prometheus для разработки (targets dev)
   prometheus:

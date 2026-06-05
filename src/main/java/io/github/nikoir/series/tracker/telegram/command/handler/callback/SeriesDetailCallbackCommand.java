@@ -34,23 +34,22 @@ public class SeriesDetailCallbackCommand extends BaseCallbackCommand {
     }
 
     @Override
-    protected void innerExecute(CallbackQuery callbackQuery) {
-        User user = callbackQuery.getFrom();
+    protected void doExecute(CallbackQuery callbackQuery) {
 
         Optional<SeriesHistoryItem> historyItemOptional = getHistoryItem(callbackQuery);
         if (historyItemOptional.isEmpty()) {
-            handleMissingHistoryItem(user);
+            handleMissingHistoryItem(callbackQuery);
             return;
         }
 
         SeriesHistoryItem historyItem = historyItemOptional.get();
 
         SeriesDetailPersonalizedRs seriesDetailViewRs = seriesGetFacade
-                .getSeriesInfoForUser(user.getId(), historyItem.getExternalIds());
+                .getSeriesInfoForUser(extractChatId(callbackQuery), historyItem.getExternalIds());
 
         Optional<Integer> sentMessageId = seriesSendService.sendSeriesDetailInfo(seriesDetailViewRs,
                 historyItem.getToken(),
-                user.getId());
+                extractChatId(callbackQuery));
 
         sentMessageId.ifPresent(messageId -> setHistoryItemMessageId(callbackQuery, messageId));
     }

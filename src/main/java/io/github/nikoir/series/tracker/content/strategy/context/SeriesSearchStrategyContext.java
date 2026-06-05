@@ -8,6 +8,7 @@ import io.github.nikoir.series.tracker.content.strategy.SeriesSearchStrategy;
 import io.github.nikoir.series.tracker.content.strategy.impl.DBSearchStrategy;
 import io.github.nikoir.series.tracker.content.strategy.impl.KinopoiskSearchStrategy;
 import io.github.nikoir.series.tracker.content.strategy.impl.MovieLabSearchStrategy;
+import io.github.nikoir.series.tracker.content.strategy.impl.TMDBSearchStrategy;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import static io.github.nikoir.series.tracker.content.enums.Source.*;
 @Slf4j
 @RequiredArgsConstructor
 public class SeriesSearchStrategyContext {
+    private final TMDBSearchStrategy tmdbSearchStrategy;
     private final KinopoiskSearchStrategy kinopoiskSearchStrategy;
     private final MovieLabSearchStrategy movieLabSearchStrategy;
     private final DBSearchStrategy dbSearchStrategy;
@@ -36,10 +38,12 @@ public class SeriesSearchStrategyContext {
 
     @PostConstruct
     private void buildChain() {
+        searchMap.put(TMDB, tmdbSearchStrategy);
         searchMap.put(KINOPOISK, kinopoiskSearchStrategy);
         searchMap.put(MOVIELAB, movieLabSearchStrategy);
         searchMap.put(DATABASE, dbSearchStrategy);
 
+        searchChain.add(tmdbSearchStrategy);
         searchChain.add(movieLabSearchStrategy);
         searchChain.add(kinopoiskSearchStrategy);
         searchChain.add(dbSearchStrategy);

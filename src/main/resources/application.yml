@@ -58,6 +58,14 @@ api:
 
     credentials:
       token: ${KINOPOISK_TOKEN}
+  tmdb:
+    url: https://api.themoviedb.org/3/
+    auth:
+      path: authentication
+    series-search:
+      path: search/tv
+    credentials:
+      token: ${TMDB_TOKEN}
 sync:
   scheduler:
     cron: "0 0 * * * *"

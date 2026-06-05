@@ -11,7 +11,8 @@ import java.util.Arrays;
 public enum Source {
     DATABASE("DataBase", false),
     KINOPOISK("KinoPoisk", true),
-    MOVIELAB("MovieLab", true);
+    MOVIELAB("MovieLab", true),
+    TMDB("TMDB", true);
 
     private final String name;
     private final boolean external;

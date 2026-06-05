@@ -31,30 +31,28 @@ public class SeriesUnsubscribeCallbackCommand extends BaseCallbackCommand {
     }
 
     @Override
-    protected void innerExecute(CallbackQuery callbackQuery) {
-        User user = callbackQuery.getFrom();
-
+    protected void doExecute(CallbackQuery callbackQuery) {
         Optional<SeriesHistoryItem> historyItemOptional = getHistoryItem(callbackQuery);
         if (historyItemOptional.isEmpty()) {
-            handleMissingHistoryItem(user);
+            handleMissingHistoryItem(callbackQuery);
             return;
         }
 
         SeriesHistoryItem historyItem = historyItemOptional.get();
-        processUnsubscription(callbackQuery, user, historyItem);
+        processUnsubscription(callbackQuery, historyItem);
     }
 
-    private void processUnsubscription(CallbackQuery callbackQuery, User user, SeriesHistoryItem historyItem) {
+    private void processUnsubscription(CallbackQuery callbackQuery, SeriesHistoryItem historyItem) {
         sendWaitingState(callbackQuery, historyItem);
         try {
-            executeUnsubscription(user, historyItem);
+            executeUnsubscription(extractChatId(callbackQuery), historyItem);
             sendUnsubscribedState(callbackQuery, historyItem);
         } catch (Exception ex) {
             sendSubscribedState(callbackQuery, historyItem);
         }
     }
 
-    private void executeUnsubscription(User user, SeriesHistoryItem historyItem) {
-        seriesSubscribeFacade.unsubscribe(user.getId(), historyItem.getExternalIds());
+    private void executeUnsubscription(Long chatId, SeriesHistoryItem historyItem) {
+        seriesSubscribeFacade.unsubscribe(chatId, historyItem.getExternalIds());
     }
 }
