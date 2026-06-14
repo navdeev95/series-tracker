@@ -23,6 +23,7 @@ public abstract class SeriesDetailMapper {
         return switch (status) {
             case FILMING -> Series.Status.FILMING;
             case PRE_PRODUCTION -> Series.Status.PRE_PRODUCTION;
+            case CONTINUING -> Series.Status.CONTINUING;
             case COMPLETED -> Series.Status.COMPLETED;
             case ANNOUNCED -> Series.Status.ANNOUNCED;
             case POST_PRODUCTION -> Series.Status.POST_PRODUCTION;

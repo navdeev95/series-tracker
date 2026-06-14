@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.content.dto.integration.response.movielab.episode.search;
+package io.github.nikoir.series.tracker.content.dto.integration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

@@ -7,13 +7,10 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Data
-@ConfigurationProperties(prefix = "api.tmdb")
+@ConfigurationProperties(prefix = "api.wikidata")
 @Component
-public class TMDBProps {
+public class WikidataProps {
     private String url;
-    private MethodProps auth;
-    private MethodProps seriesSearch;
-    private MethodProps seriesDetails;
-    private MethodProps externalIds;
+    private MethodProps getEntity;
     private Map<String, String> credentials;
 }

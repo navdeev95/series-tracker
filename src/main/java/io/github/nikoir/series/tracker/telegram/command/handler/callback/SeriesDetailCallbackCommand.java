@@ -10,7 +10,6 @@ import io.github.nikoir.series.tracker.telegram.service.TelegramService;
 import io.github.nikoir.series.tracker.telegram.service.UserSessionService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.Optional;
 
@@ -18,14 +17,11 @@ import static io.github.nikoir.series.tracker.telegram.command.enums.CallbackCom
 
 @Component
 public class SeriesDetailCallbackCommand extends BaseCallbackCommand {
-    private final SeriesGetFacade seriesGetFacade;
-
     public SeriesDetailCallbackCommand(SeriesGetFacade seriesGetFacade,
                                        SeriesSendService seriesSendService,
                                        TelegramService telegramService,
                                        UserSessionService userSessionService) {
-        super(telegramService, userSessionService, seriesSendService);
-        this.seriesGetFacade = seriesGetFacade;
+        super(telegramService, userSessionService, seriesSendService, seriesGetFacade);
     }
 
     @Override
@@ -35,7 +31,6 @@ public class SeriesDetailCallbackCommand extends BaseCallbackCommand {
 
     @Override
     protected void doExecute(CallbackQuery callbackQuery) {
-
         Optional<SeriesHistoryItem> historyItemOptional = getHistoryItem(callbackQuery);
         if (historyItemOptional.isEmpty()) {
             handleMissingHistoryItem(callbackQuery);
@@ -43,15 +38,22 @@ public class SeriesDetailCallbackCommand extends BaseCallbackCommand {
         }
 
         SeriesHistoryItem historyItem = historyItemOptional.get();
+        SeriesDetailPersonalizedRs personalizedRs = getPersonalizedSeriesData(callbackQuery, historyItem);
+        sendAndSaveMessageId(historyItem, callbackQuery, personalizedRs);
+    }
 
-        SeriesDetailPersonalizedRs seriesDetailViewRs = seriesGetFacade
-                .getSeriesInfoForUser(extractChatId(callbackQuery), historyItem.getExternalIds());
-
-        Optional<Integer> sentMessageId = seriesSendService.sendSeriesDetailInfo(seriesDetailViewRs,
+    private void sendAndSaveMessageId(SeriesHistoryItem historyItem,
+                                      CallbackQuery callbackQuery,
+                                      SeriesDetailPersonalizedRs personalizedRs) {
+        Optional<Integer> messageIdOptional = seriesSendService.sendSeriesDetailInfo(personalizedRs,
                 historyItem.getToken(),
                 extractChatId(callbackQuery));
 
-        sentMessageId.ifPresent(messageId -> setHistoryItemMessageId(callbackQuery, messageId));
+        if (messageIdOptional.isEmpty()) {
+            return;
+        }
+
+        setHistoryItemMessageId(callbackQuery, messageIdOptional.get());
     }
 
 }

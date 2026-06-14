@@ -20,7 +20,7 @@ import java.util.List;
 public class Series {
 
     public enum Status {
-        FILMING, PRE_PRODUCTION, COMPLETED, ANNOUNCED, POST_PRODUCTION, DELETED
+        FILMING, PRE_PRODUCTION, COMPLETED, CONTINUING, ANNOUNCED, POST_PRODUCTION, DELETED
     }
 
     @Id

@@ -24,7 +24,7 @@ public class SeriesNewContentService {
         PagedModel<Long> subscribers;
         int page = 0;
         do {
-            SeriesSubscribersRq request = new SeriesSubscribersRq(seriesDetains.id(), page, BATCH_SIZE);
+            SeriesSubscribersRq request = new SeriesSubscribersRq(seriesDetains.getInnerId(), page, BATCH_SIZE);
             subscribers = subscribeFacade.getSubscribersTelegramIds(request);
             subscribers.getContent().forEach(userId -> this.handleSubscriber(userId, newContentEvent));
         } while (subscribers.getMetadata().number() + 1 < subscribers.getMetadata().totalPages());

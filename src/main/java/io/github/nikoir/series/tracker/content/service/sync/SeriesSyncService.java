@@ -4,7 +4,7 @@ import io.github.nikoir.series.tracker.common.dto.response.SeasonViewRs;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.content.dto.internal.SyncResult;
 import io.github.nikoir.series.tracker.content.enums.Source;
-import io.github.nikoir.series.tracker.content.strategy.context.ExternalContentSearchStrategyContext;
+import io.github.nikoir.series.tracker.content.strategy.impl.MovieLabEpisodeSearchStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +13,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SeriesSyncService {
-    private final ExternalContentSearchStrategyContext searchStrategyContext;
+    private final MovieLabEpisodeSearchStrategy episodeSearchStrategy;
     private final SeriesContentSyncService contentSyncService;
 
     public SyncResult syncSeriesWithReleases(SeriesDetailViewRs seriesDetails) {
-        List<SeasonViewRs> externalSeasons = searchStrategyContext.search(seriesDetails.externalIds());
-        Source source = searchStrategyContext.getExternalContentSearchStrategy()
-                .getDataSource();
+        List<SeasonViewRs> externalSeasons = episodeSearchStrategy.searchEpisodes(seriesDetails.getExternalIds());
+        Source source = episodeSearchStrategy.getDataSource();
 
-        SyncResult result = contentSyncService.syncSeriesContent(seriesDetails.id(), externalSeasons, source);
+        SyncResult result = contentSyncService.syncSeriesContent(seriesDetails.getInnerId(), externalSeasons, source);
         return result.hasNewContent() ? result : SyncResult.empty();
     }
 }

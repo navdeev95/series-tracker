@@ -6,7 +6,6 @@ import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
 import io.github.nikoir.series.tracker.telegram.service.SeriesSendService;
 import io.github.nikoir.series.tracker.telegram.service.TelegramService;
 import io.github.nikoir.series.tracker.telegram.service.UserSessionService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -59,7 +58,7 @@ public abstract class BaseInlineCommand extends BaseCommand<InlineCommandEnum, I
         String token = UUID.randomUUID().toString();
         return SeriesHistoryItem.builder()
                 .token(token)
-                .externalIds(series.externalIds())
+                .lightExternalIds(series.externalIds())
                 .build();
     }
 

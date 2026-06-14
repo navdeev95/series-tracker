@@ -64,8 +64,18 @@ api:
       path: authentication
     series-search:
       path: search/tv
+    series-details:
+      path: tv/{series_id}
+    external-ids:
+      path: tv/{series_id}/external_ids
     credentials:
       token: ${TMDB_TOKEN}
+  wikidata:
+    url: https://www.wikidata.org/w/rest.php/wikibase/v1
+    get-entity:
+      path: /entities/items/{item_id}
+    credentials:
+      token: ${WIKIDATA_TOKEN}
 sync:
   scheduler:
     cron: "0 0 * * * *"

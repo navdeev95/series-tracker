@@ -1,4 +1,4 @@
-package io.github.nikoir.series.tracker.content.dto.integration.response.tmdb;
+package io.github.nikoir.series.tracker.content.dto.integration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -15,6 +15,7 @@ import java.util.Map;
 @Mapper(componentModel = "spring")
 public abstract class DBSeriesDetailAdapter implements SeriesDetailAdapter<Series>{
     @Override
+    @Mapping(target = "innerId", source = "id")
     @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
     @Mapping(target = "externalIds", source = "externalIds")
     @Mapping(target = "isSeries", constant = "true")
@@ -30,6 +31,7 @@ public abstract class DBSeriesDetailAdapter implements SeriesDetailAdapter<Serie
             case FILMING -> SeriesStatus.FILMING;
             case PRE_PRODUCTION -> SeriesStatus.PRE_PRODUCTION;
             case COMPLETED -> SeriesStatus.COMPLETED;
+            case CONTINUING -> SeriesStatus.CONTINUING;
             case POST_PRODUCTION -> SeriesStatus.POST_PRODUCTION;
             case DELETED -> SeriesStatus.DELETED;
             case ANNOUNCED -> SeriesStatus.ANNOUNCED;

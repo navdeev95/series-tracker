@@ -34,7 +34,7 @@ public class SeriesService {
     @Transactional
     public Series create(SeriesDetailViewRs seriesDto) {
         Series entity = detailMapper.toEntity(seriesDto);
-        entity.setExternalIds(mapExternalIds(entity, seriesDto.externalIds()));
+        entity.setExternalIds(mapExternalIds(entity, seriesDto.getExternalIds()));
         return seriesRepository.save(entity);
     }
 

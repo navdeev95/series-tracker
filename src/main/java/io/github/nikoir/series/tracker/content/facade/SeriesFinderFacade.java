@@ -5,8 +5,10 @@ import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import io.github.nikoir.series.tracker.content.service.SeriesService;
-import io.github.nikoir.series.tracker.content.strategy.context.SeriesGetStrategyContext;
-import jakarta.transaction.Transactional;
+import io.github.nikoir.series.tracker.content.strategy.SeriesGetStrategy;
+import io.github.nikoir.series.tracker.content.strategy.impl.TMDBExternalIdStrategy;
+import io.github.nikoir.series.tracker.content.strategy.impl.TMDBSeriesGetStrategy;
+import io.github.nikoir.series.tracker.content.strategy.impl.WikidataExternalIdStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,24 +21,27 @@ import java.util.Optional;
 @Slf4j
 class SeriesFinderFacade {
     private final SeriesService seriesService;
-    private final SeriesGetStrategyContext getStrategyContext;
+    private final SeriesGetStrategy seriesGetStrategy;
+    private final ExternalIdFacade externalIdFacade;
     private final DBSeriesDetailAdapter detailAdapter;
 
-    SeriesDetailViewRs findOrCreateSeries(Map<ExternalId, String> externalIds) {
-        return seriesService.find(externalIds)
-                .map(detailAdapter::toViewDto)
-                .orElseGet(() -> createSeries(externalIds));
+    public SeriesDetailViewRs findLocallyOrGet(Map<ExternalId, String> externalIds) {
+        return findLocally(externalIds)
+                .orElseGet(() -> getSeriesAndExternalIds(externalIds));
     }
 
-    SeriesDetailViewRs findSeries(Map<ExternalId, String> externalIds) {
-        return seriesService.find(externalIds)
-                .map(detailAdapter::toViewDto)
-                .orElseGet(() -> getStrategyContext.get(externalIds));
+    private SeriesDetailViewRs getSeriesAndExternalIds(Map<ExternalId, String> externalIds) {
+        SeriesDetailViewRs seriesDetails = seriesGetStrategy.get(externalIds);
+
+        Map<ExternalId, String> enrichedExternalIds = externalIdFacade.enrichExternalIds(seriesDetails.getExternalIds());
+        seriesDetails.setExternalIds(enrichedExternalIds);
+
+        return seriesDetails;
     }
 
-    private SeriesDetailViewRs createSeries(Map<ExternalId, String> externalIds) {
-        SeriesDetailViewRs seriesInfo = getStrategyContext.get(externalIds);
-        Series series = seriesService.create(seriesInfo);
-        return detailAdapter.toViewDto(series);
+    private Optional<SeriesDetailViewRs> findLocally(Map<ExternalId, String> externalIds) {
+        return seriesService.find(externalIds)
+                .map(detailAdapter::toViewDto);
     }
+
 }

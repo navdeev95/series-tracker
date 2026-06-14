@@ -18,7 +18,7 @@ public abstract class BaseCommand<T extends CommandEnum, E> {
         try {
             doExecute(request);
         } catch (Exception ex) {
-            handleException(request, ex);
+            handleError(request, ex);
             log.error("Произошла ошибка при обработке ответа", ex);
         }
     }
@@ -33,9 +33,13 @@ public abstract class BaseCommand<T extends CommandEnum, E> {
 
     protected abstract User extractUser(E request);
 
-    protected void handleException(E request, Exception ex) {
+    protected void handleError(E request, Exception ex) {
         Long chatId = extractChatId(request);
         telegramService.sendErrorMessage(chatId);
+    }
+
+    protected void handleError(E request) {
+        handleError(request, null);
     }
 
 }

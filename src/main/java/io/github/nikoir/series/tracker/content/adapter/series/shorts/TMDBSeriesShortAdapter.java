@@ -1,7 +1,7 @@
 package io.github.nikoir.series.tracker.content.adapter.series.shorts;
 
 import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
-import io.github.nikoir.series.tracker.content.dto.integration.response.tmdb.TMDBSeriesSearchRs;
+import io.github.nikoir.series.tracker.content.dto.integration.TMDBSeriesSearchRs;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -21,7 +21,7 @@ public class MessageFactory {
                                                String seriesToken) {
         return SendPhoto.builder()
                 .chatId(chatId)
-                .photo(new InputFile(seriesDetail.seriesInfo().posterUrl()))
+                .photo(new InputFile(seriesDetail.seriesInfo().getPosterUrl()))
                 .caption(buildSeriesDetailCaption(seriesDetail.seriesInfo(), false, false))
                 .parseMode("HTML")
                 .replyMarkup(keyboardFactory.createSeriesKeyboard(seriesDetail, seriesToken))
@@ -69,7 +69,7 @@ public class MessageFactory {
                                             SeriesDetailViewRs seriesDetail) {
         return SendPhoto.builder()
                 .chatId(chatId)
-                .photo(new InputFile(seriesDetail.posterUrl()))
+                .photo(new InputFile(seriesDetail.getPosterUrl()))
                 .caption(buildSeriesDetailCaption(seriesDetail, false, true))
                 .parseMode("HTML")
                 .build();
@@ -79,7 +79,7 @@ public class MessageFactory {
                                              SeriesDetailViewRs seriesDetail) {
         return SendPhoto.builder()
                 .chatId(chatId)
-                .photo(new InputFile(seriesDetail.posterUrl()))
+                .photo(new InputFile(seriesDetail.getPosterUrl()))
                 .caption(buildSeriesDetailCaption(seriesDetail, true, false))
                 .parseMode("HTML")
                 .build();
@@ -102,13 +102,13 @@ public class MessageFactory {
             %s
             """,
                 buildTypeInfo(isNewEpisodeEvent, isNewSeasonEvent),
-                seriesInfo.title(),
-                seriesInfo.releaseYear(),
-                seriesInfo.isSeries() ? "Сериал" : "Фильм",
-                String.join(", ", seriesInfo.countries()),
-                seriesInfo.releaseYear(),
-                seriesInfo.totalSeasons(),
-                seriesInfo.description());
+                seriesInfo.getTitle(),
+                seriesInfo.getReleaseYear(),
+                seriesInfo.getIsSeries() ? "Сериал" : "Фильм",
+                String.join(", ", seriesInfo.getCountries()),
+                seriesInfo.getReleaseYear(),
+                seriesInfo.getTotalSeasons(),
+                seriesInfo.getDescription());
     }
 
     private String buildTypeInfo(boolean isNewEpisodeEvent, boolean isNewSeasonEvent) {

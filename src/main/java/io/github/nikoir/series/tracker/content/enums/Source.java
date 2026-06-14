@@ -12,7 +12,8 @@ public enum Source {
     DATABASE("DataBase", false),
     KINOPOISK("KinoPoisk", true),
     MOVIELAB("MovieLab", true),
-    TMDB("TMDB", true);
+    TMDB("TMDB", true),
+    WIKIDATA("WikiData", true);
 
     private final String name;
     private final boolean external;

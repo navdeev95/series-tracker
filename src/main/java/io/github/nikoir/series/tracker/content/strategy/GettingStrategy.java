@@ -2,7 +2,6 @@ package io.github.nikoir.series.tracker.content.strategy;
 
 import io.github.nikoir.series.tracker.content.enums.Source;
 
-public interface SearchStrategy<T, R> {
+public interface GettingStrategy {
     Source getDataSource();
-    R search(T request);
 }

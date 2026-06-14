@@ -14,7 +14,8 @@ public enum ExternalId {
     IMDB("IMDB"),
     TMDB("TMDB"),
     MOVIELAB("movielab"),
-    KINOPOISK_HD("kinopoisk_hd");
+    KINOPOISK_HD("kinopoisk_hd"),
+    WIKIDATA("wikidata");
 
     private final String name;
     private Long entityId;

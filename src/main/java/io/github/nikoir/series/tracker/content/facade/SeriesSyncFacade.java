@@ -23,7 +23,6 @@ public class SeriesSyncFacade {
 
     private final SeriesService seriesService;
     private final SeriesSyncService syncService;
-    private final SeriesFinderFacade finderFacade;
     private final DBSeriesDetailAdapter seriesDetailAdapter;
     private final NewContentEventPublisher eventPublisher;
 
@@ -38,12 +37,9 @@ public class SeriesSyncFacade {
         } while (batch.hasNext());
     }
 
-    @Transactional
-    public SeriesDetailViewRs findOrCreateWithSync(Map<ExternalId, String> externalIds) {
-        SeriesDetailViewRs seriesDto = finderFacade.findOrCreateSeries(externalIds);
-        syncService.syncSeriesWithReleases(seriesDto);
-
-        return seriesDto;
+    public void sync(Series series) {
+        SeriesDetailViewRs detailViewRs = seriesDetailAdapter.toViewDto(series);
+        syncService.syncSeriesWithReleases(detailViewRs);
     }
 
     private void syncAndNotify(Series series) {
