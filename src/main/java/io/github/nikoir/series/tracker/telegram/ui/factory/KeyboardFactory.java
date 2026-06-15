@@ -111,7 +111,7 @@ public class KeyboardFactory {
     private InlineKeyboardButton createUnavailableSubscribeButton() {
         return InlineKeyboardButton.builder()
                 .text("🚫 Подписка недоступна")
-                .callbackData("noop")
+                .callbackData(" ")
                 .build();
     }
 

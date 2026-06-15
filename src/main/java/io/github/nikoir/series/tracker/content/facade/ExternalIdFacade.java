@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+import static io.github.nikoir.series.tracker.content.enums.ExternalId.WIKIDATA;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -18,6 +20,9 @@ public class ExternalIdFacade {
 
     public Map<ExternalId, String> enrichExternalIds(Map<ExternalId, String> existingExternalIds) {
         Map<ExternalId, String> tmdbResult = tmdbExternalIdStrategy.enrichExternalIds(existingExternalIds);
+        if (!tmdbResult.containsKey(WIKIDATA)) {
+            return tmdbResult;
+        }
         return wikidataExternalIdStrategy.enrichExternalIds(tmdbResult);
     }
 }
