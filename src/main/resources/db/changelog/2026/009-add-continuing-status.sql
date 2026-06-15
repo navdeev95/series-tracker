@@ -6,4 +6,9 @@
 -- Изменяем CHECK constraint, добавляя новое значение continuing
 ALTER TABLE "series" DROP CONSTRAINT chk_status;
 
-ALTER TABLE "series" ADD CONSTRAINT chk_status CHECK (status in ('filming', 'pre-production', 'completed', 'announced', 'post-production', 'continuing'));
+ALTER TABLE "series" ADD CONSTRAINT chk_status CHECK (status in ('FILMING',
+'PRE-PRODUCTION',
+'COMPLETED',
+'ANNOUNCED',
+'POST-PRODUCTION',
+'CONTINUING'));
