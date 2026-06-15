@@ -1,6 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.command.handler.callback;
 
-import io.github.nikoir.series.tracker.content.facade.SeriesGetFacade;
+import io.github.nikoir.series.tracker.content.facade.SeriesPersonalInfoFacade;
 import io.github.nikoir.series.tracker.content.facade.SeriesSubscribeFacade;
 import io.github.nikoir.series.tracker.telegram.command.handler.base.BaseCallbackCommand;
 import io.github.nikoir.series.tracker.telegram.command.enums.CallbackCommandEnum;
@@ -21,8 +21,8 @@ public class SeriesSubscribeCallbackCommand extends BaseCallbackCommand {
                                           SeriesSubscribeFacade seriesSubscribeFacade,
                                           TelegramService telegramService,
                                           UserSessionService userSessionService,
-                                          SeriesGetFacade seriesGetFacade) {
-        super(telegramService, userSessionService, seriesSendService, seriesGetFacade);
+                                          SeriesPersonalInfoFacade seriesPersonalInfoFacade) {
+        super(telegramService, userSessionService, seriesSendService, seriesPersonalInfoFacade);
         this.seriesSubscribeFacade = seriesSubscribeFacade;
     }
 

@@ -2,14 +2,13 @@ package io.github.nikoir.series.tracker.telegram.command.handler.base;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailPersonalizedRs;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
-import io.github.nikoir.series.tracker.content.facade.SeriesGetFacade;
+import io.github.nikoir.series.tracker.content.facade.SeriesPersonalInfoFacade;
 import io.github.nikoir.series.tracker.telegram.command.enums.CallbackCommandEnum;
 import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
 import io.github.nikoir.series.tracker.telegram.service.SeriesSendService;
 import io.github.nikoir.series.tracker.telegram.service.TelegramService;
 import io.github.nikoir.series.tracker.telegram.service.UserSessionService;
 import io.github.nikoir.series.tracker.telegram.command.util.CommandUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -22,16 +21,16 @@ import java.util.Optional;
 public abstract class BaseCallbackCommand extends BaseCommand<CallbackCommandEnum, CallbackQuery> {
     private final UserSessionService userSessionService;
     protected final SeriesSendService seriesSendService;
-    protected final SeriesGetFacade seriesGetFacade;
+    protected final SeriesPersonalInfoFacade seriesPersonalInfoFacade;
 
     public BaseCallbackCommand(TelegramService telegramService,
                                UserSessionService userSessionService,
                                SeriesSendService seriesSendService,
-                               SeriesGetFacade seriesGetFacade) {
+                               SeriesPersonalInfoFacade seriesPersonalInfoFacade) {
         super(telegramService);
         this.userSessionService = userSessionService;
         this.seriesSendService = seriesSendService;
-        this.seriesGetFacade = seriesGetFacade;
+        this.seriesPersonalInfoFacade = seriesPersonalInfoFacade;
     }
 
     @Override
@@ -105,13 +104,13 @@ public abstract class BaseCallbackCommand extends BaseCommand<CallbackCommandEnu
     private SeriesDetailPersonalizedRs getResponseForExisting(SeriesDetailViewRs seriesDetails,
                                                               CallbackQuery callbackQuery) {
         Long chatId = extractChatId(callbackQuery);
-        SeriesDetailPersonalizedRs.SubscriptionStatus subscriptionStatus = seriesGetFacade.getSubscriptionStatus(chatId, seriesDetails);
+        SeriesDetailPersonalizedRs.SubscriptionStatus subscriptionStatus = seriesPersonalInfoFacade.getSubscriptionStatus(chatId, seriesDetails);
         return new SeriesDetailPersonalizedRs(seriesDetails, subscriptionStatus);
     }
 
     private SeriesDetailPersonalizedRs loadAndGetResponse(Map<ExternalId, String> externalIds,
                                                           CallbackQuery callbackQuery) {
         Long chatId = extractChatId(callbackQuery);
-        return seriesGetFacade.getSeriesInfoForUser(chatId, externalIds);
+        return seriesPersonalInfoFacade.getSeriesInfoForUser(chatId, externalIds);
     }
 }

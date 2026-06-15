@@ -2,7 +2,7 @@ package io.github.nikoir.series.tracker.telegram.command.handler.inline;
 
 import io.github.nikoir.series.tracker.common.dto.request.SeriesSearchRq;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
-import io.github.nikoir.series.tracker.content.facade.SeriesSearchFacade;
+import io.github.nikoir.series.tracker.content.facade.SeriesFinderFacade;
 import io.github.nikoir.series.tracker.telegram.command.enums.InlineCommandEnum;
 import io.github.nikoir.series.tracker.telegram.command.handler.base.BaseInlineCommand;
 import io.github.nikoir.series.tracker.telegram.model.session.UserStateEnum;
@@ -22,14 +22,14 @@ import static io.github.nikoir.series.tracker.telegram.command.util.CommandUtil.
 @Slf4j
 @Component
 public class SearchInlineCommand extends BaseInlineCommand {
-    private final SeriesSearchFacade searchFacade;
+    private final SeriesFinderFacade seriesFinderFacade;
 
     public SearchInlineCommand(TelegramService telegramService,
                                SeriesSendService seriesSendService,
-                               SeriesSearchFacade seriesSearchFacade,
+                               SeriesFinderFacade seriesFinderFacade,
                                UserSessionService userSessionService) {
         super(telegramService, userSessionService, seriesSendService);
-        this.searchFacade = seriesSearchFacade;
+        this.seriesFinderFacade = seriesFinderFacade;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class SearchInlineCommand extends BaseInlineCommand {
             return;
         }
 
-        PagedModel<SeriesListViewRs> response = searchFacade.search(createRq(inlineQuery, searchText.get()));
+        PagedModel<SeriesListViewRs> response = seriesFinderFacade.search(createRq(inlineQuery, searchText.get()));
 
         List<String> seriesTokens = saveSeriesListToHistory(chatId, response.getContent());
 

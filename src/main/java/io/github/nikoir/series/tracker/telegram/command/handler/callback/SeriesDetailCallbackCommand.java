@@ -1,7 +1,7 @@
 package io.github.nikoir.series.tracker.telegram.command.handler.callback;
 
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailPersonalizedRs;
-import io.github.nikoir.series.tracker.content.facade.SeriesGetFacade;
+import io.github.nikoir.series.tracker.content.facade.SeriesPersonalInfoFacade;
 import io.github.nikoir.series.tracker.telegram.command.handler.base.BaseCallbackCommand;
 import io.github.nikoir.series.tracker.telegram.command.enums.CallbackCommandEnum;
 import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
@@ -17,11 +17,11 @@ import static io.github.nikoir.series.tracker.telegram.command.enums.CallbackCom
 
 @Component
 public class SeriesDetailCallbackCommand extends BaseCallbackCommand {
-    public SeriesDetailCallbackCommand(SeriesGetFacade seriesGetFacade,
+    public SeriesDetailCallbackCommand(SeriesPersonalInfoFacade seriesPersonalInfoFacade,
                                        SeriesSendService seriesSendService,
                                        TelegramService telegramService,
                                        UserSessionService userSessionService) {
-        super(telegramService, userSessionService, seriesSendService, seriesGetFacade);
+        super(telegramService, userSessionService, seriesSendService, seriesPersonalInfoFacade);
     }
 
     @Override

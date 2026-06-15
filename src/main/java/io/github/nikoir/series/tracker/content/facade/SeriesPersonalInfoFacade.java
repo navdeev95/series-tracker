@@ -14,7 +14,7 @@ import static io.github.nikoir.series.tracker.common.dto.response.SeriesDetailPe
 
 @Service
 @RequiredArgsConstructor
-public class SeriesGetFacade {
+public class SeriesPersonalInfoFacade {
     private final SeriesFinderFacade seriesFinderFacade;
     private final UserSubscriptionService subscriptionService;
 
