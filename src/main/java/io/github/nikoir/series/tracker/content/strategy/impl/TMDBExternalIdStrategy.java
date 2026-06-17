@@ -6,7 +6,6 @@ import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import io.github.nikoir.series.tracker.content.enums.Source;
 import io.github.nikoir.series.tracker.content.service.RequestBuilder;
 import io.github.nikoir.series.tracker.content.strategy.ExternalIdStrategy;
-import io.github.nikoir.series.tracker.content.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
@@ -14,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,11 +34,11 @@ public class TMDBExternalIdStrategy implements ExternalIdStrategy {
             throw new IllegalArgumentException("Not found tmdb id!"); //TODO: кастомные исключения
         }
 
-        String url = UriBuilder.from(tmdbProps.getUrl())
+        String url = UriComponentsBuilder.fromUriString(tmdbProps.getUrl())
                 .path(tmdbProps.getExternalIds().getPath())
-                .var("series_id", tmdbId)
-                .disableEncoding()
-                .build();
+                .build(false)
+                .expand(tmdbId)
+                .toUriString();
 
         ResponseEntity<TMDBExternalIdsRs> response = restTemplate.exchange(url,
                 HttpMethod.GET,

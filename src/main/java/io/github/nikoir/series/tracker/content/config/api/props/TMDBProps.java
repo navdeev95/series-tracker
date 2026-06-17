@@ -8,7 +8,6 @@ import java.util.Map;
 
 @Data
 @ConfigurationProperties(prefix = "api.tmdb")
-@Component
 public class TMDBProps {
     private String url;
     private MethodProps auth;

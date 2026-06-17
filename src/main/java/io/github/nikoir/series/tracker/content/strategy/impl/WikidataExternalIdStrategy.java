@@ -1,13 +1,11 @@
 package io.github.nikoir.series.tracker.content.strategy.impl;
 
 import io.github.nikoir.series.tracker.content.config.api.props.WikidataProps;
-import io.github.nikoir.series.tracker.content.dto.integration.TMDBExternalIdsRs;
 import io.github.nikoir.series.tracker.content.dto.integration.WikidataItemRs;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import io.github.nikoir.series.tracker.content.enums.Source;
 import io.github.nikoir.series.tracker.content.service.RequestBuilder;
 import io.github.nikoir.series.tracker.content.strategy.ExternalIdStrategy;
-import io.github.nikoir.series.tracker.content.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
@@ -15,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
 
@@ -41,11 +40,11 @@ public class WikidataExternalIdStrategy implements ExternalIdStrategy {
             throw new IllegalArgumentException("Not found wikidata id!"); //TODO: кастомные исключения
         }
 
-        String url = UriBuilder.from(wikidataProps.getUrl())
+        String url = UriComponentsBuilder.fromUriString(wikidataProps.getUrl())
                 .path(wikidataProps.getGetEntity().getPath())
-                .var("item_id", wikidataId)
-                .disableEncoding()
-                .build();
+                .build(false)
+                .expand(wikidataId)
+                .toUriString();
 
         ResponseEntity<WikidataItemRs> response = restTemplate.exchange(url,
                 HttpMethod.GET,

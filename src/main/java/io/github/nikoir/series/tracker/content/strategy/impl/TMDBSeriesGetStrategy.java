@@ -10,7 +10,6 @@ import io.github.nikoir.series.tracker.content.enums.Source;
 import io.github.nikoir.series.tracker.content.service.RequestBuilder;
 import io.github.nikoir.series.tracker.content.strategy.CountryGetStrategy;
 import io.github.nikoir.series.tracker.content.strategy.SeriesGetStrategy;
-import io.github.nikoir.series.tracker.content.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
@@ -18,6 +17,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -44,12 +44,12 @@ public class TMDBSeriesGetStrategy implements SeriesGetStrategy {
             throw new IllegalArgumentException("Not found tmdb id!"); //TODO: кастомные исключения
         }
 
-        String url = UriBuilder.from(tmdbProps.getUrl())
+        String url = UriComponentsBuilder.fromUriString(tmdbProps.getUrl())
                 .path(tmdbProps.getSeriesDetails().getPath())
-                .var("series_id", tmdbId)
-                .param("language", "ru-RU")
-                .disableEncoding()
-                .build();
+                .queryParam("language", "ru-RU")
+                .build(false)
+                .expand(tmdbId)
+                .toUriString();
 
         ResponseEntity<TMDBSeriesInfoRs> response = restTemplate.exchange(url,
                 HttpMethod.GET,

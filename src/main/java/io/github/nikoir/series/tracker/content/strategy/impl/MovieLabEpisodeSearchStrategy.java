@@ -7,7 +7,6 @@ import io.github.nikoir.series.tracker.content.adapter.season.MovieLabSeasonAdap
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import io.github.nikoir.series.tracker.content.enums.Source;
 import io.github.nikoir.series.tracker.content.strategy.EpisodeSearchStrategy;
-import io.github.nikoir.series.tracker.content.util.UriBuilder;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
@@ -16,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -43,10 +43,11 @@ public class MovieLabEpisodeSearchStrategy implements EpisodeSearchStrategy {
 
         HttpEntity<String> entity = new HttpEntity<>(movieLabHeaders);
 
-        String url = UriBuilder.from(movieLabProps.getUrl())
+        String url = UriComponentsBuilder.fromUriString(movieLabProps.getUrl())
                 .path(movieLabProps.getEpisodeSearch().getPath())
-                .path(kinopoiskId)
-                .build();
+                .pathSegment(kinopoiskId)
+                .build()
+                .toUriString();
 
         ResponseEntity<MovieLabEpisodeSearchRs> response = restTemplate.exchange(
                 url, HttpMethod.GET, entity, MovieLabEpisodeSearchRs.class);
