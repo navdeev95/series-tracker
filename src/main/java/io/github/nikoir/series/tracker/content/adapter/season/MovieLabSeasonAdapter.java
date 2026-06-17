@@ -1,7 +1,7 @@
 package io.github.nikoir.series.tracker.content.adapter.season;
 
 import io.github.nikoir.series.tracker.common.dto.response.SeasonViewRs;
-import io.github.nikoir.series.tracker.content.dto.integration.response.movielab.episode.search.MovieLabEpisodeSearchRs;
+import io.github.nikoir.series.tracker.content.dto.integration.MovieLabEpisodeSearchRs;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

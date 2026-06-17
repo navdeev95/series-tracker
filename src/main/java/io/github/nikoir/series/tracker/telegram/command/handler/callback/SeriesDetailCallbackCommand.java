@@ -1,7 +1,7 @@
 package io.github.nikoir.series.tracker.telegram.command.handler.callback;
 
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailPersonalizedRs;
-import io.github.nikoir.series.tracker.content.facade.SeriesGetFacade;
+import io.github.nikoir.series.tracker.content.facade.SeriesPersonalInfoFacade;
 import io.github.nikoir.series.tracker.telegram.command.handler.base.BaseCallbackCommand;
 import io.github.nikoir.series.tracker.telegram.command.enums.CallbackCommandEnum;
 import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
@@ -10,7 +10,6 @@ import io.github.nikoir.series.tracker.telegram.service.TelegramService;
 import io.github.nikoir.series.tracker.telegram.service.UserSessionService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.Optional;
 
@@ -18,14 +17,11 @@ import static io.github.nikoir.series.tracker.telegram.command.enums.CallbackCom
 
 @Component
 public class SeriesDetailCallbackCommand extends BaseCallbackCommand {
-    private final SeriesGetFacade seriesGetFacade;
-
-    public SeriesDetailCallbackCommand(SeriesGetFacade seriesGetFacade,
+    public SeriesDetailCallbackCommand(SeriesPersonalInfoFacade seriesPersonalInfoFacade,
                                        SeriesSendService seriesSendService,
                                        TelegramService telegramService,
                                        UserSessionService userSessionService) {
-        super(telegramService, userSessionService, seriesSendService);
-        this.seriesGetFacade = seriesGetFacade;
+        super(telegramService, userSessionService, seriesSendService, seriesPersonalInfoFacade);
     }
 
     @Override
@@ -35,7 +31,6 @@ public class SeriesDetailCallbackCommand extends BaseCallbackCommand {
 
     @Override
     protected void doExecute(CallbackQuery callbackQuery) {
-
         Optional<SeriesHistoryItem> historyItemOptional = getHistoryItem(callbackQuery);
         if (historyItemOptional.isEmpty()) {
             handleMissingHistoryItem(callbackQuery);
@@ -43,15 +38,26 @@ public class SeriesDetailCallbackCommand extends BaseCallbackCommand {
         }
 
         SeriesHistoryItem historyItem = historyItemOptional.get();
+        Optional<SeriesDetailPersonalizedRs> personalizedRs = getPersonalizedSeriesData(callbackQuery, historyItem);
+        if (personalizedRs.isEmpty()) {
+            handleError(callbackQuery);
+            return;
+        }
+        sendAndSaveMessageId(historyItem, callbackQuery, personalizedRs.get());
+    }
 
-        SeriesDetailPersonalizedRs seriesDetailViewRs = seriesGetFacade
-                .getSeriesInfoForUser(extractChatId(callbackQuery), historyItem.getExternalIds());
-
-        Optional<Integer> sentMessageId = seriesSendService.sendSeriesDetailInfo(seriesDetailViewRs,
+    private void sendAndSaveMessageId(SeriesHistoryItem historyItem,
+                                      CallbackQuery callbackQuery,
+                                      SeriesDetailPersonalizedRs personalizedRs) {
+        Optional<Integer> messageIdOptional = seriesSendService.sendSeriesDetailInfo(personalizedRs,
                 historyItem.getToken(),
                 extractChatId(callbackQuery));
 
-        sentMessageId.ifPresent(messageId -> setHistoryItemMessageId(callbackQuery, messageId));
+        if (messageIdOptional.isEmpty()) {
+            return;
+        }
+
+        setHistoryItemMessageId(callbackQuery, messageIdOptional.get());
     }
 
 }

@@ -21,8 +21,7 @@ import static io.github.nikoir.series.tracker.telegram.command.util.CommandUtil.
 @Component
 public class KeyboardFactory {
     public InlineKeyboardMarkup createSeriesKeyboard(SeriesDetailPersonalizedRs seriesDetail, String seriesToken) {
-        SubscriptionStatus status = seriesDetail.isUserSubscribed() ?
-                SubscriptionStatus.SUBSCRIBED : SubscriptionStatus.NOT_SUBSCRIBED;
+        SubscriptionStatus status = getSubscriptionStatus(seriesDetail);
         return createSubscriptionKeyboard(seriesToken, status);
     }
 
@@ -31,6 +30,7 @@ public class KeyboardFactory {
             case SUBSCRIBED -> new InlineKeyboardRow(createUnsubscribeButton(seriesToken));
             case NOT_SUBSCRIBED -> new InlineKeyboardRow(createSubscribeButton(seriesToken));
             case WAITING -> new InlineKeyboardRow(createWaitingButton());
+            case NOT_AVAILABLE -> new InlineKeyboardRow(createUnavailableSubscribeButton());
         };
 
         return InlineKeyboardMarkup.builder()
@@ -79,6 +79,14 @@ public class KeyboardFactory {
                 .build();
     }
 
+    private SubscriptionStatus getSubscriptionStatus(SeriesDetailPersonalizedRs seriesDetail) {
+        return switch (seriesDetail.subscriptionStatus()) {
+            case SUBSCRIBED -> SubscriptionStatus.SUBSCRIBED;
+            case AVAILABLE -> SubscriptionStatus.NOT_SUBSCRIBED;
+            case NOT_AVAILABLE -> SubscriptionStatus.NOT_AVAILABLE;
+        };
+    }
+
     private InlineKeyboardButton createSubscribeButton(String seriesToken) {
         return InlineKeyboardButton.builder()
                 .text("🔔 Подписаться")
@@ -96,6 +104,13 @@ public class KeyboardFactory {
     private InlineKeyboardButton createWaitingButton() {
         return InlineKeyboardButton.builder()
                 .text("⏳ Обработка...")
+                .callbackData(" ")
+                .build();
+    }
+
+    private InlineKeyboardButton createUnavailableSubscribeButton() {
+        return InlineKeyboardButton.builder()
+                .text("🚫 Подписка недоступна")
                 .callbackData(" ")
                 .build();
     }

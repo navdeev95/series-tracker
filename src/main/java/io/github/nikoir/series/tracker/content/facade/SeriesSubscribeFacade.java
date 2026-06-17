@@ -3,9 +3,9 @@ package io.github.nikoir.series.tracker.content.facade;
 import io.github.nikoir.series.tracker.common.dto.request.SeriesSubscribersRq;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.content.adapter.series.shorts.DatabaseSeriesShortAdapter;
-import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.common.dto.request.SeriesSubscriptionRq;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.content.domain.entity.User;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import io.github.nikoir.series.tracker.content.service.SeriesService;
@@ -18,7 +18,6 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Optional;
 
 
 @Service
@@ -26,16 +25,21 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SeriesSubscribeFacade {
     private final SeriesSyncFacade syncFacade;
+    private final SeriesService seriesService;
     private final UserSubscriptionService subscriptionService;
     private final DatabaseSeriesShortAdapter seriesShortAdapter;
 
     @Transactional
-    public void subscribe(Long userTelegramId, Map<ExternalId, String> externalIds) {
-        SeriesDetailViewRs seriesDto = syncFacade.findOrCreateWithSync(externalIds);
-
-        if (seriesDto.id() != null) {
-            subscriptionService.subscribeIfNotExists(userTelegramId, seriesDto.id());
+    public void subscribeIfNotSubscribed(SeriesDetailViewRs seriesDetailViewRs, Long userTelegramId) {
+        Long seriesId;
+        if (seriesDetailViewRs.getInnerId() != null) {
+            seriesId = seriesDetailViewRs.getInnerId();
+        } else {
+            Series createdSeries = seriesService.create(seriesDetailViewRs);
+            syncFacade.sync(createdSeries);
+            seriesId = createdSeries.getId();
         }
+        subscriptionService.subscribeIfNotSubscribed(userTelegramId, seriesId);
     }
 
     public void unsubscribe(Long userTelegramId, Map<ExternalId, String> externalIds) {

@@ -13,5 +13,8 @@ public class TMDBProps {
     private String url;
     private MethodProps auth;
     private MethodProps seriesSearch;
+    private MethodProps seriesDetails;
+    private MethodProps externalIds;
+    private MethodProps countries;
     private Map<String, String> credentials;
 }

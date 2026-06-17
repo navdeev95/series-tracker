@@ -50,6 +50,14 @@ public final class UriBuilder {
         return this;
     }
 
+    public UriBuilder var(String key, Object value) {
+        if (isNotBlank(key) && value != null) {
+            String textToSearch = String.format("{%s}", key);
+            this.paths.replaceAll(p -> p.replace(textToSearch, String.valueOf(value)));
+        }
+        return this;
+    }
+
     public UriBuilder params(Map<String, Object> params) {
         if (params != null) {
             this.params.putAll(params);
