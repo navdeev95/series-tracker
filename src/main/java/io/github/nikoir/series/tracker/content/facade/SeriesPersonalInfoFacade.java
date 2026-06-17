@@ -18,11 +18,14 @@ public class SeriesPersonalInfoFacade {
     private final SeriesFinderFacade seriesFinderFacade;
     private final UserSubscriptionService subscriptionService;
 
-    public SeriesDetailPersonalizedRs getSeriesInfoForUser(Long userTelegramId,
+    public Optional<SeriesDetailPersonalizedRs> getSeriesInfoForUser(Long userTelegramId,
                                                            Map<ExternalId, String> externalIds) {
-        SeriesDetailViewRs seriesInfo = seriesFinderFacade.findLocallyOrGet(externalIds);
-        SeriesDetailPersonalizedRs.SubscriptionStatus subscriptionStatus = getSubscriptionStatus(userTelegramId, seriesInfo);
-        return new SeriesDetailPersonalizedRs(seriesInfo, subscriptionStatus);
+        Optional<SeriesDetailViewRs> seriesInfo = seriesFinderFacade.findLocallyOrGet(externalIds);
+        if (seriesInfo.isEmpty()) {
+            return Optional.empty();
+        }
+        SeriesDetailPersonalizedRs.SubscriptionStatus subscriptionStatus = getSubscriptionStatus(userTelegramId, seriesInfo.get());
+        return Optional.of(new SeriesDetailPersonalizedRs(seriesInfo.get(), subscriptionStatus));
     }
 
     public SeriesDetailPersonalizedRs.SubscriptionStatus getSubscriptionStatus(Long userTelegramId,

@@ -15,5 +15,6 @@ public class TMDBProps {
     private MethodProps seriesSearch;
     private MethodProps seriesDetails;
     private MethodProps externalIds;
+    private MethodProps countries;
     private Map<String, String> credentials;
 }

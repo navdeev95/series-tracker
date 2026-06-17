@@ -1,5 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.ui.factory;
 
+import io.github.nikoir.series.tracker.common.dto.response.CountryRs;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailPersonalizedRs;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
@@ -105,7 +106,12 @@ public class MessageFactory {
                 seriesInfo.getTitle(),
                 seriesInfo.getReleaseYear(),
                 seriesInfo.getIsSeries() ? "Сериал" : "Фильм",
-                String.join(", ", seriesInfo.getCountries()),
+                String.join(", ",
+                        seriesInfo.getCountries()
+                                .stream()
+                                .map(CountryRs::name)
+                                .toList()),
+
                 seriesInfo.getReleaseYear(),
                 seriesInfo.getTotalSeasons(),
                 seriesInfo.getDescription());

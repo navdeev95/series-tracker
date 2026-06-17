@@ -1,11 +1,16 @@
 package io.github.nikoir.series.tracker.content.mapper;
 
+import io.github.nikoir.series.tracker.common.dto.response.CountryRs;
+import io.github.nikoir.series.tracker.content.domain.entity.Country;
 import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.content.dto.internal.SeriesStatus;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+
+import java.util.List;
+import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public abstract class SeriesDetailMapper {

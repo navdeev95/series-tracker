@@ -1,6 +1,8 @@
 package io.github.nikoir.series.tracker.content.adapter.series.detail;
 
+import io.github.nikoir.series.tracker.common.dto.response.CountryRs;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
+import io.github.nikoir.series.tracker.content.domain.entity.Country;
 import io.github.nikoir.series.tracker.content.dto.integration.TMDBSeriesInfoRs;
 import io.github.nikoir.series.tracker.content.dto.internal.SeriesStatus;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
@@ -80,13 +82,13 @@ public abstract class TMDBSeriesDetailAdapter implements SeriesDetailAdapter<TMD
     }
 
     @Named("mapCountries")
-    protected List<String> mapCountries(List<TMDBSeriesInfoRs.ProductionCountry> productionCountries) {
+    protected List<CountryRs> mapCountries(List<TMDBSeriesInfoRs.ProductionCountry> productionCountries) {
         if (CollectionUtils.isEmpty(productionCountries)) {
             return Collections.emptyList();
         }
 
         return productionCountries.stream()
-                .map(TMDBSeriesInfoRs.ProductionCountry::name)
+                .map(pc -> new CountryRs(pc.iso3166_1(), pc.name()))
                 .toList();
     }
 

@@ -19,7 +19,7 @@ public class SeriesDetailViewRs {
     private Integer releaseYear;
     private String posterUrl;
     private String description;
-    private List<String> countries;
+    private List<CountryRs> countries;
     private Boolean isSeries;
     private Map<ExternalId, String> externalIds;
 }

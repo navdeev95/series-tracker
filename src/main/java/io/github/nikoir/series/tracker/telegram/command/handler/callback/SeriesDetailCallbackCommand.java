@@ -38,8 +38,12 @@ public class SeriesDetailCallbackCommand extends BaseCallbackCommand {
         }
 
         SeriesHistoryItem historyItem = historyItemOptional.get();
-        SeriesDetailPersonalizedRs personalizedRs = getPersonalizedSeriesData(callbackQuery, historyItem);
-        sendAndSaveMessageId(historyItem, callbackQuery, personalizedRs);
+        Optional<SeriesDetailPersonalizedRs> personalizedRs = getPersonalizedSeriesData(callbackQuery, historyItem);
+        if (personalizedRs.isEmpty()) {
+            handleError(callbackQuery);
+            return;
+        }
+        sendAndSaveMessageId(historyItem, callbackQuery, personalizedRs.get());
     }
 
     private void sendAndSaveMessageId(SeriesHistoryItem historyItem,

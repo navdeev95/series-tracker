@@ -3,15 +3,11 @@ package io.github.nikoir.series.tracker.content.facade;
 import io.github.nikoir.series.tracker.common.dto.request.SeriesSearchRq;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
 import io.github.nikoir.series.tracker.content.adapter.series.detail.DBSeriesDetailAdapter;
-import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import io.github.nikoir.series.tracker.content.service.SeriesService;
 import io.github.nikoir.series.tracker.content.strategy.SeriesGetStrategy;
-import io.github.nikoir.series.tracker.content.strategy.impl.TMDBExternalIdStrategy;
-import io.github.nikoir.series.tracker.content.strategy.impl.TMDBSeriesGetStrategy;
 import io.github.nikoir.series.tracker.content.strategy.impl.TMDBSeriesSearchStrategy;
-import io.github.nikoir.series.tracker.content.strategy.impl.WikidataExternalIdStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -35,9 +31,9 @@ public class SeriesFinderFacade {
     private final ExternalIdFacade externalIdFacade;
     private final DBSeriesDetailAdapter detailAdapter;
 
-    public SeriesDetailViewRs findLocallyOrGet(Map<ExternalId, String> externalIds) {
+    public Optional<SeriesDetailViewRs> findLocallyOrGet(Map<ExternalId, String> externalIds) {
         return findLocally(externalIds)
-                .orElseGet(() -> getSeriesAndExternalIds(externalIds));
+                .or(() -> getSeriesAndExternalIds(externalIds));
     }
 
     public PagedModel<SeriesListViewRs> search(SeriesSearchRq request) {
@@ -47,13 +43,18 @@ public class SeriesFinderFacade {
         return seriesSearchStrategy.search(request);
     }
 
-    private SeriesDetailViewRs getSeriesAndExternalIds(Map<ExternalId, String> externalIds) {
-        SeriesDetailViewRs seriesDetails = seriesGetStrategy.get(externalIds);
+    private Optional<SeriesDetailViewRs> getSeriesAndExternalIds(Map<ExternalId, String> externalIds) {
+        Optional<SeriesDetailViewRs> optionalSeriesDetails = seriesGetStrategy.get(externalIds);
+
+        if (optionalSeriesDetails.isEmpty()) {
+            return Optional.empty();
+        }
+        SeriesDetailViewRs seriesDetails = optionalSeriesDetails.get();
 
         Map<ExternalId, String> enrichedExternalIds = externalIdFacade.enrichExternalIds(seriesDetails.getExternalIds());
         seriesDetails.setExternalIds(enrichedExternalIds);
 
-        return seriesDetails;
+        return Optional.of(seriesDetails);
     }
 
     private Optional<SeriesDetailViewRs> findLocally(Map<ExternalId, String> externalIds) {

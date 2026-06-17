@@ -88,16 +88,19 @@ public abstract class BaseCallbackCommand extends BaseCommand<CallbackCommandEnu
         seriesSendService.setUnsubscribedButton(query.getFrom().getId(), historyItem);
     }
 
-    protected SeriesDetailPersonalizedRs getPersonalizedSeriesData(CallbackQuery callbackQuery,
+    protected Optional<SeriesDetailPersonalizedRs> getPersonalizedSeriesData(CallbackQuery callbackQuery,
                                                                    SeriesHistoryItem historyItem) {
-        SeriesDetailPersonalizedRs personalizedRs;
+        Optional<SeriesDetailPersonalizedRs> personalizedRs;
 
         if (historyItem.hasSeriesDetails()) {
-            personalizedRs = getResponseForExisting(historyItem.getFullSeriesDetail(), callbackQuery);
+            personalizedRs = Optional.of(getResponseForExisting(historyItem.getFullSeriesDetail(), callbackQuery));
         } else {
             personalizedRs = loadAndGetResponse(historyItem.getLightExternalIds(), callbackQuery);
         }
-        setHistoryItemSeriesDetails(callbackQuery, personalizedRs.seriesInfo());
+        if (personalizedRs.isEmpty()) {
+            return Optional.empty();
+        }
+        setHistoryItemSeriesDetails(callbackQuery, personalizedRs.get().seriesInfo());
         return personalizedRs;
     }
 
@@ -108,7 +111,7 @@ public abstract class BaseCallbackCommand extends BaseCommand<CallbackCommandEnu
         return new SeriesDetailPersonalizedRs(seriesDetails, subscriptionStatus);
     }
 
-    private SeriesDetailPersonalizedRs loadAndGetResponse(Map<ExternalId, String> externalIds,
+    private Optional<SeriesDetailPersonalizedRs> loadAndGetResponse(Map<ExternalId, String> externalIds,
                                                           CallbackQuery callbackQuery) {
         Long chatId = extractChatId(callbackQuery);
         return seriesPersonalInfoFacade.getSeriesInfoForUser(chatId, externalIds);
