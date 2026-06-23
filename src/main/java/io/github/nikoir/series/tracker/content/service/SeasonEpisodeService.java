@@ -34,7 +34,10 @@ public class SeasonEpisodeService {
         for (SeasonInfo seasonInfo: seasonList) {
             Season seasonToSave = seasonMapper.toEntity(seasonInfo);
             seasonToSave.setSeries(seriesRepository.getReferenceById(seriesId));
+
             List<Episode> episodesToSave = episodeMapper.toEntities(seasonInfo.getEpisodes());
+            episodesToSave.forEach(episode -> episode.setSeason(seasonToSave));
+
             seasonToSave.setEpisodes(episodesToSave);
 
             seasonsToSave.add(seasonToSave);

@@ -1,6 +1,5 @@
 package io.github.nikoir.series.tracker.content.service;
 
-import io.github.nikoir.series.tracker.common.dto.response.CountryRs;
 import io.github.nikoir.series.tracker.content.domain.entity.Country;
 import io.github.nikoir.series.tracker.content.domain.entity.ExternalIdSeries;
 import io.github.nikoir.series.tracker.content.domain.entity.Series;
@@ -8,14 +7,12 @@ import io.github.nikoir.series.tracker.content.domain.repo.CountryRepository;
 import io.github.nikoir.series.tracker.content.domain.repo.ExternalIdRepository;
 import io.github.nikoir.series.tracker.content.domain.repo.SeriesRepository;
 import io.github.nikoir.series.tracker.content.domain.repo.specification.SeriesSpecifications;
-import io.github.nikoir.series.tracker.content.dto.internal.SeriesSyncRq;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import io.github.nikoir.series.tracker.content.mapper.SeriesDetailMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,9 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static io.github.nikoir.series.tracker.content.domain.entity.Series.Status.COMPLETED;
-import static io.github.nikoir.series.tracker.content.domain.entity.Series.Status.DELETED;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +46,12 @@ public class SeriesService {
 
     }
 
-    public Optional<Series> getSeriesWithCountries(Specification<Series> specification) {
+    public Page<Series> findUncompletedSeries(int page, int size) {
+        return seriesRepository.searchSeriesWithoutReleases(PageRequest.of(page, size));
+    }
+
+
+    private Optional<Series> getSeriesWithCountries(Specification<Series> specification) {
         // 1. Получаем ID сериалов по спецификации
         List<Long> ids = seriesRepository.findAll(specification)
                 .stream()
@@ -67,14 +66,6 @@ public class SeriesService {
         //TODO: предусмотреть "отметку" дублей.
         // На текущий момент выбирается первый добавленный в базу сериал
         return seriesRepository.findByIdWithCountries(ids.getFirst());
-    }
-
-    public Page<Series> findUncompletedSeries(int page, int size) {
-        return seriesRepository.searchSeriesWithStatus(
-                true,
-                List.of(Series.Status.COMPLETED, Series.Status.DELETED),
-                PageRequest.of(page, size)
-        );
     }
 
     private Set<Country> getCountriesToSave(SeriesDetailViewRs seriesDetails) {

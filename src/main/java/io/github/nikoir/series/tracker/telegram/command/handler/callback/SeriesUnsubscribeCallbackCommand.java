@@ -50,6 +50,7 @@ public class SeriesUnsubscribeCallbackCommand extends BaseCallbackCommand {
             sendUnsubscribedState(callbackQuery, historyItem);
         } catch (Exception ex) {
             sendSubscribedState(callbackQuery, historyItem);
+            throw ex;
         }
     }
 

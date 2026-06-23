@@ -38,7 +38,7 @@ public class Season {
     @JoinColumn(name = "series_id", nullable = false)
     private Series series;
 
-    @OneToMany(mappedBy = "season", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "season", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Episode> episodes = new ArrayList<>();
 }
