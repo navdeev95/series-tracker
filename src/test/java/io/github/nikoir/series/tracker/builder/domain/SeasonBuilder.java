@@ -7,22 +7,18 @@ import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class SeasonBuilder {
     private String name;
     private Integer number;
     private LocalDate releaseDate;
-    private Integer totalEpisodes;
     private Series series;
     private List<Episode> episodes = new ArrayList<>();
 
     public SeasonBuilder() {
         // Значения по умолчанию
         this.number = 1;
-        this.totalEpisodes = 10;
         this.releaseDate = LocalDate.now();
         this.name = "Season " + number;
     }
@@ -45,22 +41,19 @@ public class SeasonBuilder {
         return this;
     }
 
-    public SeasonBuilder withTotalEpisodes(Integer totalEpisodes) {
-        this.totalEpisodes = totalEpisodes;
-        return this;
-    }
-
     public SeasonBuilder withSeries(Series series) {
         this.series = series;
         return this;
     }
 
     public SeasonBuilder withEpisodes(List<Episode> episodes) {
-        this.episodes = new ArrayList<>(episodes);
+        if (episodes != null && !episodes.isEmpty()) {
+            this.episodes = new ArrayList<>(episodes);
+        }
         return this;
     }
 
-    public SeasonBuilder addEpisode(Episode episode) {
+    public SeasonBuilder withEpisode(Episode episode) {
         this.episodes.add(episode);
         return this;
     }
@@ -83,7 +76,6 @@ public class SeasonBuilder {
         season.setName(name);
         season.setNumber(number);
         season.setReleaseDate(releaseDate);
-        season.setTotalEpisodes(totalEpisodes);
         season.setSeries(series);
         season.setEpisodes(episodes);
 

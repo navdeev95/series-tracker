@@ -1,7 +1,7 @@
 package io.github.nikoir.series.tracker.content.strategy.impl;
 
 import io.github.nikoir.series.tracker.content.config.api.props.MovieLabProps;
-import io.github.nikoir.series.tracker.common.dto.response.SeasonViewRs;
+import io.github.nikoir.series.tracker.content.dto.internal.SeasonInfo;
 import io.github.nikoir.series.tracker.content.dto.integration.MovieLabEpisodeSearchRs;
 import io.github.nikoir.series.tracker.content.adapter.season.MovieLabSeasonAdapter;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
@@ -35,7 +35,7 @@ public class MovieLabEpisodeSearchStrategy implements EpisodeSearchStrategy {
     }
 
     @Override
-    public List<SeasonViewRs> searchEpisodes(Map<ExternalId, String> externalIds) {
+    public List<SeasonInfo> searchEpisodes(Map<ExternalId, String> externalIds) {
         String kinopoiskId = externalIds.get(ExternalId.KINOPOISK);
         if (StringUtils.isEmpty(kinopoiskId)) {
             throw new IllegalArgumentException("Not found kinopoisk id!"); //TODO: кастомные исключения
@@ -59,6 +59,6 @@ public class MovieLabEpisodeSearchStrategy implements EpisodeSearchStrategy {
                 .map(e -> e.values().stream().toList())
                 .orElseThrow();
 
-        return seasonAdapter.toSeasonViewRsList(seasonList);
+        return seasonAdapter.toSeasonInfoList(seasonList);
     }
 }

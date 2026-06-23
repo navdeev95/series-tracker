@@ -89,6 +89,10 @@ public class MessageFactory {
     private String buildSeriesDetailCaption(SeriesDetailViewRs seriesInfo,
                                             boolean isNewEpisodeEvent,
                                             boolean isNewSeasonEvent) {
+        String status = seriesInfo.getStatus() != null
+                ? seriesInfo.getStatus().getDescription()
+                : "Неизвестно";
+
         return String.format("""
             %s
             <b>%s</b> (%d)
@@ -98,6 +102,7 @@ public class MessageFactory {
             🌏 <b>Страны:</b> %s
             📅 <b>Год:</b> %d
             📺 <b>Сезонов:</b> %d
+            📌 <b>Статус:</b> %s
             
             <b>Описание:</b>
             %s
@@ -111,9 +116,9 @@ public class MessageFactory {
                                 .stream()
                                 .map(CountryRs::name)
                                 .toList()),
-
                 seriesInfo.getReleaseYear(),
                 seriesInfo.getTotalSeasons(),
+                status,
                 seriesInfo.getDescription());
     }
 

@@ -13,10 +13,6 @@ public class SyncResult {
     private int newEpisodesCnt;
     private final List<EpisodeRelease> newReleases = new ArrayList<>();
 
-    public int getNewReleasesCnt() {
-        return newEpisodesCnt;
-    }
-
     public boolean hasNewContent() {
         return newEpisodesCnt > 0;
     }

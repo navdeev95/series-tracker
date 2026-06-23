@@ -7,6 +7,7 @@ import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.content.dto.internal.SeriesStatus;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
+import org.hibernate.collection.spi.PersistentSet;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -45,14 +46,22 @@ public abstract class DBSeriesDetailAdapter implements SeriesDetailAdapter<Serie
 
     @Named("mapCountries")
     protected List<CountryRs> mapCountries(Set<Country> countrySet) {
-        if (countrySet == null || countrySet.isEmpty()) {
+        if (countrySet == null) {
             return Collections.emptyList();
         }
 
-        return countrySet
-                .stream()
-                .map(c -> new CountryRs(c.getIsoCode(), c.getName()))
-                .toList();
+        // Безопасная проверка на инициализацию
+        if (countrySet instanceof PersistentSet<Country> persistentSet) {
+            if (!persistentSet.wasInitialized()) {
+                return Collections.emptyList();
+            }
+        }
+
+        return countrySet.isEmpty() ?
+                Collections.emptyList() :
+                countrySet.stream()
+                        .map(c -> new CountryRs(c.getIsoCode(), c.getName()))
+                        .toList();
     }
 
     protected Map<ExternalId, String> mapExternalIds(List<ExternalIdSeries> externalIds) {

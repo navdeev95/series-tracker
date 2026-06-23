@@ -1,7 +1,8 @@
 package io.github.nikoir.series.tracker.content.mapper;
 
 import io.github.nikoir.series.tracker.content.domain.entity.Episode;
-import io.github.nikoir.series.tracker.common.dto.response.SeasonViewRs;
+import io.github.nikoir.series.tracker.content.dto.internal.EpisodeInfo;
+import io.github.nikoir.series.tracker.content.dto.internal.SeasonInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -15,15 +16,15 @@ public abstract class EpisodeMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "season", ignore = true)
-    public abstract Episode toEntity(SeasonViewRs.EpisodeViewRs episodeViewRs);
+    public abstract Episode toEntity(EpisodeInfo episodeInfo);
 
     @Named("mapEpisodes")
-    public List<Episode> toEntities(List<SeasonViewRs.EpisodeViewRs> episodeViewRsList) {
-        if (CollectionUtils.isEmpty(episodeViewRsList)) {
+    public List<Episode> toEntities(List<EpisodeInfo> episodeInfoList) {
+        if (CollectionUtils.isEmpty(episodeInfoList)) {
             return Collections.emptyList();
         }
 
-        return episodeViewRsList
+        return episodeInfoList
                 .stream()
                 .map(this::toEntity)
                 .toList();

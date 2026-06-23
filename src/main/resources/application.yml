@@ -68,8 +68,8 @@ api:
       path: tv/{series_id}
     external-ids:
       path: tv/{series_id}/external_ids
-    countries:
-      path: configuration/countries
+    season-details:
+      path: tv/{series_id}/season/{season_number}
     credentials:
       token: ${TMDB_TOKEN}
   wikidata:

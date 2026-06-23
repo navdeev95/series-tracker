@@ -95,10 +95,10 @@ public record TMDBSeriesInfoRs(
         List<Season> seasons,
 
         @JsonProperty("last_episode_to_air")
-        Episode lastEpisodeToAir,
+        TMDBEpisodeInfoRs lastEpisodeToAir,
 
         @JsonProperty("next_episode_to_air")
-        Episode nextEpisodeToAir
+        TMDBEpisodeInfoRs nextEpisodeToAir
 ) {
     public record Creator(
             @JsonProperty("id")
@@ -199,46 +199,5 @@ public record TMDBSeriesInfoRs(
 
             @JsonProperty("vote_average")
             Double voteAverage
-    ) {}
-
-    public record Episode(
-            @JsonProperty("id")
-            Integer id,
-
-            @JsonProperty("name")
-            String name,
-
-            @JsonProperty("overview")
-            String overview,
-
-            @JsonProperty("air_date")
-            String airDate,
-
-            @JsonProperty("episode_number")
-            Integer episodeNumber,
-
-            @JsonProperty("episode_type")
-            String episodeType,
-
-            @JsonProperty("production_code")
-            String productionCode,
-
-            @JsonProperty("runtime")
-            Integer runtime,
-
-            @JsonProperty("season_number")
-            Integer seasonNumber,
-
-            @JsonProperty("show_id")
-            Integer showId,
-
-            @JsonProperty("still_path")
-            String stillPath,
-
-            @JsonProperty("vote_average")
-            Double voteAverage,
-
-            @JsonProperty("vote_count")
-            Integer voteCount
     ) {}
 }

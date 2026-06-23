@@ -1,6 +1,7 @@
 package io.github.nikoir.series.tracker.content.adapter.season;
 
-import io.github.nikoir.series.tracker.common.dto.response.SeasonViewRs;
+import io.github.nikoir.series.tracker.content.dto.internal.EpisodeInfo;
+import io.github.nikoir.series.tracker.content.dto.internal.SeasonInfo;
 import io.github.nikoir.series.tracker.content.dto.integration.MovieLabEpisodeSearchRs;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,14 +17,14 @@ public abstract class MovieLabSeasonAdapter implements ExternalSeasonAdapter<Mov
     @Override
     @Mapping(source = "seasonNumber", target = "number")
     @Mapping(source = "episodes", target = "episodes", qualifiedByName = "mapEpisodes")
-    public abstract SeasonViewRs toSeasonViewRs(MovieLabEpisodeSearchRs.Season source);
+    public abstract SeasonInfo toSeasonInfo(MovieLabEpisodeSearchRs.Season source);
 
     @Mapping(source = "episode", target = "number")
-    @Mapping(source = "translations", target = "translations", qualifiedByName = "mapTranslations")
-    protected abstract SeasonViewRs.EpisodeViewRs mapEpisode(MovieLabEpisodeSearchRs.Episode episode);
+    //@Mapping(source = "translations", target = "translations", qualifiedByName = "mapTranslations")
+    protected abstract EpisodeInfo mapEpisode(MovieLabEpisodeSearchRs.Episode episode);
 
     @Named("mapEpisodes")
-    protected List<SeasonViewRs.EpisodeViewRs> mapEpisodes(Map<String, MovieLabEpisodeSearchRs.Episode> episodes) {
+    protected List<EpisodeInfo> mapEpisodes(Map<String, MovieLabEpisodeSearchRs.Episode> episodes) {
         if (CollectionUtils.isEmpty(episodes)) {
             return Collections.emptyList();
         }

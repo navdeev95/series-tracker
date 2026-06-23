@@ -4,7 +4,7 @@ import io.github.nikoir.series.tracker.content.domain.entity.Episode;
 import io.github.nikoir.series.tracker.content.domain.entity.Season;
 import io.github.nikoir.series.tracker.content.domain.repo.EpisodeRepository;
 import io.github.nikoir.series.tracker.content.domain.repo.SeasonRepository;
-import io.github.nikoir.series.tracker.common.dto.response.SeasonViewRs;
+import io.github.nikoir.series.tracker.content.dto.internal.SeasonInfo;
 import io.github.nikoir.series.tracker.content.domain.repo.SeriesRepository;
 import io.github.nikoir.series.tracker.content.mapper.EpisodeMapper;
 import io.github.nikoir.series.tracker.content.mapper.SeasonMapper;
@@ -13,9 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,45 +23,36 @@ import java.util.stream.Collectors;
 public class SeasonEpisodeService {
 
     private final SeasonRepository seasonRepository;
-    private final EpisodeRepository episodeRepository;
     private final SeriesRepository seriesRepository;
+    private final EpisodeRepository episodeRepository;
     private final SeasonMapper seasonMapper;
     private final EpisodeMapper episodeMapper;
 
-    public Season createSeason(Long seriesId, SeasonViewRs seasonData) {
-        log.info("Creating new season for series with id '{}': season {}",
-                seriesId, seasonData.number());
+    public void createSeasonsWithEpisodes(Long seriesId, List<SeasonInfo> seasonList) {
+        List<Season> seasonsToSave = new LinkedList<>();
 
-        Season newSeason = seasonMapper.toEntity(seasonData);
-        newSeason.getEpisodes().forEach(episode -> episode.setSeason(newSeason));
-        newSeason.setSeries(seriesRepository.getReferenceById(seriesId));
+        for (SeasonInfo seasonInfo: seasonList) {
+            Season seasonToSave = seasonMapper.toEntity(seasonInfo);
+            seasonToSave.setSeries(seriesRepository.getReferenceById(seriesId));
+            List<Episode> episodesToSave = episodeMapper.toEntities(seasonInfo.getEpisodes());
+            seasonToSave.setEpisodes(episodesToSave);
 
-        return seasonRepository.save(newSeason);
+            seasonsToSave.add(seasonToSave);
+        }
+
+        seasonRepository.saveAll(seasonsToSave);
     }
 
-    public List<Episode> createEpisodes(Season season, List<SeasonViewRs.EpisodeViewRs> episodesData) {
-        log.info("Creating {} episodes for series '{}' season {}",
-                episodesData.size(), season.getSeries().getTitle(), season.getNumber());
+    public List<Season> loadContentWithoutReleases(Long seriesId) {
+        List<Season> seasons = seasonRepository.findSeasonsWithEpisodesWithoutReleases(seriesId);
 
-        List<Episode> episodes = episodeMapper.toEntities(episodesData);
-        episodes.forEach(episode -> episode.setSeason(season));
+        // Для каждого сезона загружаем только эпизоды без релизов
+        seasons.forEach(season -> {
+            List<Episode> episodesWithoutReleases =
+                    episodeRepository.findEpisodesWithoutReleasesBySeasonId(season.getId());
+            season.setEpisodes(episodesWithoutReleases);
+        });
 
-        return episodeRepository.saveAll(episodes);
-    }
-
-    public List<SeasonViewRs.EpisodeViewRs> findMissingEpisodes(Season existingSeason, SeasonViewRs externalSeason) {
-        Set<Integer> existingNumbers = existingSeason.getEpisodes()
-                .stream()
-                .map(Episode::getNumber)
-                .collect(Collectors.toSet());
-
-        return externalSeason.episodes()
-                .stream()
-                .filter(episode -> !existingNumbers.contains(episode.number()))
-                .toList();
-    }
-
-    public List<Season> loadCurrentContent(Long seriesId) {
-        return seasonRepository.findBySeriesIdWithEpisodes(seriesId);
+        return seasons;
     }
 }

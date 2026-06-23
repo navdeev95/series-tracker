@@ -33,10 +33,6 @@ public class Season {
     @Column(name = "release_date")
     private LocalDate releaseDate;
 
-    @PositiveOrZero
-    @Column(name = "total_episodes")
-    private Integer totalEpisodes;
-
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "series_id", nullable = false)

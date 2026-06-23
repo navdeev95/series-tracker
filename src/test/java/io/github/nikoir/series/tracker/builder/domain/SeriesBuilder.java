@@ -1,5 +1,6 @@
 package io.github.nikoir.series.tracker.builder.domain;
 
+import io.github.nikoir.series.tracker.content.domain.entity.Country;
 import io.github.nikoir.series.tracker.content.domain.entity.ExternalIdSeries;
 import io.github.nikoir.series.tracker.content.domain.entity.Season;
 import io.github.nikoir.series.tracker.content.domain.entity.Series;
@@ -7,7 +8,9 @@ import io.github.nikoir.series.tracker.content.domain.entity.dictionary.DictExte
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -21,7 +24,7 @@ public class SeriesBuilder {
     private Integer releaseYear;
     private String posterUrl;
     private String description;
-    private List<String> countries;
+    private Set<Country> countries;
     private List<ExternalIdSeries> externalIds;
     private List<Season> seasons;
 
@@ -32,7 +35,7 @@ public class SeriesBuilder {
         this.totalSeasons = 1;
         this.status = Series.Status.ANNOUNCED;
         this.releaseYear = 2024;
-        this.countries = new ArrayList<>();
+        this.countries = new HashSet<>();
         this.externalIds = new ArrayList<>();
         this.seasons = new ArrayList<>();
     }
@@ -72,14 +75,14 @@ public class SeriesBuilder {
         return this;
     }
 
-    public SeriesBuilder withCountries(List<String> countries) {
-        this.countries = countries != null ? new ArrayList<>(countries) : new ArrayList<>();
+    public SeriesBuilder withCountries(List<Country> countries) {
+        this.countries = countries != null ? new HashSet<>(countries) : new HashSet<>();
         return this;
     }
 
-    public SeriesBuilder withCountry(String country) {
+    public SeriesBuilder withCountry(Country country) {
         if (this.countries == null) {
-            this.countries = new ArrayList<>();
+            this.countries = new HashSet<>();
         }
         this.countries.add(country);
         return this;

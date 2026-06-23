@@ -6,6 +6,6 @@ import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import java.util.List;
 import java.util.Map;
 
-public interface EpisodeSearchStrategy extends GettingStrategy {
-    List<SeasonInfo> searchEpisodes(Map<ExternalId, String> externalIds);
+public interface SeasonEpisodeGetStrategy {
+    List<SeasonInfo> getSeasonsWithEpisodes(Map<ExternalId, String> externalIds);
 }

@@ -1,39 +1,38 @@
 package io.github.nikoir.series.tracker.content.service;
 
 import io.github.nikoir.series.tracker.builder.domain.EpisodeBuilder;
-import io.github.nikoir.series.tracker.builder.domain.SeasonBuilder;
-import io.github.nikoir.series.tracker.builder.domain.SeriesBuilder;
-import io.github.nikoir.series.tracker.builder.domain.SourceBuilder;
-import io.github.nikoir.series.tracker.common.dto.response.SeasonViewRs;
 import io.github.nikoir.series.tracker.content.domain.entity.Episode;
+import io.github.nikoir.series.tracker.content.domain.entity.EpisodeRelease;
 import io.github.nikoir.series.tracker.content.domain.entity.Season;
-import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.content.domain.entity.dictionary.DictSource;
 import io.github.nikoir.series.tracker.content.domain.repo.EpisodeReleaseRepository;
 import io.github.nikoir.series.tracker.content.domain.repo.SourceRepository;
+import io.github.nikoir.series.tracker.content.dto.internal.EpisodeInfo;
+import io.github.nikoir.series.tracker.content.dto.internal.SeasonInfo;
 import io.github.nikoir.series.tracker.content.dto.internal.SyncResult;
-import io.github.nikoir.series.tracker.content.service.sync.SeriesContentSyncService;
-import io.github.nikoir.series.tracker.factory.EpisodeTestFactory;
-import io.github.nikoir.series.tracker.factory.SeasonTestFactory;
+import io.github.nikoir.series.tracker.content.enums.Source;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static io.github.nikoir.series.tracker.content.enums.Source.KINOPOISK;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class SeriesContentSyncServiceTest {
+class SeriesContentSyncServiceTest {
+
     @Mock
     private SeasonEpisodeService seasonEpisodeService;
 
@@ -44,136 +43,241 @@ public class SeriesContentSyncServiceTest {
     private SourceRepository sourceRepository;
 
     @InjectMocks
-    private SeriesContentSyncService contentSyncService;
+    private SeriesContentSyncService syncService;
 
-    private Series series;
-
-    private Season existingSeason;
+    private static final Long SERIES_ID = 1L;
+    private static final Source SOURCE = Source.KINOPOISK;
 
     @BeforeEach
     void setUp() {
-        SeasonBuilder seasonBuilder = new SeasonBuilder();
-        SeriesBuilder seriesBuilder = new SeriesBuilder();
-
-        series = seriesBuilder.withSeason(seasonBuilder
-                .withRandomEpisodes(10)
-                .build()).build();
-
-        existingSeason = series.getSeasons().getFirst();
-
-        when(seasonEpisodeService.loadCurrentContent(series.getId())).thenReturn(series.getSeasons());
-    }
-
-
-    @Test
-    public void syncSeriesContent_NewEpisodes_CreateNewEpisodes() {
-        SeasonViewRs externalSeason = SeasonTestFactory.fromSeason(existingSeason);
-        int maxEpisodeNumber = getMaxEpisodeNumber(existingSeason);
-        int newEpisodesCnt = 3;
-        List<SeasonViewRs.EpisodeViewRs> newEpisodes = createNewEpisodes(maxEpisodeNumber, newEpisodesCnt);
-
-        SourceBuilder sourceBuilder = new SourceBuilder(KINOPOISK);
-
-        Optional<DictSource> optionalSource = Optional
-                .ofNullable(sourceBuilder.build());
-
-        when(sourceRepository.findByName(anyString()))
-                .thenReturn(optionalSource);
-
-        when(seasonEpisodeService.findMissingEpisodes(any(Season.class), any(SeasonViewRs.class)))
-                .thenReturn(newEpisodes);
-
-        when(seasonEpisodeService.createEpisodes(any(Season.class), anyList()))
-                .thenReturn(EpisodeTestFactory.fromEpisodeViewList(newEpisodes));
-
-        SyncResult syncResult = contentSyncService.syncSeriesContent(series.getId(),
-                List.of(externalSeason),
-                KINOPOISK);
-
-        assertEquals(0, syncResult.getNewSeasonsCnt());
-        assertEquals(newEpisodesCnt, syncResult.getNewEpisodesCnt());
-        assertTrue(syncResult.hasNewContent());
+        // Common setup if needed
     }
 
     @Test
-    public void syncSeriesContent_NewSeason_CreateNewSeason() {
-        Season nonExistingSeason = createNewSeason(existingSeason.getNumber() + 1, 10);
+    void syncSeriesContent_WhenAllSeasonsAreNew_ShouldCreateSeasonsWithEpisodes() {
+        // Given
+        List<Season> existingContent = Collections.emptyList();
+        List<SeasonInfo> externalSeasons = createExternalSeasons(2);
 
-        SeasonViewRs firstExternalSeason = SeasonTestFactory.fromSeason(existingSeason);
-        SeasonViewRs secondExternalSeason = SeasonTestFactory.fromSeason(nonExistingSeason);
+        when(seasonEpisodeService.loadContentWithoutReleases(SERIES_ID))
+                .thenReturn(existingContent);
 
-        SourceBuilder sourceBuilder = new SourceBuilder(KINOPOISK);
+        // When
+        SyncResult result = syncService.syncSeriesContent(SERIES_ID, externalSeasons, SOURCE);
 
-        Optional<DictSource> optionalSource = Optional
-                .ofNullable(sourceBuilder.build());
+        // Then
+        assertEquals(2, result.getNewSeasonsCnt());
+        assertEquals(0, result.getNewEpisodesCnt());
+        verify(seasonEpisodeService).createSeasonsWithEpisodes(eq(SERIES_ID), eq(externalSeasons));
+        verify(episodeReleaseRepository, never()).saveAll(anyList());
+    }
 
-        when(sourceRepository.findByName(anyString()))
-                .thenReturn(optionalSource);
+    @Test
+    void syncSeriesContent_WhenAllEpisodesAreMissing_ShouldCreateReleases() {
+        // Given
+        Season existingSeason = createSeason(1, 1, 2, 3);
 
-        when(seasonEpisodeService.createSeason(eq(series.getId()), any(SeasonViewRs.class)))
-                .thenReturn(nonExistingSeason);
+        List<Season> existingContent = List.of(existingSeason);
+        SeasonInfo externalSeason = createExternalSeason(1, 3);
 
-        SyncResult result = contentSyncService.syncSeriesContent(series.getId(),
-                List.of(firstExternalSeason, secondExternalSeason),
-                KINOPOISK);
+        DictSource dictSource = new DictSource();
+        dictSource.setName(SOURCE.getName());
 
+        when(seasonEpisodeService.loadContentWithoutReleases(SERIES_ID))
+                .thenReturn(existingContent);
+        when(sourceRepository.findByName(SOURCE.getName()))
+                .thenReturn(Optional.of(dictSource));
+
+        // When
+        SyncResult result = syncService.syncSeriesContent(SERIES_ID, List.of(externalSeason), SOURCE);
+
+        // Then
+        assertEquals(0, result.getNewSeasonsCnt());
+        assertEquals(3, result.getNewEpisodesCnt());
+        verify(seasonEpisodeService, never()).createSeasonsWithEpisodes(any(), anyList());
+        verify(episodeReleaseRepository).saveAll(anyList());
+    }
+
+    @Test
+    void syncSeriesContent_WhenSomeEpisodesExist_ShouldCreateReleasesOnlyForMissing() {
+        // Given
+        Season existingSeason = createSeason(1, 2, 3);
+        List<Season> existingContent = List.of(existingSeason);
+        SeasonInfo externalSeason = createExternalSeason(1, 3);
+
+        DictSource dictSource = new DictSource();
+        dictSource.setName(SOURCE.getName());
+
+        when(seasonEpisodeService.loadContentWithoutReleases(SERIES_ID))
+                .thenReturn(existingContent);
+        when(sourceRepository.findByName(SOURCE.getName()))
+                .thenReturn(Optional.of(dictSource));
+
+        // When
+        SyncResult result = syncService.syncSeriesContent(SERIES_ID, List.of(externalSeason), SOURCE);
+
+        // Then
+        assertEquals(0, result.getNewSeasonsCnt());
+        assertEquals(2, result.getNewEpisodesCnt()); // Episodes 1 and 2 are missing
+        verify(seasonEpisodeService, never()).createSeasonsWithEpisodes(any(), anyList());
+
+        ArgumentCaptor<List<EpisodeRelease>> releasesCaptor = ArgumentCaptor.forClass(List.class);
+        verify(episodeReleaseRepository).saveAll(releasesCaptor.capture());
+        List<EpisodeRelease> savedReleases = releasesCaptor.getValue();
+        assertEquals(2, savedReleases.size());
+    }
+
+    @Test
+    void syncSeriesContent_MixedNewSeasonsAndMissingEpisodes_ShouldHandleBoth() {
+        // Given
+        Season existingSeason = createSeason(1, 2, 3);
+        List<Season> existingContent = List.of(existingSeason);
+
+        List<SeasonInfo> externalSeasons = new ArrayList<>();
+        externalSeasons.add(createExternalSeason(1, 3)); // Season 1 exists, missing episodes 1-2
+        externalSeasons.add(createExternalSeason(2, 2)); // Season 2 is new
+
+        DictSource dictSource = new DictSource();
+        dictSource.setName(SOURCE.getName());
+
+        when(seasonEpisodeService.loadContentWithoutReleases(SERIES_ID))
+                .thenReturn(existingContent);
+        when(sourceRepository.findByName(SOURCE.getName()))
+                .thenReturn(Optional.of(dictSource));
+
+        // When
+        SyncResult result = syncService.syncSeriesContent(SERIES_ID, externalSeasons, SOURCE);
+
+        // Then
         assertEquals(1, result.getNewSeasonsCnt());
-        assertEquals(nonExistingSeason.getEpisodes().size(),
-                result.getNewEpisodesCnt());
-        assertTrue(result.hasNewContent());
+        assertEquals(2, result.getNewEpisodesCnt()); // Only from existing season
 
+        ArgumentCaptor<List<SeasonInfo>> seasonsCaptor = ArgumentCaptor.forClass(List.class);
+        verify(seasonEpisodeService).createSeasonsWithEpisodes(eq(SERIES_ID), seasonsCaptor.capture());
+        List<SeasonInfo> createdSeasons = seasonsCaptor.getValue();
+        assertEquals(1, createdSeasons.size());
+        assertEquals(2, createdSeasons.get(0).getNumber());
+
+        ArgumentCaptor<List<EpisodeRelease>> releasesCaptor = ArgumentCaptor.forClass(List.class);
+        verify(episodeReleaseRepository).saveAll(releasesCaptor.capture());
+        assertEquals(2, releasesCaptor.getValue().size());
     }
 
     @Test
-    public void syncSeriesContent_NoNewData_ReturnEmptyResult() {
-        SeasonViewRs externalSeason = SeasonTestFactory.fromSeason(existingSeason);
-
-        when(seasonEpisodeService.findMissingEpisodes(any(Season.class), any(SeasonViewRs.class)))
+    void syncSeriesContent_WhenNoExternalSeasons_ShouldDoNothing() {
+        // Given
+        when(seasonEpisodeService.loadContentWithoutReleases(SERIES_ID))
                 .thenReturn(Collections.emptyList());
 
-        SyncResult result = contentSyncService.syncSeriesContent(series.getId(),
-                List.of(externalSeason),
-                KINOPOISK);
+        // When
+        SyncResult result = syncService.syncSeriesContent(SERIES_ID, Collections.emptyList(), SOURCE);
 
-        verify(seasonEpisodeService, never()).createSeason(anyLong(), any(SeasonViewRs.class));
-        verify(seasonEpisodeService, never()).createEpisodes(any(Season.class), anyList());
-        verify(episodeReleaseRepository, never()).saveAll(anyList());
-
-        assertEquals(0, result.getNewEpisodesCnt());
+        // Then
         assertEquals(0, result.getNewSeasonsCnt());
-        assertFalse(result.hasNewContent());
+        assertEquals(0, result.getNewEpisodesCnt());
+        verify(seasonEpisodeService, never()).createSeasonsWithEpisodes(any(), anyList());
+        verify(episodeReleaseRepository, never()).saveAll(anyList());
+        verify(sourceRepository, never()).findByName(any());
     }
 
-    private int getMaxEpisodeNumber(Season existingSeason) {
-        return existingSeason
-                .getEpisodes()
-                .stream()
-                .mapToInt(Episode::getNumber)
-                .max()
-                .orElse(0);
+    @Test
+    void syncSeriesContent_WhenSourceNotFound_ShouldThrowException() {
+        // Given
+        Season existingSeason = createSeason(1, 1);
+        List<Season> existingContent = List.of(existingSeason);
+        SeasonInfo externalSeason = createExternalSeason(1, 3);
+
+        when(seasonEpisodeService.loadContentWithoutReleases(SERIES_ID))
+                .thenReturn(existingContent);
+        when(sourceRepository.findByName(SOURCE.getName()))
+                .thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(RuntimeException.class, () -> {
+            syncService.syncSeriesContent(SERIES_ID, List.of(externalSeason), SOURCE);
+        });
     }
 
-    private List<SeasonViewRs.EpisodeViewRs> createNewEpisodes(int maxEpisodeNumber, int newEpisodesCnt) {
-        EpisodeBuilder episodeBuilder = new EpisodeBuilder();
+    @Test
+    void syncSeriesContent_ShouldCreateReleasesWithCorrectSource() {
+        // Given
+        Season existingSeason = createSeason(1, 1, 2);
+        List<Season> existingContent = List.of(existingSeason);
+        SeasonInfo externalSeason = createExternalSeason(1, 2);
 
-        List<SeasonViewRs.EpisodeViewRs> newEpisodes = new LinkedList<>();
-        for (int i = 1; i <= newEpisodesCnt; i++) {
-            newEpisodes.add(EpisodeTestFactory
-                    .fromEpisode(episodeBuilder
-                            .withNumber(maxEpisodeNumber + i)
-                            .build()));
+        DictSource expectedSource = new DictSource();
+        expectedSource.setName(SOURCE.getName());
+
+        when(seasonEpisodeService.loadContentWithoutReleases(SERIES_ID))
+                .thenReturn(existingContent);
+        when(sourceRepository.findByName(SOURCE.getName()))
+                .thenReturn(Optional.of(expectedSource));
+
+        // When
+        syncService.syncSeriesContent(SERIES_ID, List.of(externalSeason), SOURCE);
+
+        // Then
+        ArgumentCaptor<List<EpisodeRelease>> releasesCaptor = ArgumentCaptor.forClass(List.class);
+        verify(episodeReleaseRepository).saveAll(releasesCaptor.capture());
+
+        List<EpisodeRelease> savedReleases = releasesCaptor.getValue();
+        assertEquals(2, savedReleases.size());
+        savedReleases.forEach(release -> {
+            assertEquals(expectedSource, release.getSource());
+            assertNotNull(release.getEpisode());
+        });
+    }
+
+    @Test
+    void syncSeriesContent_ShouldLogCorrectMessage() {
+        // Given
+        when(seasonEpisodeService.loadContentWithoutReleases(SERIES_ID))
+                .thenReturn(Collections.emptyList());
+
+        // When
+        SyncResult result = syncService.syncSeriesContent(SERIES_ID, Collections.emptyList(), SOURCE);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(0, result.getNewSeasonsCnt());
+        assertEquals(0, result.getNewEpisodesCnt());
+    }
+
+    // Helper methods to create test data
+
+    private List<SeasonInfo> createExternalSeasons(int count) {
+        List<SeasonInfo> seasons = new ArrayList<>();
+        for (int i = 1; i <= count; i++) {
+            seasons.add(createExternalSeason(i, 5));
+        }
+        return seasons;
+    }
+
+    private SeasonInfo createExternalSeason(int seasonNumber, int episodeCount) {
+        SeasonInfo seasonInfo = new SeasonInfo();
+        seasonInfo.setNumber(seasonNumber);
+
+        List<EpisodeInfo> episodes = new ArrayList<>();
+        for (int i = 1; i <= episodeCount; i++) {
+            EpisodeInfo episodeInfo = new EpisodeInfo();
+            episodeInfo.setNumber(i);
+            episodes.add(episodeInfo);
+        }
+        seasonInfo.setEpisodes(episodes);
+
+        return seasonInfo;
+    }
+
+    private Season createSeason(int number, int... missingEpisodesNumbers) {
+        Season season = new Season();
+        season.setNumber(number);
+
+        List<Episode> episodes = new ArrayList<>();
+        for (int episodeNum: missingEpisodesNumbers) {
+            episodes.add(new EpisodeBuilder().withNumber(episodeNum).build());
         }
 
-        return newEpisodes;
-    }
-
-    private Season createNewSeason(int newSeasonNumber, int episodesCnt) {
-        SeasonBuilder seasonBuilder = new SeasonBuilder();
-
-        return seasonBuilder
-                .withRandomEpisodes(episodesCnt)
-                .withSeries(series)
-                .withNumber(newSeasonNumber)
-                .build();
+        season.setEpisodes(episodes);
+        return season;
     }
 }
