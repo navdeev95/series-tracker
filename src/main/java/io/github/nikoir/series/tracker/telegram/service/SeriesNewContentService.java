@@ -31,10 +31,8 @@ public class SeriesNewContentService {
     }
 
     private void handleSubscriber(Long userId, NewContentEvent newContentEvent) {
-        if (newContentEvent.getNewSeasonsCnt() > 0) {
-            seriesSendService.sendNewSeasonAnswer(userId, newContentEvent.getSeriesDetails());
-        } else if (newContentEvent.getNewEpisodesCnt() > 0) {
-            seriesSendService.sendNewEpisodeAnswer(userId, newContentEvent.getSeriesDetails());
+        if (newContentEvent.hasNewContent()) {
+            seriesSendService.sendNewEpisodeAnswer(userId, newContentEvent);
         }
     }
 }

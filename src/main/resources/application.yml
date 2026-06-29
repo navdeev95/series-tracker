@@ -84,7 +84,11 @@ api:
     credentials:
       token: ${WIKIDATA_TOKEN}
 sync:
-  scheduler:
+  info:
+    cron: "0 0 0 * * *"
+  seasons:
+    cron: "0 0 1 * * *"
+  releases:
     cron: "0 0 * * * *"
 
 telegram:

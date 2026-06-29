@@ -3,6 +3,7 @@ package io.github.nikoir.series.tracker.telegram.ui.factory;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailPersonalizedRs;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.common.events.NewContentEvent;
 import io.github.nikoir.series.tracker.telegram.model.SubscriptionStatus;
 import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
 import lombok.RequiredArgsConstructor;
@@ -62,14 +63,9 @@ public class ResponseFactory {
         return createEditMarkup(userId, historyItem.getMessageId(), keyboardMarkup);
     }
 
-    public SendPhoto createNewSeasonAnswer(Long chatId,
-                                           SeriesDetailViewRs seriesDetail) {
-        return messageFactory.createNewSeasonMessage(chatId, seriesDetail);
-    }
-
     public SendPhoto createNewEpisodeAnswer(Long chatId,
-                                            SeriesDetailViewRs seriesDetail) {
-        return messageFactory.createNewEpisodeMessage(chatId, seriesDetail);
+                                            NewContentEvent newContentEvent) {
+        return messageFactory.createNewEpisodeMessage(chatId, newContentEvent);
     }
 
     private AnswerInlineQuery createInlineQueryAnswer(String inlineQueryId,

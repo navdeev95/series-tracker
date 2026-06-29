@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SyncResult {
+public class SyncReleaseResult {
     @Getter
     private int newSeasonsCnt;
     @Getter
@@ -25,7 +25,9 @@ public class SyncResult {
         this.newEpisodesCnt += episodesCnt;
     }
 
-    public static SyncResult empty() {
-        return new SyncResult();
+    public static SyncReleaseResult empty() {
+        return new SyncReleaseResult();
     }
+
+
 }

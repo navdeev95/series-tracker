@@ -20,7 +20,8 @@ CREATE TABLE "series" (
     'COMPLETED',
     'ANNOUNCED',
     'POST_PRODUCTION',
-    'DELETED'
+    'DELETED',
+    'CONTINUING'
   ))
 );
 

@@ -46,11 +46,6 @@ public class SeriesService {
 
     }
 
-    public Page<Series> findUncompletedSeries(int page, int size) {
-        return seriesRepository.searchSeriesWithoutReleases(PageRequest.of(page, size));
-    }
-
-
     private Optional<Series> getSeriesWithCountries(Specification<Series> specification) {
         // 1. Получаем ID сериалов по спецификации
         List<Long> ids = seriesRepository.findAll(specification)

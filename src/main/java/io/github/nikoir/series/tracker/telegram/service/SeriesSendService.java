@@ -3,6 +3,7 @@ package io.github.nikoir.series.tracker.telegram.service;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailPersonalizedRs;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.common.events.NewContentEvent;
 import io.github.nikoir.series.tracker.telegram.model.SubscriptionStatus;
 import io.github.nikoir.series.tracker.telegram.model.session.SeriesHistoryItem;
 import io.github.nikoir.series.tracker.telegram.ui.factory.*;
@@ -69,14 +70,9 @@ public class SeriesSendService {
         updateSubscriptionButton(userId, historyItem, NOT_SUBSCRIBED);
     }
 
-    public void sendNewEpisodeAnswer(Long userId, SeriesDetailViewRs seriesDetail) {
-        SendPhoto newEpisodeAnswer = responseFactory.createNewEpisodeAnswer(userId, seriesDetail);
+    public void sendNewEpisodeAnswer(Long userId, NewContentEvent newContentEvent) {
+        SendPhoto newEpisodeAnswer = responseFactory.createNewEpisodeAnswer(userId, newContentEvent);
         telegramService.execute(newEpisodeAnswer);
-    }
-
-    public void sendNewSeasonAnswer(Long userId, SeriesDetailViewRs seriesDetail) {
-        SendPhoto newSeasonAnswer = responseFactory.createNewSeasonAnswer(userId, seriesDetail);
-        telegramService.execute(newSeasonAnswer);
     }
 
     private void sendCallbackAnswer(AnswerCallbackQuery answer) {

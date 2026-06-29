@@ -7,6 +7,7 @@ import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import io.github.nikoir.series.tracker.content.dto.internal.SeriesStatus;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
 import java.util.List;
@@ -19,6 +20,13 @@ public abstract class SeriesDetailMapper {
     @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
     @Mapping(target = "id", ignore = true)
     public abstract Series toEntity(SeriesDetailViewRs dto);
+
+    @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "seasons", ignore = true)
+    @Mapping(target = "countries", ignore = true)
+    @Mapping(target = "externalIds", ignore = true)
+    public abstract void updateEntity(SeriesDetailViewRs dto, @MappingTarget Series entity);
 
     @Named("mapStatus")
     public Series.Status mapStatus(SeriesStatus status) {

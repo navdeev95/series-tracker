@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +29,10 @@ public class SeasonEpisodeService {
     private final SeasonMapper seasonMapper;
     private final EpisodeMapper episodeMapper;
 
-    public void createSeasonsWithEpisodes(Long seriesId, List<SeasonInfo> seasonList) {
+    public void createSeasonsWithEpisodes(Long seriesId, List<SeasonInfo> externalSeasons) {
         List<Season> seasonsToSave = new LinkedList<>();
 
-        for (SeasonInfo seasonInfo: seasonList) {
+        for (SeasonInfo seasonInfo: externalSeasons) {
             Season seasonToSave = seasonMapper.toEntity(seasonInfo);
             seasonToSave.setSeries(seriesRepository.getReferenceById(seriesId));
 
@@ -46,6 +47,17 @@ public class SeasonEpisodeService {
         seasonRepository.saveAll(seasonsToSave);
     }
 
+    public List<SeasonInfo> findMissingSeasonsWithEpisodes(Long seriesId, List<SeasonInfo> externalSeasons) {
+        List<Season> existingSeasons = seasonRepository.findBySeriesId(seriesId);
+
+        List<SeasonInfo> missingSeasons = externalSeasons
+                .stream()
+                .filter(s -> externalSeasonNotExists(s, existingSeasons))
+                .toList();
+
+        return missingSeasons;
+    }
+
     public List<Season> loadContentWithoutReleases(Long seriesId) {
         List<Season> seasons = seasonRepository.findSeasonsWithEpisodesWithoutReleases(seriesId);
 
@@ -57,5 +69,11 @@ public class SeasonEpisodeService {
         });
 
         return seasons;
+    }
+
+    private boolean externalSeasonNotExists(SeasonInfo externalSeason, List<Season> existingSeasons) {
+        return existingSeasons
+                .stream()
+                .noneMatch(s -> Objects.equals(externalSeason.getNumber(), s.getNumber()));
     }
 }

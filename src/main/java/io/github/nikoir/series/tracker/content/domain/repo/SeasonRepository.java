@@ -18,4 +18,6 @@ public interface SeasonRepository extends JpaRepository<Season, Long> {
             "WHERE s.series.id = :seriesId " +
             "AND e.releases IS EMPTY")
     List<Season> findSeasonsWithEpisodesWithoutReleases(@Param("seriesId") Long seriesId);
+
+    List<Season> findBySeriesId(Long seriesId);
 }

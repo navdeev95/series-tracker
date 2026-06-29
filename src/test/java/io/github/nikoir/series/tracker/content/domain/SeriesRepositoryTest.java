@@ -29,7 +29,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.nikoir.series.tracker.content.domain.entity.Series.Status.COMPLETED;
+import static io.github.nikoir.series.tracker.content.domain.entity.Series.Status.CONTINUING;
 import static io.github.nikoir.series.tracker.content.enums.Source.MOVIELAB;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -47,7 +50,12 @@ public class SeriesRepositoryTest {
     private Long seriesId1;
     private Long seriesId2;
     private Long seriesId3;
+
     private DictSource releaseSource;
+
+    private DictExternalId kinopoiskId;
+    private DictExternalId movielabId;
+
 
     private static final int EPISODES_COUNT = 10;
 
@@ -57,11 +65,11 @@ public class SeriesRepositoryTest {
                 .findByName(MOVIELAB.getName())
                 .orElseThrow();
 
-        DictExternalId kinopoiskId = externalIdRepository.save(DictExternalId.builder()
+        kinopoiskId = externalIdRepository.save(DictExternalId.builder()
                         .name(ExternalId.KINOPOISK.getName())
                 .build());
 
-        DictExternalId movielabId = externalIdRepository.save(DictExternalId.builder()
+        movielabId = externalIdRepository.save(DictExternalId.builder()
                 .name(ExternalId.MOVIELAB.getName())
                 .build());
 
@@ -69,7 +77,7 @@ public class SeriesRepositoryTest {
         Series series1 = new SeriesBuilder()
                 .withTitle("Game of Thrones")
                 .withEngTitle("Game of Thrones")
-                .withStatus(Series.Status.COMPLETED)
+                .withStatus(COMPLETED)
                 .withReleaseYear(2011)
                 .withExternalId(kinopoiskId, "123")
                 .withExternalId(movielabId, "456")
@@ -82,10 +90,12 @@ public class SeriesRepositoryTest {
         Series series2 = new SeriesBuilder()
                 .withTitle("Дом Дракона")
                 .withEngTitle("House of the Dragon")
-                .withStatus(Series.Status.COMPLETED)
+                .withStatus(COMPLETED)
                 .withSeason(buildCompletedSeason(1))
                 .withSeason(buildCompletedSeason(2))
                 .withSeason(buildUncompletedSeason(3, 8, 9, 10))
+                .withExternalId(kinopoiskId, "1234")
+                .withExternalId(movielabId, "5678")
                 .withReleaseYear(2022)
                 .build();
         series2 = seriesRepository.save(series2);
@@ -195,6 +205,38 @@ public class SeriesRepositoryTest {
         //Should return House of the Dragon
         assertEquals(1, seriesResult.getContent().size());
         assertEquals(seriesId2, seriesResult.getContent().getFirst().getId());
+
+        assertThat(seriesResult.getContent().getFirst().getExternalIds()).hasSize(2);
+    }
+
+    @Test
+    public void searchSeriesWithCompletedSeasons_ShouldReturnSeries() {
+        Series newSeries = new SeriesBuilder()
+                .withTitle("Рик и Морти")
+                .withEngTitle("Rick And Morty")
+                .withStatus(Series.Status.CONTINUING)
+                .withReleaseYear(2013)
+                .withExternalId(kinopoiskId, "666")
+                .withExternalId(movielabId, "666")
+                .withGeneratedSeasons(5, i -> buildCompletedSeason(i + 1))
+                .build();
+
+        seriesRepository.save(newSeries);
+
+        PageRequest page = PageRequest.of(0, 10);
+        Page<Series> seriesPage = seriesRepository.searchSeriesWithCompletedSeasons(page, List.of(CONTINUING, COMPLETED));
+
+        assertTrue(seriesPage.hasContent());
+        assertEquals(2, seriesPage.getTotalElements());
+
+        Series firstSeries = seriesPage.getContent().getFirst();
+        Series secondSeries = seriesPage.getContent().get(1);
+
+        assertEquals("Game of Thrones", firstSeries.getTitle());
+        assertEquals("Рик и Морти", secondSeries.getTitle());
+
+        assertThat(firstSeries.getExternalIds()).hasSize(2);
+        assertThat(secondSeries.getExternalIds()).hasSize(2);
     }
 
     private Season buildUncompletedSeason(int number, int... episodesWithoutReleases) {

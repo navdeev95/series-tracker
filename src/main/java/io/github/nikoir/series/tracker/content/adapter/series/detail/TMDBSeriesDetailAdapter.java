@@ -50,7 +50,7 @@ public abstract class TMDBSeriesDetailAdapter implements SeriesDetailAdapter<TMD
         }
 
         return switch (status.toLowerCase()) {
-            case "returning series" -> SeriesStatus.CONTINUING; // или FILMING, если CONTINUING нет в enum
+            case "returning series" -> SeriesStatus.CONTINUING;
             case "in production" -> SeriesStatus.FILMING;
             case "planned" -> SeriesStatus.ANNOUNCED;
             case "ended" -> SeriesStatus.COMPLETED;
