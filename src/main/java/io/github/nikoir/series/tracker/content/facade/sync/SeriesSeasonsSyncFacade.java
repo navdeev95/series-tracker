@@ -4,9 +4,12 @@ import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.content.domain.repo.SeriesRepository;
 import io.github.nikoir.series.tracker.content.dto.internal.SeasonInfo;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
+import io.github.nikoir.series.tracker.content.metric.AppMetricService;
+import io.github.nikoir.series.tracker.content.metric.SyncMetric;
 import io.github.nikoir.series.tracker.content.service.SeasonEpisodeService;
 import io.github.nikoir.series.tracker.content.strategy.SeasonEpisodeGetStrategy;
 import io.github.nikoir.series.tracker.telegram.command.util.SyncUtil;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,6 +20,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.nikoir.series.tracker.content.metric.SyncMetric.SYNC_SEASONS;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -26,6 +31,7 @@ public class SeriesSeasonsSyncFacade {
     private final SeasonEpisodeService seasonEpisodeService;
     private final SeriesRepository seriesRepository;
     private final TransactionTemplate transactionTemplate;
+    private final AppMetricService appMetricService;
 
     public void syncAllSeriesSeasons() {
         int page = 0;
@@ -59,7 +65,7 @@ public class SeriesSeasonsSyncFacade {
 
     private void syncSeriesSeasonsSafe(Series series) {
         try {
-            syncSeriesSeasons(series);
+            appMetricService.record(SYNC_SEASONS, () -> syncSeriesSeasons(series));
         } catch (Exception e) {
             log.error("Failed to sync seasons for series '{}' with id = {}",
                     series.getTitle(),

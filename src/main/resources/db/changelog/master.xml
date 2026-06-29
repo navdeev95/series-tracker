@@ -17,4 +17,5 @@
     <include file="2026/011-add-country-dictionary.sql" relativeToChangelogFile="true"/>
     <include file="2026/012-add-series-country-table.sql" relativeToChangelogFile="true"/>
     <include file="2026/013-drop-total-episodes-column.sql" relativeToChangelogFile="true"/>
+    <include file="2026/014-update-url-templates.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

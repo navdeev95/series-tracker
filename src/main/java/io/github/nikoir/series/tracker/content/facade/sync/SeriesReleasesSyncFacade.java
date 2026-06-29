@@ -6,10 +6,10 @@ import io.github.nikoir.series.tracker.content.adapter.series.detail.DBSeriesDet
 import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.content.domain.repo.SeriesRepository;
 import io.github.nikoir.series.tracker.content.dto.internal.SeasonInfo;
-import io.github.nikoir.series.tracker.content.dto.internal.SyncReleaseResult;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import io.github.nikoir.series.tracker.content.enums.Source;
 import io.github.nikoir.series.tracker.content.event.publisher.NewContentEventPublisher;
+import io.github.nikoir.series.tracker.content.metric.AppMetricService;
 import io.github.nikoir.series.tracker.content.service.SeriesReleaseSyncService;
 import io.github.nikoir.series.tracker.content.strategy.EpisodeSearchStrategy;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+
+import static io.github.nikoir.series.tracker.content.metric.SyncMetric.SYNC_RELEASES;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class SeriesReleasesSyncFacade {
 
     private final EpisodeSearchStrategy episodeSearchStrategy;
     private final SeriesReleaseSyncService contentSyncService;
+    private final AppMetricService appMetricService;
 
 
     public void syncAndNotifyAllSeriesReleases() {
@@ -43,10 +46,11 @@ public class SeriesReleasesSyncFacade {
         do {
             PageRequest pageRequest = PageRequest.of(page, BATCH_SIZE);
             batch = seriesRepository.searchSeriesWithoutReleases(pageRequest);
-            batch.forEach(this::syncReleasesAndNotify);
+            batch.forEach(this::syncSeriesReleasesSaveAndNotify);
             page++;
         } while (batch.hasNext());
     }
+
 
     public List<EpisodeReleaseViewRs> syncSeriesReleases(Series series) {
         Map<ExternalId, String> externalIds = ExternalId.mapExternalIds(series.getExternalIds());
@@ -56,10 +60,10 @@ public class SeriesReleasesSyncFacade {
         return contentSyncService.syncReleases(series, externalSeasons, source);
     }
 
-    private void syncReleasesAndNotify(Series series) {
+    private void syncSeriesReleasesSaveAndNotify(Series series) {
         try {
             SeriesDetailViewRs detailViewRs = seriesDetailAdapter.toViewDto(series);
-            List<EpisodeReleaseViewRs> syncReleaseResult = syncSeriesReleases(series);
+            List<EpisodeReleaseViewRs> syncReleaseResult = appMetricService.recordWithResult(SYNC_RELEASES, () -> syncSeriesReleases(series));
             if (!syncReleaseResult.isEmpty()) {
                 eventPublisher.publishEvent(syncReleaseResult, detailViewRs);
             }
