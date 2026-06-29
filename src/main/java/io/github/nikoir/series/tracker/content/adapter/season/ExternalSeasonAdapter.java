@@ -1,19 +1,19 @@
 package io.github.nikoir.series.tracker.content.adapter.season;
 
-import io.github.nikoir.series.tracker.common.dto.response.SeasonViewRs;
+import io.github.nikoir.series.tracker.content.dto.internal.SeasonInfo;
 import org.springframework.util.CollectionUtils;
 import java.util.Collections;
 import java.util.List;
 
-public interface ExternalSeasonAdapter<T> {
-    SeasonViewRs toSeasonViewRs(T source);
+public interface ExternalSeasonAdapter<Rq> {
+    SeasonInfo toSeasonInfo(Rq source);
 
-    default List<SeasonViewRs> toSeasonViewRsList(List<T> source) {
+    default List<SeasonInfo> toSeasonInfoList(List<Rq> source) {
         if (CollectionUtils.isEmpty(source)) {
             return Collections.emptyList();
         }
         return source.stream()
-                .map(this::toSeasonViewRs)
+                .map(this::toSeasonInfo)
                 .toList();
     }
 }

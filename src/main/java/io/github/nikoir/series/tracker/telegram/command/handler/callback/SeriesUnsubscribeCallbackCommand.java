@@ -1,5 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.command.handler.callback;
 
+import io.github.nikoir.series.tracker.content.facade.SeriesPersonalInfoFacade;
 import io.github.nikoir.series.tracker.content.facade.SeriesSubscribeFacade;
 import io.github.nikoir.series.tracker.telegram.command.enums.CallbackCommandEnum;
 import io.github.nikoir.series.tracker.telegram.command.handler.base.BaseCallbackCommand;
@@ -9,7 +10,6 @@ import io.github.nikoir.series.tracker.telegram.service.TelegramService;
 import io.github.nikoir.series.tracker.telegram.service.UserSessionService;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.Optional;
 
@@ -20,8 +20,9 @@ public class SeriesUnsubscribeCallbackCommand extends BaseCallbackCommand {
     public SeriesUnsubscribeCallbackCommand(SeriesSendService seriesSendService,
                                             SeriesSubscribeFacade seriesSubscribeFacade,
                                             TelegramService telegramService,
-                                            UserSessionService userSessionService) {
-        super(telegramService, userSessionService, seriesSendService);
+                                            UserSessionService userSessionService,
+                                            SeriesPersonalInfoFacade seriesPersonalInfoFacade) {
+        super(telegramService, userSessionService, seriesSendService, seriesPersonalInfoFacade);
         this.seriesSubscribeFacade = seriesSubscribeFacade;
     }
 
@@ -31,30 +32,29 @@ public class SeriesUnsubscribeCallbackCommand extends BaseCallbackCommand {
     }
 
     @Override
-    protected void innerExecute(CallbackQuery callbackQuery) {
-        User user = callbackQuery.getFrom();
-
+    protected void doExecute(CallbackQuery callbackQuery) {
         Optional<SeriesHistoryItem> historyItemOptional = getHistoryItem(callbackQuery);
         if (historyItemOptional.isEmpty()) {
-            handleMissingHistoryItem(user);
+            handleMissingHistoryItem(callbackQuery);
             return;
         }
 
         SeriesHistoryItem historyItem = historyItemOptional.get();
-        processUnsubscription(callbackQuery, user, historyItem);
+        processUnsubscription(callbackQuery, historyItem);
     }
 
-    private void processUnsubscription(CallbackQuery callbackQuery, User user, SeriesHistoryItem historyItem) {
+    private void processUnsubscription(CallbackQuery callbackQuery, SeriesHistoryItem historyItem) {
         sendWaitingState(callbackQuery, historyItem);
         try {
-            executeUnsubscription(user, historyItem);
+            executeUnsubscription(extractChatId(callbackQuery), historyItem);
             sendUnsubscribedState(callbackQuery, historyItem);
         } catch (Exception ex) {
             sendSubscribedState(callbackQuery, historyItem);
+            throw ex;
         }
     }
 
-    private void executeUnsubscription(User user, SeriesHistoryItem historyItem) {
-        seriesSubscribeFacade.unsubscribe(user.getId(), historyItem.getExternalIds());
+    private void executeUnsubscription(Long chatId, SeriesHistoryItem historyItem) {
+        seriesSubscribeFacade.unsubscribe(chatId, historyItem.getLightExternalIds());
     }
 }

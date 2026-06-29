@@ -8,7 +8,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,7 +22,7 @@ import java.util.List;
 public class Series {
 
     public enum Status {
-        FILMING, PRE_PRODUCTION, COMPLETED, ANNOUNCED, POST_PRODUCTION, DELETED
+        FILMING, PRE_PRODUCTION, COMPLETED, CONTINUING, ANNOUNCED, POST_PRODUCTION, DELETED
     }
 
     @Id
@@ -52,9 +54,14 @@ public class Series {
     @Column(name = "description")
     private String description;
 
-    //TODO: добавить отдельную таблицу-справочник для стран
-    @Column(name = "countries")
-    private List<String> countries;
+    @ManyToMany
+    @JoinTable(
+            name = "series_country",
+            joinColumns = @JoinColumn(name = "series_id"),
+            inverseJoinColumns = @JoinColumn(name = "country_id")
+    )
+    @Builder.Default
+    private Set<Country> countries = new HashSet<>();
 
     @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExternalIdSeries> externalIds;

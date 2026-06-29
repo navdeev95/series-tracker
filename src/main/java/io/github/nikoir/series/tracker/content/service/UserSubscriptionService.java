@@ -40,7 +40,7 @@ public class UserSubscriptionService {
     }
 
     @Transactional
-    public void subscribeIfNotExists(Long userTelegramId, Long seriesId) {
+    public void subscribeIfNotSubscribed(Long userTelegramId, Long seriesId) {
         if (!isUserSubscribed(userTelegramId, seriesId)) {
             subscribe(userTelegramId, seriesId);
         }

@@ -1,17 +1,16 @@
 package io.github.nikoir.series.tracker.telegram.command.handler.inline;
 
 import io.github.nikoir.series.tracker.common.dto.request.SeriesSearchRq;
-import io.github.nikoir.series.tracker.common.dto.response.SeriesSearchRs;
-import io.github.nikoir.series.tracker.content.enums.Source;
-import io.github.nikoir.series.tracker.content.strategy.context.SeriesSearchStrategyContext;
-import io.github.nikoir.series.tracker.telegram.command.handler.base.BaseInlineCommand;
+import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.content.facade.SeriesFinderFacade;
 import io.github.nikoir.series.tracker.telegram.command.enums.InlineCommandEnum;
-import io.github.nikoir.series.tracker.telegram.model.session.UserSession;
+import io.github.nikoir.series.tracker.telegram.command.handler.base.BaseInlineCommand;
 import io.github.nikoir.series.tracker.telegram.model.session.UserStateEnum;
-import io.github.nikoir.series.tracker.telegram.model.session.SearchContext;
 import io.github.nikoir.series.tracker.telegram.service.SeriesSendService;
+import io.github.nikoir.series.tracker.telegram.service.TelegramService;
 import io.github.nikoir.series.tracker.telegram.service.UserSessionService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
 
@@ -23,13 +22,14 @@ import static io.github.nikoir.series.tracker.telegram.command.util.CommandUtil.
 @Slf4j
 @Component
 public class SearchInlineCommand extends BaseInlineCommand {
-    private final SeriesSearchStrategyContext searchStrategyContext;
+    private final SeriesFinderFacade seriesFinderFacade;
 
-    public SearchInlineCommand(SeriesSendService seriesSendService,
-                               SeriesSearchStrategyContext searchStrategyContext,
+    public SearchInlineCommand(TelegramService telegramService,
+                               SeriesSendService seriesSendService,
+                               SeriesFinderFacade seriesFinderFacade,
                                UserSessionService userSessionService) {
-        super(userSessionService, seriesSendService);
-        this.searchStrategyContext = searchStrategyContext;
+        super(telegramService, userSessionService, seriesSendService);
+        this.seriesFinderFacade = seriesFinderFacade;
     }
 
     @Override
@@ -38,35 +38,20 @@ public class SearchInlineCommand extends BaseInlineCommand {
     }
 
     @Override
-    protected void innerExecute(InlineQuery inlineQuery) {
-        Long userId = inlineQuery.getFrom().getId();
-        userSessionService.setUserState(userId, UserStateEnum.SEARCHING);
+    protected void doExecute(InlineQuery inlineQuery) {
+        Long chatId = extractChatId(inlineQuery);
+        userSessionService.setUserState(chatId, UserStateEnum.SEARCHING);
 
         Optional<String> searchText = extractSearchText(inlineQuery);
         if (searchText.isEmpty()) {
             return;
         }
 
-        SeriesSearchRs response = performSearch(inlineQuery, searchText.get(), userId);
+        PagedModel<SeriesListViewRs> response = seriesFinderFacade.search(createRq(inlineQuery, searchText.get()));
 
-        List<String> seriesTokens = saveSeriesListToHistory(userId, response.foundSeries().getContent());
+        List<String> seriesTokens = saveSeriesListToHistory(chatId, response.getContent());
 
         sendResponse(inlineQuery, response, seriesTokens);
-    }
-
-    private SeriesSearchRs performSearch(InlineQuery query, String searchText, Long userId) {
-        UserSession session = userSessionService.getOrCreateSession(userId);
-
-        SeriesSearchRq searchRq = createRq(query, searchText);
-
-        if (searchRq.page() == 0) {
-            session.resetContext();
-        }
-
-        SeriesSearchRs response = executeSearch(session, searchRq);
-        userSessionService.initSearchContext(userId, response.source());
-
-        return response;
     }
 
     private SeriesSearchRq createRq(InlineQuery inlineQuery, String searchText) {
@@ -74,26 +59,15 @@ public class SearchInlineCommand extends BaseInlineCommand {
         return new SeriesSearchRq(searchText, page, PAGE_SIZE);
     }
 
-    private SeriesSearchRs executeSearch(UserSession session, SeriesSearchRq request) {
-        return extractPreviousSource(session)
-                .map(source -> searchStrategyContext.search(request, source))
-                .orElseGet(() -> searchStrategyContext.search(request));
-    }
-
-    private Optional<Source> extractPreviousSource(UserSession session) {
-        return Optional.ofNullable(session.getSearchContext())
-                .map(SearchContext::getSearchSource);
-    }
-
-    private void sendResponse(InlineQuery query, SeriesSearchRs response, List<String> seriesTokens) {
-        if (response.isEmpty()) {
+    private void sendResponse(InlineQuery query, PagedModel<SeriesListViewRs> response, List<String> seriesTokens) {
+        if (response.getContent().isEmpty()) {
             seriesSendService.sendNotFoundInline(query.getId());
             return;
         }
 
         seriesSendService.sendSeriesListInline(
                 query.getId(),
-                response.foundSeries(),
+                response,
                 seriesTokens);
     }
 

@@ -33,16 +33,12 @@ public class Season {
     @Column(name = "release_date")
     private LocalDate releaseDate;
 
-    @PositiveOrZero
-    @Column(name = "total_episodes")
-    private Integer totalEpisodes;
-
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "series_id", nullable = false)
     private Series series;
 
-    @OneToMany(mappedBy = "season", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "season", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Episode> episodes = new ArrayList<>();
 }

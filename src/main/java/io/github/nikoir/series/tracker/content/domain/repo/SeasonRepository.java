@@ -11,7 +11,13 @@ import java.util.List;
 
 @Repository
 public interface SeasonRepository extends JpaRepository<Season, Long> {
-    @EntityGraph(attributePaths = {"episodes"})
-    @Query("SELECT s FROM Season s WHERE s.series.id = :seriesId")
-    List<Season> findBySeriesIdWithEpisodes(@Param("seriesId") Long seriesId);
+    // Находим сезоны, у которых есть эпизоды без релизов
+    @Query("SELECT DISTINCT s " +
+            "FROM Season s " +
+            "JOIN s.episodes e " +
+            "WHERE s.series.id = :seriesId " +
+            "AND e.releases IS EMPTY")
+    List<Season> findSeasonsWithEpisodesWithoutReleases(@Param("seriesId") Long seriesId);
+
+    List<Season> findBySeriesId(Long seriesId);
 }

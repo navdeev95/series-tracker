@@ -12,4 +12,10 @@
     <include file="2025/006-add-external-id-table.sql" relativeToChangelogFile="true"/>
     <include file="2025/007-alter-user-table.sql" relativeToChangelogFile="true"/>
     <include file="2025/008-alter-series-table.sql" relativeToChangelogFile="true"/>
+    <include file="2026/009-add-continuing-status.sql" relativeToChangelogFile="true"/>
+    <include file="2026/010-add-wikidata.sql" relativeToChangelogFile="true"/>
+    <include file="2026/011-add-country-dictionary.sql" relativeToChangelogFile="true"/>
+    <include file="2026/012-add-series-country-table.sql" relativeToChangelogFile="true"/>
+    <include file="2026/013-drop-total-episodes-column.sql" relativeToChangelogFile="true"/>
+    <include file="2026/014-update-url-templates.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

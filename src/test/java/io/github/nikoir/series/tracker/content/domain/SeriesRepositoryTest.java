@@ -1,10 +1,18 @@
 package io.github.nikoir.series.tracker.content.domain;
 
+import io.github.nikoir.series.tracker.builder.domain.EpisodeBuilder;
+import io.github.nikoir.series.tracker.builder.domain.EpisodeReleaseBuilder;
+import io.github.nikoir.series.tracker.builder.domain.SeasonBuilder;
 import io.github.nikoir.series.tracker.builder.domain.SeriesBuilder;
+import io.github.nikoir.series.tracker.content.domain.entity.Episode;
+import io.github.nikoir.series.tracker.content.domain.entity.EpisodeRelease;
+import io.github.nikoir.series.tracker.content.domain.entity.Season;
 import io.github.nikoir.series.tracker.content.domain.entity.Series;
 import io.github.nikoir.series.tracker.content.domain.entity.dictionary.DictExternalId;
+import io.github.nikoir.series.tracker.content.domain.entity.dictionary.DictSource;
 import io.github.nikoir.series.tracker.content.domain.repo.ExternalIdRepository;
 import io.github.nikoir.series.tracker.content.domain.repo.SeriesRepository;
+import io.github.nikoir.series.tracker.content.domain.repo.SourceRepository;
 import io.github.nikoir.series.tracker.content.domain.repo.specification.SeriesSpecifications;
 import io.github.nikoir.series.tracker.content.enums.ExternalId;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,9 +24,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.nikoir.series.tracker.content.domain.entity.Series.Status.COMPLETED;
+import static io.github.nikoir.series.tracker.content.domain.entity.Series.Status.CONTINUING;
+import static io.github.nikoir.series.tracker.content.enums.Source.MOVIELAB;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -30,17 +44,32 @@ public class SeriesRepositoryTest {
     @Autowired
     private ExternalIdRepository externalIdRepository;
 
+    @Autowired
+    private SourceRepository sourceRepository;
+
     private Long seriesId1;
     private Long seriesId2;
     private Long seriesId3;
 
+    private DictSource releaseSource;
+
+    private DictExternalId kinopoiskId;
+    private DictExternalId movielabId;
+
+
+    private static final int EPISODES_COUNT = 10;
+
     @BeforeEach
     void setUp() {
-        DictExternalId kinopoiskId = externalIdRepository.save(DictExternalId.builder()
+        releaseSource = sourceRepository
+                .findByName(MOVIELAB.getName())
+                .orElseThrow();
+
+        kinopoiskId = externalIdRepository.save(DictExternalId.builder()
                         .name(ExternalId.KINOPOISK.getName())
                 .build());
 
-        DictExternalId movielabId = externalIdRepository.save(DictExternalId.builder()
+        movielabId = externalIdRepository.save(DictExternalId.builder()
                 .name(ExternalId.MOVIELAB.getName())
                 .build());
 
@@ -48,10 +77,11 @@ public class SeriesRepositoryTest {
         Series series1 = new SeriesBuilder()
                 .withTitle("Game of Thrones")
                 .withEngTitle("Game of Thrones")
-                .withStatus(Series.Status.COMPLETED)
+                .withStatus(COMPLETED)
                 .withReleaseYear(2011)
                 .withExternalId(kinopoiskId, "123")
                 .withExternalId(movielabId, "456")
+                .withGeneratedSeasons(5, i -> buildCompletedSeason(i + 1))
                 .build();
         series1 = seriesRepository.save(series1);
         seriesId1 = series1.getId();
@@ -60,7 +90,12 @@ public class SeriesRepositoryTest {
         Series series2 = new SeriesBuilder()
                 .withTitle("Дом Дракона")
                 .withEngTitle("House of the Dragon")
-                .withStatus(Series.Status.COMPLETED)
+                .withStatus(COMPLETED)
+                .withSeason(buildCompletedSeason(1))
+                .withSeason(buildCompletedSeason(2))
+                .withSeason(buildUncompletedSeason(3, 8, 9, 10))
+                .withExternalId(kinopoiskId, "1234")
+                .withExternalId(movielabId, "5678")
                 .withReleaseYear(2022)
                 .build();
         series2 = seriesRepository.save(series2);
@@ -134,144 +169,6 @@ public class SeriesRepositoryTest {
         assertEquals(2, result.getContent().size());
     }
 
-    // ==================== Тесты для searchSeriesWithStatus ====================
-
-    @Test
-    public void searchSeriesWithStatus_IncludeUnknownStatusTrue_ExcludesSpecifiedStatus() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Series.Status> excludedStatus = List.of(Series.Status.ANNOUNCED);
-
-        Page<Series> result = seriesRepository.searchSeriesWithStatus(true, excludedStatus, pageable);
-
-        // Должен вернуть: Game of Thrones (COMPLETED) и House of the Dragon (COMPLETED)
-        // The Witcher (ANNOUNCED) исключен, но так как unknownStatus=true,
-        // сериалов с null статусом нет, поэтому только 2
-        assertEquals(2, result.getTotalElements());
-
-        for (Series series : result.getContent()) {
-            assertSame(Series.Status.COMPLETED, series.getStatus());
-        }
-    }
-
-    @Test
-    public void searchSeriesWithStatus_IncludeUnknownStatusFalse_ExcludesSpecifiedStatus() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Series.Status> excludedStatus = List.of(Series.Status.ANNOUNCED);
-
-        Page<Series> result = seriesRepository.searchSeriesWithStatus(false, excludedStatus, pageable);
-
-        // Должен вернуть только RELEASED сериалы
-        assertEquals(2, result.getTotalElements());
-
-        for (Series series : result.getContent()) {
-            assertEquals(Series.Status.COMPLETED, series.getStatus());
-        }
-    }
-
-    @Test
-    public void searchSeriesWithStatus_ExcludeMultipleStatuses_ReturnsCorrectResults() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Series.Status> excludedStatus = List.of(Series.Status.COMPLETED, Series.Status.ANNOUNCED);
-
-        Page<Series> result = seriesRepository.searchSeriesWithStatus(true, excludedStatus, pageable);
-
-        // Все статусы исключены, сериалов с null статусом нет
-        assertEquals(0, result.getTotalElements());
-        assertTrue(result.getContent().isEmpty());
-    }
-
-    @Test
-    public void searchSeriesWithStatus_EmptyExcludedList_ReturnsAllSeries() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Series.Status> excludedStatus = List.of();
-
-        Page<Series> result = seriesRepository.searchSeriesWithStatus(true, excludedStatus, pageable);
-
-        // Должен вернуть все 3 сериала
-        assertEquals(3, result.getTotalElements());
-    }
-
-    @Test
-    public void searchSeriesWithStatus_IncludeUnknownStatusTrue_WithNullStatusSeries() {
-        // Создаем сериал с null статусом
-        Series seriesWithNullStatus = new SeriesBuilder()
-                .withTitle("Series Without Status")
-                .withEngTitle("Series Without Status")
-                .withStatus(null)  // Явно устанавливаем null
-                .withReleaseYear(2023)
-                .build();
-        seriesRepository.save(seriesWithNullStatus);
-
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Series.Status> excludedStatus = List.of(Series.Status.ANNOUNCED);
-
-        Page<Series> result = seriesRepository.searchSeriesWithStatus(true, excludedStatus, pageable);
-
-        // Должен вернуть: Game of Thrones (RELEASED), House of the Dragon (RELEASED)
-        // и сериал с null статусом
-        assertEquals(3, result.getTotalElements());
-
-        boolean hasNullStatus = result.getContent().stream()
-                .anyMatch(series -> series.getStatus() == null);
-        assertTrue(hasNullStatus);
-    }
-
-    @Test
-    public void searchSeriesWithStatus_IncludeUnknownStatusFalse_WithNullStatusSeries() {
-        // Создаем сериал с null статусом
-        Series seriesWithNullStatus = new SeriesBuilder()
-                .withTitle("Series Without Status")
-                .withEngTitle("Series Without Status")
-                .withStatus(null)
-                .withReleaseYear(2023)
-                .build();
-        seriesRepository.save(seriesWithNullStatus);
-
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Series.Status> excludedStatus = List.of(Series.Status.ANNOUNCED);
-
-        Page<Series> result = seriesRepository.searchSeriesWithStatus(false, excludedStatus, pageable);
-
-        // Должен вернуть только RELEASED сериалы (без сериала с null статусом)
-        assertEquals(2, result.getTotalElements());
-
-        for (Series series : result.getContent()) {
-            assertEquals(Series.Status.COMPLETED, series.getStatus());
-        }
-    }
-
-    @Test
-    public void searchSeriesWithStatus_WithPagination_ReturnsCorrectPage() {
-        Pageable pageable = PageRequest.of(0, 2);
-        List<Series.Status> excludedStatus = List.of();
-
-        Page<Series> result = seriesRepository.searchSeriesWithStatus(true, excludedStatus, pageable);
-
-        assertEquals(3, result.getTotalElements());
-        assertEquals(2, result.getContent().size());
-
-        // Проверяем, что сериалы отсортированы по id ASC
-        assertEquals(seriesId1, result.getContent().get(0).getId());
-        assertEquals(seriesId2, result.getContent().get(1).getId());
-    }
-
-    @Test
-    public void searchSeriesWithStatus_SecondPage_ReturnsRemainingSeries() {
-        Pageable firstPage = PageRequest.of(0, 2);
-        Pageable secondPage = PageRequest.of(1, 2);
-        List<Series.Status> excludedStatus = List.of();
-
-        Page<Series> firstPageResult = seriesRepository.searchSeriesWithStatus(true, excludedStatus, firstPage);
-        Page<Series> secondPageResult = seriesRepository.searchSeriesWithStatus(true, excludedStatus, secondPage);
-
-        assertEquals(3, firstPageResult.getTotalElements());
-        assertEquals(2, firstPageResult.getContent().size());
-        assertEquals(1, secondPageResult.getContent().size());
-
-        // Проверяем, что на второй странице остался последний сериал
-        assertEquals(seriesId3, secondPageResult.getContent().get(0).getId());
-    }
-
     @Test
     public void searchSeriesSpecification_ExistingId_ReturnSeries() {
         Specification<Series> seriesSpecification = SeriesSpecifications
@@ -298,5 +195,92 @@ public class SeriesRepositoryTest {
                 .toList();
 
         assertTrue(seriesList.isEmpty());
+    }
+
+    @Test
+    public void searchSeriesWithoutReleases_ShouldReturnSeries() {
+        PageRequest page = PageRequest.of(0, 10);
+        Page<Series> seriesResult = seriesRepository.searchSeriesWithoutReleases(page);
+
+        //Should return House of the Dragon
+        assertEquals(1, seriesResult.getContent().size());
+        assertEquals(seriesId2, seriesResult.getContent().getFirst().getId());
+
+        assertThat(seriesResult.getContent().getFirst().getExternalIds()).hasSize(2);
+    }
+
+    @Test
+    public void searchSeriesWithCompletedSeasons_ShouldReturnSeries() {
+        Series newSeries = new SeriesBuilder()
+                .withTitle("Рик и Морти")
+                .withEngTitle("Rick And Morty")
+                .withStatus(Series.Status.CONTINUING)
+                .withReleaseYear(2013)
+                .withExternalId(kinopoiskId, "666")
+                .withExternalId(movielabId, "666")
+                .withGeneratedSeasons(5, i -> buildCompletedSeason(i + 1))
+                .build();
+
+        seriesRepository.save(newSeries);
+
+        PageRequest page = PageRequest.of(0, 10);
+        Page<Series> seriesPage = seriesRepository.searchSeriesWithCompletedSeasons(page, List.of(CONTINUING, COMPLETED));
+
+        assertTrue(seriesPage.hasContent());
+        assertEquals(2, seriesPage.getTotalElements());
+
+        Series firstSeries = seriesPage.getContent().getFirst();
+        Series secondSeries = seriesPage.getContent().get(1);
+
+        assertEquals("Game of Thrones", firstSeries.getTitle());
+        assertEquals("Рик и Морти", secondSeries.getTitle());
+
+        assertThat(firstSeries.getExternalIds()).hasSize(2);
+        assertThat(secondSeries.getExternalIds()).hasSize(2);
+    }
+
+    private Season buildUncompletedSeason(int number, int... episodesWithoutReleases) {
+        return new SeasonBuilder()
+                .withNumber(number)
+                .withGeneratedEpisodes(EPISODES_COUNT, i -> {
+                    if (Arrays.stream(episodesWithoutReleases).anyMatch(num -> num == i)) {
+                        return buildEpisodeWithoutRelease(i + 1, LocalDate
+                                .now()
+                                .plusDays(1));
+                    } else {
+                        return buildEpisodeWithRelease(i + 1);
+                    }
+
+                })
+                .build();
+    }
+
+    private Season buildCompletedSeason(int number) {
+        return new SeasonBuilder()
+                .withNumber(number)
+                .withGeneratedEpisodes(EPISODES_COUNT, i -> buildEpisodeWithRelease(i + 1))
+                .build();
+    }
+
+    private Episode buildEpisodeWithRelease(int number) {
+        Episode episode = new EpisodeBuilder()
+                .withNumber(number)
+                .build();
+
+        EpisodeRelease release = new EpisodeReleaseBuilder()
+                .withEpisode(episode)
+                .withSource(releaseSource)
+                .build();
+
+        episode.setReleases(List.of(release));
+
+        return episode;
+    }
+
+    private Episode buildEpisodeWithoutRelease(int number, LocalDate releaseDate) {
+        return new EpisodeBuilder()
+                .withNumber(number)
+                .withReleaseDate(releaseDate)
+                .build();
     }
 }

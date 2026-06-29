@@ -10,7 +10,12 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        ddl-auto: update
         format_sql: true
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
   application:
     name: seriesparser
   liquibase:
@@ -58,8 +63,32 @@ api:
 
     credentials:
       token: ${KINOPOISK_TOKEN}
+  tmdb:
+    url: https://api.themoviedb.org/3/
+    auth:
+      path: authentication
+    series-search:
+      path: search/tv
+    series-details:
+      path: tv/{series_id}
+    external-ids:
+      path: tv/{series_id}/external_ids
+    season-details:
+      path: tv/{series_id}/season/{season_number}
+    credentials:
+      token: ${TMDB_TOKEN}
+  wikidata:
+    url: https://www.wikidata.org/w/rest.php/wikibase/v1
+    get-entity:
+      path: /entities/items/{item_id}
+    credentials:
+      token: ${WIKIDATA_TOKEN}
 sync:
-  scheduler:
+  info:
+    cron: "0 0 0 * * *"
+  seasons:
+    cron: "0 0 1 * * *"
+  releases:
     cron: "0 0 * * * *"
 
 telegram:

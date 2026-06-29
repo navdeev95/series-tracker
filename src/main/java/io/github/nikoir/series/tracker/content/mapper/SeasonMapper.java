@@ -1,7 +1,7 @@
 package io.github.nikoir.series.tracker.content.mapper;
 
 import io.github.nikoir.series.tracker.content.domain.entity.Season;
-import io.github.nikoir.series.tracker.common.dto.response.SeasonViewRs;
+import io.github.nikoir.series.tracker.content.dto.internal.SeasonInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +18,13 @@ public abstract class SeasonMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "series", ignore = true)
     @Mapping(target = "episodes", source = "episodes")
-    public abstract Season toEntity(SeasonViewRs seasonViewRs);
+    public abstract Season toEntity(SeasonInfo seasonInfo);
 
-    public List<Season> toEntities(List<SeasonViewRs> seasonViewRsList) {
-        if (CollectionUtils.isEmpty(seasonViewRsList)) {
+    public List<Season> toEntities(List<SeasonInfo> seasonInfoList) {
+        if (CollectionUtils.isEmpty(seasonInfoList)) {
             return Collections.emptyList();
         }
-        return seasonViewRsList
+        return seasonInfoList
                 .stream()
                 .map(this::toEntity)
                 .toList();

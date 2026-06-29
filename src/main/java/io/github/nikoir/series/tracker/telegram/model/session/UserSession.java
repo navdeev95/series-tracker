@@ -1,5 +1,6 @@
 package io.github.nikoir.series.tracker.telegram.model.session;
 
+import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,14 +18,9 @@ public class UserSession {
     private LocalDateTime lastActivity;
     @Builder.Default
     private Deque<SeriesHistoryItem> queue = new ArrayDeque<>();
-    private SearchContext searchContext;
 
     public void updateActivity() {
         this.lastActivity = LocalDateTime.now();
-    }
-
-    public void resetContext() {
-        this.searchContext = null;
     }
 
     public void addToHistory(SeriesHistoryItem historyItem) {
@@ -47,6 +43,15 @@ public class UserSession {
             return false;
         }
         historyItem.get().setMessageId(messageId);
+        return true;
+    }
+
+    public boolean setHistoryItemSeriesDetails(String token, SeriesDetailViewRs seriesDetailViewRs) {
+        Optional<SeriesHistoryItem> historyItem = getHistoryItem(token);
+        if (historyItem.isEmpty()) {
+            return false;
+        }
+        historyItem.get().setFullSeriesDetail(seriesDetailViewRs);
         return true;
     }
 }

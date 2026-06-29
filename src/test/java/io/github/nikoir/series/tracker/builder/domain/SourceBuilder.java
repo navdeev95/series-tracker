@@ -6,6 +6,7 @@ import io.github.nikoir.series.tracker.content.enums.Source;
 public class SourceBuilder {
     private final Source sourceTemplate;
     private String customName;
+    private String customUrlTemplate;
 
     public SourceBuilder(Source source) {
         this.sourceTemplate = source;
@@ -16,12 +17,17 @@ public class SourceBuilder {
         return this;
     }
 
+    public SourceBuilder withUrlTemplate(String urlTemplate) {
+        this.customUrlTemplate = urlTemplate;
+        return this;
+    }
+
     public DictSource build() {
         return DictSource.builder()
                 .id(sourceTemplate.getEntityId())
                 .name(customName != null ? customName : sourceTemplate.getName())
                 .rootUrl(sourceTemplate.getRootUrl())
-                .urlTemplate(sourceTemplate.getUrlTemplate())
+                .urlTemplate(customUrlTemplate != null? customUrlTemplate : sourceTemplate.getUrlTemplate())
                 .build();
     }
 }

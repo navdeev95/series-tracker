@@ -12,11 +12,15 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component
 public class StartTextCommand extends BaseTextCommand {
-    private final TelegramService telegramService;
     private final MessageFactory messageFactory;
+
+    public StartTextCommand(TelegramService telegramService,
+                            MessageFactory messageFactory) {
+        super(telegramService);
+        this.messageFactory = messageFactory;
+    }
 
     @Override
     public TextCommandEnum getCommand() {
@@ -24,10 +28,10 @@ public class StartTextCommand extends BaseTextCommand {
     }
 
     @Override
-    protected void innerExecute(Message message) {
-        User user = message.getFrom();
+    protected void doExecute(Message message) {
+        User user = extractUser(message);
 
-        log.info("User {} ({}) has run bot", user.getId(), user.getFirstName());
+        log.info("User {} ({}) has run bot", extractChatId(message), user.getFirstName());
 
         SendMessage response = messageFactory.createWelcomeMessage(user);
 

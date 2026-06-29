@@ -1,8 +1,7 @@
 package io.github.nikoir.series.tracker.telegram.ui.factory;
 
-import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailPersonalizedRs;
-import io.github.nikoir.series.tracker.common.dto.response.SeriesDetailViewRs;
-import io.github.nikoir.series.tracker.common.dto.response.SeriesListViewRs;
+import io.github.nikoir.series.tracker.common.dto.response.*;
+import io.github.nikoir.series.tracker.common.events.NewContentEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -10,6 +9,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.inputmessagecontent.InputTextMessageContent;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -21,8 +22,8 @@ public class MessageFactory {
                                                String seriesToken) {
         return SendPhoto.builder()
                 .chatId(chatId)
-                .photo(new InputFile(seriesDetail.seriesInfo().posterUrl()))
-                .caption(buildSeriesDetailCaption(seriesDetail.seriesInfo(), false, false))
+                .photo(new InputFile(seriesDetail.seriesInfo().getPosterUrl()))
+                .caption(buildSeriesDetailCaption(seriesDetail.seriesInfo()))
                 .parseMode("HTML")
                 .replyMarkup(keyboardFactory.createSeriesKeyboard(seriesDetail, seriesToken))
                 .build();
@@ -65,31 +66,22 @@ public class MessageFactory {
                 .build();
     }
 
-    public SendPhoto createNewSeasonMessage(Long chatId,
-                                            SeriesDetailViewRs seriesDetail) {
-        return SendPhoto.builder()
-                .chatId(chatId)
-                .photo(new InputFile(seriesDetail.posterUrl()))
-                .caption(buildSeriesDetailCaption(seriesDetail, false, true))
-                .parseMode("HTML")
-                .build();
-    }
-
     public SendPhoto createNewEpisodeMessage(Long chatId,
-                                             SeriesDetailViewRs seriesDetail) {
+                                             NewContentEvent newContentEvent) {
         return SendPhoto.builder()
                 .chatId(chatId)
-                .photo(new InputFile(seriesDetail.posterUrl()))
-                .caption(buildSeriesDetailCaption(seriesDetail, true, false))
+                .photo(new InputFile(newContentEvent.getSeriesDetails().getPosterUrl()))
+                .caption(buildNewEpisodeCaption(newContentEvent))
                 .parseMode("HTML")
                 .build();
     }
 
-    private String buildSeriesDetailCaption(SeriesDetailViewRs seriesInfo,
-                                            boolean isNewEpisodeEvent,
-                                            boolean isNewSeasonEvent) {
+    private String buildSeriesDetailCaption(SeriesDetailViewRs seriesInfo) {
+        String status = seriesInfo.getStatus() != null
+                ? seriesInfo.getStatus().getDescription()
+                : "Неизвестно";
+
         return String.format("""
-            %s
             <b>%s</b> (%d)
             
             <i>%s</i>
@@ -97,29 +89,38 @@ public class MessageFactory {
             🌏 <b>Страны:</b> %s
             📅 <b>Год:</b> %d
             📺 <b>Сезонов:</b> %d
+            📌 <b>Статус:</b> %s
             
             <b>Описание:</b>
             %s
-            """,
-                buildTypeInfo(isNewEpisodeEvent, isNewSeasonEvent),
-                seriesInfo.title(),
-                seriesInfo.releaseYear(),
-                seriesInfo.isSeries() ? "Сериал" : "Фильм",
-                String.join(", ", seriesInfo.countries()),
-                seriesInfo.releaseYear(),
-                seriesInfo.totalSeasons(),
-                seriesInfo.description());
+            """,seriesInfo.getTitle(),
+                seriesInfo.getReleaseYear(),
+                seriesInfo.getIsSeries() ? "Сериал" : "Фильм",
+                String.join(", ",
+                        seriesInfo.getCountries()
+                                .stream()
+                                .map(CountryRs::name)
+                                .toList()),
+                seriesInfo.getReleaseYear(),
+                seriesInfo.getTotalSeasons(),
+                status,
+                seriesInfo.getDescription());
     }
 
-    private String buildTypeInfo(boolean isNewEpisodeEvent, boolean isNewSeasonEvent) {
-        if (isNewEpisodeEvent) {
-            return "🎬 <i>Новый эпизод</i>";
+    private String buildNewEpisodeCaption(NewContentEvent newContentEvent) {
+        List<EpisodeReleaseViewRs> episodeReleases = newContentEvent.getEpisodeReleases();
+        SeriesDetailViewRs seriesDetails = newContentEvent.getSeriesDetails();
+        if (episodeReleases.isEmpty()) {
+            return "";
         }
-        if (isNewSeasonEvent) {
-            return "📺 <i>Новый сезон</i>";
-        }
-
-        return "";
+        return String.format("""
+                <b>%s</b> (%d)
+                %d эпизод
+                Ссылка для просмотра: %s
+                """,
+                seriesDetails.getTitle(),
+                episodeReleases.getFirst().episodeNumber(),
+                episodeReleases.getFirst().episodeUrl());
     }
 
     private String getWelcomeMessage(String userName) {

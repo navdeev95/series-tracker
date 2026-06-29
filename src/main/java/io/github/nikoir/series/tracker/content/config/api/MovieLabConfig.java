@@ -12,13 +12,6 @@ import java.util.Locale;
 
 @Configuration
 public class MovieLabConfig {
-
-    @Bean
-    @ConfigurationProperties(prefix = "api.movielab")
-    public MovieLabProps movieLabProperties() {
-        return new MovieLabProps();
-    }
-
     @Bean
     public HttpHeaders movieLabBaseHeaders(
             MovieLabProps properties
