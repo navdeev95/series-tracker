@@ -73,7 +73,7 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
     volumes:
-      - ./grafana/data:/var/lib/grafana
+      - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning/
 
   portainer:
@@ -91,3 +91,4 @@ services:
       - 8000:8000
 volumes:
   portainer_data:
+  grafana_data:
