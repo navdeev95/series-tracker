@@ -48,4 +48,5 @@ jobs:
             git pull origin main
             cd docker
             docker compose down
-            docker compose -f docker-compose.base.yml -f docker-compose.prod.yml --profile prod up -d --pull always
+            docker pull navdeev95/series-tracker-app:latest --quiet
+            docker compose -f docker-compose.base.yml -f docker-compose.prod.yml --profile prod up -d
