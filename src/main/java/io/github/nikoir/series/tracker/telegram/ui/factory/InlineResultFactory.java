@@ -47,7 +47,7 @@ public class InlineResultFactory {
     }
 
     public PagedModel<InlineQueryResult> createNoResultsInline() {
-        Pageable pageable = PageRequest.of(0, 0);
+        Pageable pageable = PageRequest.of(0, 1);
 
         InlineQueryResult result = InlineQueryResultArticle.builder()
                 .id("no_results")
