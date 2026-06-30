@@ -39,6 +39,13 @@ public class MessageFactory {
                 .build();
     }
 
+    public InputTextMessageContent createNotFoundMessageContent() {
+        return InputTextMessageContent.builder()
+                .messageText("Ничего не найдено 😔\nПопробуйте изменить запрос")
+                .parseMode("HTML")
+                .build();
+    }
+
     public SendMessage createSearchSendMessage(Long chatId) {
         return SendMessage.builder()
                 .chatId(String.valueOf(chatId))
