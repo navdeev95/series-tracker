@@ -53,7 +53,7 @@ services:
     image: prom/prometheus:latest
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus/data/:/prometheus/
+      - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -90,5 +90,6 @@ services:
       - 9443:9443
       - 8000:8000
 volumes:
+  prometheus_data:
   portainer_data:
   grafana_data:
