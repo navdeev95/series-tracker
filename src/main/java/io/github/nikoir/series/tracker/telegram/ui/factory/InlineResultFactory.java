@@ -53,6 +53,7 @@ public class InlineResultFactory {
                 .id("no_results")
                 .title("Ничего не найдено 😔")
                 .description("Попробуйте изменить запрос")
+                .inputMessageContent(messageFactory.createNotFoundMessageContent())
                 .build();
 
         return new PagedModel<>(new PageImpl<>(List.of(result), pageable, 0));
