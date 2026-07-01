@@ -5,6 +5,7 @@ import io.micrometer.core.instrument.Timer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
@@ -24,12 +25,7 @@ public class AppMetricService {
             exceptionClass = e.getClass().getSimpleName();
             throw e;
         } finally {
-            // Останавливаем таймер и отправляем метрику с собранными тегами
-            sample.stop(Timer.builder(metricName)
-                    .description("Длительность и статус выполнения операций приложения")
-                    .tag("status", status)
-                    .tag("exception", exceptionClass)
-                    .register(registry));
+            sampleStop(sample, metricName, status, exceptionClass);
         }
     }
 
@@ -46,13 +42,26 @@ public class AppMetricService {
             exceptionClass = e.getClass().getSimpleName();
             throw e;
         } finally {
-            // Останавливаем таймер и отправляем метрику с собранными тегами
-            sample.stop(Timer.builder(metricName)
-                    .description("Длительность и статус выполнения операций приложения")
-                    .tag("status", status)
-                    .tag("exception", exceptionClass)
-                    .register(registry));
+            sampleStop(sample, metricName, status, exceptionClass);
         }
         return result;
+    }
+
+    private void sampleStop(Timer.Sample sample,
+                            String metricName,
+                            String status,
+                            String exceptionClass) {
+        // Останавливаем таймер и отправляем метрику с собранными тегами
+        sample.stop(Timer.builder(metricName)
+                .tag("status", status)
+                .tag("exception", exceptionClass)
+                .sla(Duration.ofMillis(50),   // "Хорошо" — быстрее 50ms
+                        Duration.ofMillis(100),  // "Приемлемо" — до 100ms
+                        Duration.ofMillis(200),  // "Медленно" — до 200ms
+                        Duration.ofMillis(500),  // "Критично" — до 500ms
+                        Duration.ofMillis(1000)  // "Нарушение SLA" — >1s
+                )
+                .publishPercentileHistogram()
+                .register(registry));
     }
 }
