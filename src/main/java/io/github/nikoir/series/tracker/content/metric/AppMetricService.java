@@ -61,7 +61,6 @@ public class AppMetricService {
                         Duration.ofMillis(500),  // "Критично" — до 500ms
                         Duration.ofMillis(1000)  // "Нарушение SLA" — >1s
                 )
-                .publishPercentileHistogram()
                 .register(registry));
     }
 }
