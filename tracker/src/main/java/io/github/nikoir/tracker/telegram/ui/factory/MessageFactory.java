@@ -126,6 +126,7 @@ public class MessageFactory {
                 Ссылка для просмотра: %s
                 """,
                 seriesDetails.getTitle(),
+                seriesDetails.getReleaseYear(),
                 episodeReleases.getFirst().episodeNumber(),
                 episodeReleases.getFirst().episodeUrl());
     }
