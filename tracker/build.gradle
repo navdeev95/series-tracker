@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+}
+
+group = 'io.github.nikoir'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':common')
+
+    // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    //Actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    //Prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // Database
+    implementation 'org.liquibase:liquibase-core'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // Hibernate utilities
+    implementation "io.hypersistence:hypersistence-utils-hibernate-63:${hibernateVersion}"
+
+    // MapStruct
+    implementation "org.mapstruct:mapstruct:${mapStructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
+
+    // Для работы Lombok с MapStruct
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapStructVersion}"
+
+    //Telegram
+    implementation "org.telegram:telegrambots-springboot-longpolling-starter:${telegramVersion}"
+    implementation "org.telegram:telegrambots-client:${telegramVersion}"
+
+    //Caffeine cache
+    implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
+
+    // Тестирование
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testImplementation 'com.h2database:h2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+}
+
+bootJar {
+    archiveFileName = "series-tracker.jar"
+}
+
+test {
+    useJUnitPlatform()
+}
