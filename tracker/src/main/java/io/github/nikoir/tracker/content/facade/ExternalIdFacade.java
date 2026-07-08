@@ -1,0 +1,28 @@
+package io.github.nikoir.tracker.content.facade;
+
+import io.github.nikoir.common.dto.response.ExternalId;
+import io.github.nikoir.tracker.content.strategy.impl.TMDBExternalIdStrategy;
+import io.github.nikoir.tracker.content.strategy.impl.WikidataExternalIdStrategy;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+
+import static io.github.nikoir.common.dto.response.ExternalId.WIKIDATA;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class ExternalIdFacade {
+    private final TMDBExternalIdStrategy tmdbExternalIdStrategy;
+    private final WikidataExternalIdStrategy wikidataExternalIdStrategy;
+
+    public Map<ExternalId, String> enrichExternalIds(Map<ExternalId, String> existingExternalIds) {
+        Map<ExternalId, String> tmdbResult = tmdbExternalIdStrategy.enrichExternalIds(existingExternalIds);
+        if (!tmdbResult.containsKey(WIKIDATA)) {
+            return tmdbResult;
+        }
+        return wikidataExternalIdStrategy.enrichExternalIds(tmdbResult);
+    }
+}

@@ -5,8 +5,8 @@
     <option name="envFilePaths">
       <option value="$PROJECT_DIR$/.env" />
     </option>
-    <option name="MAIN_CLASS_NAME" value="io.github.nikoir.series.tracker.SeriesTrackerApplication" />
-    <module name="seriestracker.main" />
+    <option name="MAIN_CLASS_NAME" value="io.github.nikoir.tracker.TrackerApplication" />
+    <module name="seriestracker.tracker.main" />
     <option name="VM_PARAMETERS" value="-Dspring.profiles.active=dev -Dfile.encoding=UTF-8" />
     <method v="2">
       <option name="Make" enabled="true" />
