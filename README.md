@@ -16,7 +16,7 @@ Telegram-бот для автоматического оповещения о в
 | База данных | PostgreSQL |
 | Миграции | Liquibase |
 | Тестирование | JUnit, Mockito |
-| Сборка | Maven |
+| Сборка | Gradle |
 | Логирование | SLF4J + Logback |
 | Внешние API | TMDB API, Kinopoisk API, MovieLab API |
 
