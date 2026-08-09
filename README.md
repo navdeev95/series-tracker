@@ -50,7 +50,7 @@ PostgreSQL
 
 Миграции управляются через Liquibase (`/db/changelog`).
 
-📊 [Схема БД (ER-диаграмма)](/docs/schema.png)
+<img width="948" height="1167" alt="series_tracker_dev - series_tracker" src="https://github.com/user-attachments/assets/64390f43-9789-45e7-8c24-2545eb8aed98" />
 
 ## ✅ Реализованный функционал
 
