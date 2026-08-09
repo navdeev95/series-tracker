@@ -27,13 +27,10 @@ Telegram-бот для автоматического оповещения о в
 Telegram Bot (входящие команды)
       ↓
 Facade Service (единая точка входа)
-
       ↓
 Service Layer (бизнес-логика)
-
       ↓
 Repository Layer (доступ к БД)
-
       ↓
 PostgreSQL
 
