@@ -1,4 +1,4 @@
-# 🎬 Series Notification Bot
+# 🎬 Series Tracker
 
 Telegram-бот для автоматического оповещения о выходе новых серий любимых сериалов.
 
