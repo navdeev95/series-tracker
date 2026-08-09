@@ -64,7 +64,7 @@ PostgreSQL
 | **`series_country`** | Связь сериалов со странами (M:N) |
 | **`external_id_series`** | Связь сериалов с внешними ID (M:N) |
 
-<img width="500" height="500" alt="series_tracker_dev - series_tracker" src="https://github.com/user-attachments/assets/64390f43-9789-45e7-8c24-2545eb8aed98" />
+<img width="600" height="600" alt="series_tracker_dev - series_tracker" src="https://github.com/user-attachments/assets/64390f43-9789-45e7-8c24-2545eb8aed98" />
 
 ## ✅ Реализованный функционал
 
