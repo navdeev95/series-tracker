@@ -46,11 +46,25 @@ PostgreSQL
 | **Repository** | Абстракция доступа к данным |
 | **Dependency Injection** | Управление зависимостями (Spring) |
 
-**Таблицы:**
+## 🗄 Структура базы данных
 
-Миграции управляются через Liquibase (`/db/changelog`).
+| Таблица | Назначение |
+|---|---|
+| **`user`** | Пользователи бота (telegram_id) |
+| **`series`** | Сериалы (название, статус, год, постер, описание) |
+| **`season`** | Сезоны сериалов (номер, дата выхода, кол-во серий) |
+| **`episode`** | Серии (номер, название, дата выхода) |
+| **`episode_release`** | Релизы серий (источник, дубляж, качество, время выхода) |
+| **`user_subscription`** | Подписки пользователей (сериал + предпочтения по дубляжу/качеству/источнику) |
+| **`source`** | Источники контента (сайты с релизами) |
+| **`dub_studio`** | Студии дубляжа |
+| **`quality`** | Качество видео (разрешение) |
+| **`country`** | Страны производства |
+| **`external_id`** | Внешние идентификаторы (для интеграции с TMDB, Kinopoisk и др.) |
+| **`series_country`** | Связь сериалов со странами (M:N) |
+| **`external_id_series`** | Связь сериалов с внешними ID (M:N) |
 
-<img width="948" height="1167" alt="series_tracker_dev - series_tracker" src="https://github.com/user-attachments/assets/64390f43-9789-45e7-8c24-2545eb8aed98" />
+<img width="500" height="500" alt="series_tracker_dev - series_tracker" src="https://github.com/user-attachments/assets/64390f43-9789-45e7-8c24-2545eb8aed98" />
 
 ## ✅ Реализованный функционал
 
