@@ -62,6 +62,8 @@ PostgreSQL
 - [x] Отправка уведомлений в Telegram при выходе новой серии
 - [x] Модульные тесты (JUnit + Mockito)
 
+## 🚀 CI/CD (GitHub Actions)
+
 Настроен автоматический деплой на VPS через GitHub Actions и Docker:
 
 ### Процесс деплоя:
